@@ -482,29 +482,23 @@ c---------------------------------------------------------------------
                                        
  100  continue
 
-
-
-c...  Forest RJarú 91/93 data------------------------------------------
-c 201  read(iu,*,end=1000) nymd,swdown, rnetm, em, tm, um, tprec,
-c     &                    xmsensh, xmevap, xmfco2, xmustar, xco2m
-c-----------------------------------------------------------------------
-
-
-c...  Cerrado PDG 00/01 data------------------------------------------
-
- 201  read(iu,*,end=1000) nymd, swdown, rnetm, em, tm, um, tprec
-   
-cHR      write(98,'(i15,f15.0)') nymd 
-
-c-----------------------------------------------------------------------
-
+*-----------------------------------------------------------------------
+*     Defining a default format to read data2
+*     and check iwl flag to read
+*     Evandro M Anselmo 16/08/2019       
+ 201  continue
+      if (ilw.ne.3) then
+         read(iu,*,end=1000) nymd, swdown, em, tm, um, tprec
+      else
+         read(iu,*,end=1000) nymd, swdown, em, tm, um, tprec, rnetm
+      end if
+*-----------------------------------------------------------------------
 
       if (nymd.ge.nyfirst) then
       itero = itero + 1           ! incremento iteracoes apos nyfirst
       else
       goto 201 
       endif
-      
 
 c...  checa qualidade forcantes
       iqc  =  1
@@ -735,7 +729,7 @@ c
 c                                                                               
 200   continue                                                                  
       return                                                                    
-      end                                                                       
+      end                                                                     
 c                                                                               
 c=======================================================================        
 c                                                                               

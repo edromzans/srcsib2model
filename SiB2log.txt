@@ -1,0 +1,92 @@
+#Warning de compilação Fortran 77 debian 10 - fort77
+$ fort77 *.for -o SiB2run
+   MAIN sib2:
+   outer:
+   driver:
+   balan:
+   veginc:
+   vegpar:
+   soipar:
+   dynveg:
+   varcal:
+   cntrol:
+   const2:
+   adjust:
+   patchs:
+   snow1:
+   rada2:
+   longrn:
+   endtem:
+   rbrd:
+   phosib:
+   cycalc:
+   sortin:
+   delrn:
+   delhf:
+   delef:
+   sibslv:
+   dtcdtg:
+   snow2:
+   radc2:
+   rasite:
+   unstab:
+   stab:
+   rafcal:
+   newton:
+   gauss:
+   updat2:
+   inter2:
+   begtem:
+   run2n:
+Warning on line 682: incompatible lengths for common block rause
+   retec:
+Warning on line 1067: incompatible lengths for common block rause
+   hydcon:
+Warning on line 1143: incompatible lengths for common block rause
+   tridia2:
+   eqlin:
+
+
+
+#Warning de compilação Fortran 95 debian 10 - gfortran
+$ gfortran *.for -o SiB2runF95
+comsibc.h:62:20:
+
+       common /rause/ z0, d, rbc, rdc
+                    1
+Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
+comsibc.h:62:20:
+
+       common /rause/ z0, d, rbc, rdc
+                    1
+Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
+comsibc.h:62:20:
+
+       common /rause/ z0, d, rbc, rdc
+                    1
+Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
+comsibc.h:62:20:
+
+       common /rause/ z0, d, rbc, rdc
+                    1
+Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
+comsibc.h:62:20:
+
+       common /rause/ z0, d, rbc, rdc
+                    1
+Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
+
+
+#Erro de execução Fortran 95
+ convergence failure in rasite - unstable case
+    failure to converge after 490 iterations
+    y =   550.20     lx = 1
+    failure to converge after 490 iterations
+    y =   71.010     lx = 2
+Note: The following floating-point exceptions are signalling: IEEE_OVERFLOW_FLAG IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+STOP  SiB2 HAS DONE. 
+
+
+
+
+
