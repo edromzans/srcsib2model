@@ -639,7 +639,7 @@ c
       rsoil =  amax1 (0.1, 1001. - exp(fac*6.686)) !Cinthia_cerrado16Out09
 c                                                                               
       psit = phsat(1) * fac ** (- bee(1) )                                            
-      argg = amax1(-10.,(psit*g/461.5/tgs))                                     
+      argg = amax1(-10.,(psit*gx/461.5/tgs))                                     
       hr = exp(argg)                                                            
 c                                                                               
       return                                                                    

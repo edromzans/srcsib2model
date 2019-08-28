@@ -14,7 +14,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c        physical constants
 c-----------------------------------------------------------------------
-      common /const/ pie, timcon, cpair, rhoair, psy, hlat, g, vkc,
+      common /const/ pie, timcon, cpair, rhoair, psy, hlat, gx, vkc,
      &                 snomel, stefan, tf, clai, cw, snofac, asnow, rcp,
      &                 kappa, epsfac
       common /atchem/ po2m, pco2m, facco2
@@ -59,7 +59,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
 c        variables calculated from above and ambient conditions
 c-----------------------------------------------------------------------
-      common /rause/ z0, d, rbc, rdc
+      common /rause/ z0, xdx, rbc, rdc
       common /aerorx/ ra, rb, rd
       common /grads/ tgs, ta, ea, etc, etgs, getc, getgs ,u2, ustar
       common /radabs/ albedo(2,2,2), radfac(2,2,2), radt(2),

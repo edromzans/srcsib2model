@@ -19,7 +19,7 @@ c
       cpair    = 1010.                                                          
       cw       = 4.2 * 1000. * 1000.                                            
       epsfac   = 0.622                                                          
-      g        = 9.81                                                           
+      gx       = 9.81                                                           
       kappa    = 0.286                                                          
       pie      = 3.14159265                                                     
       po2m     = 20900.                                                         
@@ -234,7 +234,7 @@ c
 c++++++++++++++++++++++++++++++output+++++++++++++++++++++++++++++++++++        
 c                                                                               
 c       z0             roughness length (m)                                     
-c       d              zero plane displacement (m)                              
+c       xdx              zero plane displacement (m)                              
 c       rbc            rb coefficient (c1) (s m-1)**1/2                         
 c       rdc            rd coefficient (c2)                                      
 c       satcap(2)      interception capacities (m)                              
@@ -247,7 +247,7 @@ c    alteration of aerodynamic transfer properties in case of snow
 c    accumulation. calculation of maximum water storage values.                 
 c                                                                               
 c      canex       (fraction of canopy not covered by snow)                     
-c      d           (snow-modified value of dd, used in all calculations)        
+c      xdx           (snow-modified value of dd, used in all calculations)        
 c      z0          (snow-modified value of z0d, used in all calculations)       
 c      rbc         (snow-modified value of cc1, used in all calculations)       
 c      rdc         (snow-modified value of cc2, used in all calculations)       
@@ -261,8 +261,8 @@ c
       canex  = 1.-( snoww(2)*5.-z1)/(z2-z1)                                     
       canex  = amax1( 0.1, canex )                                              
       canex  = amin1( 1.0, canex )                                              
-      d      = z2 - ( z2-dd ) * canex                                           
-      z0     = z0d/( z2-dd ) * ( z2-d )                                         
+      xdx    = z2 - ( z2-dd ) * canex                                           
+      z0     = z0d/( z2-dd ) * ( z2-xdx )                                         
       rbc    = cc1/canex                                                        
       rdc    = cc2*canex                                                        
       areas    = amin1(1., asnow*snoww(2))                                      
@@ -305,7 +305,7 @@ c
 c                                                                               
       dimension tranc1(2), tranc2(2), tranc3(2)                                 
 c                                                                               
-      f = sunang                                                                
+      xfx = sunang                                                                
 c                                                                               
 c----------------------------------------------------------------------         
 c                                                                               
@@ -356,23 +356,23 @@ c
 c-----------------------------------------------------------------------        
 c                                                                               
       scat = green*( tran1 + reff1 ) +( 1. - green ) *                          
-     &       ( tran2 + reff2)                                                   
+     &     ( tran2 + reff2)                                                   
       chiv = chil                                                               
 c                                                                               
       if ( abs(chiv) .le. 0.01 ) chiv = 0.01                                    
       aa = 0.5 - 0.633 * chiv - 0.33 * chiv * chiv                              
       bb = 0.877 * ( 1. - 2. * aa )                                             
 c                                                                               
-      proj = aa + bb * f                                                        
-      extkb = ( aa + bb * f ) / f                                               
+      proj = aa + bb * xfx                                                        
+      extkb = ( aa + bb * xfx ) / xfx                                               
       zmew = 1. / bb * ( 1. - aa / bb * alog ( ( aa + bb ) / aa ) )             
-      acss = scat / 2. * proj / ( proj + f * bb )                               
-      acss = acss * ( 1. - f * aa / ( proj + f * bb ) * alog ( ( proj           
-     *       +   f * bb + f * aa ) / ( f * aa ) ) )                             
+      acss = scat / 2. * proj / ( proj + xfx * bb )                               
+      acss = acss * ( 1. - xfx * aa / ( proj + xfx * bb ) *           
+     &     alog ( ( proj + xfx * bb + xfx * aa ) / ( xfx * aa ) ) )                             
 c                                                                               
       upscat = green * tran1 + ( 1. - green ) * tran2                           
       upscat = 0.5 * ( scat + ( scat - 2. * upscat ) *                          
-     *         (( 1. - chiv ) / 2. ) ** 2 )                                     
+     &     (( 1. - chiv ) / 2. ) ** 2 )                                     
       betao = ( 1. + zmew * extkb ) / ( scat * zmew * extkb ) * acss            
 c                                                                               
 c----------------------------------------------------------------------         
@@ -1000,7 +1000,7 @@ c     rd : equation (a15), se-86
 c-----------------------------------------------------------------------        
 c                                                                               
       temdif = amax1( 0.1, tgs-tm )                                             
-      fih = sqrt( 1. + 9. * g * temdif * z2 / tgs / ( u2*u2) )                  
+      fih = sqrt( 1. + 9. * gx * temdif * z2 / tgs / ( u2*u2) )                  
       rd  = rdc / u2 / fih                                                      
 c                                                                               
 c-----------------------------------------------------------------------        
@@ -1630,7 +1630,7 @@ c
 c                                                                               
       dimension pblsib(4,4),cvec(4),solvec(4),chin(4,5),work(4,5)               
 c                                                                               
-      grav2 = 0.01*g                                                            
+      grav2 = 0.01*gx                                                            
       gv    = grav2*rhoair/ra                                                   
       psb   = 100.                                                              
 c                                                                               
@@ -1674,8 +1674,8 @@ c
       cvec(1) = radt(2) - hg/dtt - eg/dtt - timcon*(tgs-td)*cg*2.               
       cvec(2) = radt(1) - hc/dtt - ec/dtt                                       
       cvec(3) = grav2*fths + etem*dthb                                          
-      cvec(4) = grav2*fws  + etem*dwb                                           
-c                                                                               
+      cvec(4) = grav2*fws  + etem*dwb
+c     
 c     solve 4 x 4 matrix equation                                               
 c                                                                               
       do 4000 j=1,4                                                             
@@ -1946,7 +1946,7 @@ c     parameters that must enter through comsibc
 c                                                                               
 c      z2     : height of canopy top                                            
 c      z0     : roughness length                                                
-c      d      : zero plane displacement                                         
+c      xdx      : zero plane displacement                                         
 c      vkc    : von karmans constant = 0.41                                     
 c      rhoair : air density                                                     
 c      cpair  : air specific heat                                               
@@ -2000,7 +2000,7 @@ c-----------------------------------------------------------------------
 c                                                                               
       hress = ht                                                                
       zl    = z2 + ztz0 * z0                                                    
-      uest  = vkc*um / alog((zwind-d)/z0)                                       
+      uest  = vkc*um / alog((zwind-xdx)/z0)                                       
 c                                                                               
 c-----------------------------------------------------------------------        
 c                                                                               
@@ -2010,14 +2010,14 @@ c-----------------------------------------------------------------------
 c                                                                               
       if ( zwind .gt. zl ) go to 100                                            
       top = 0.                                                                  
-      zx1 = zwind - d                                                           
-      zx2 = z2 - d                                                              
+      zx1 = zwind - xdx                                                           
+      zx2 = z2 - xdx                                                              
       go to 200                                                                 
-100   zx1 = zwind - d                                                           
-      zx2 = zl - d                                                              
+100   zx1 = zwind - xdx                                                           
+      zx2 = zl - xdx                                                              
       top = alog( zx1 / zx2 )                                                   
-      zx1 = zl - d                                                              
-      zx2 = z2 - d                                                              
+      zx1 = zl - xdx                                                              
+      zx2 = z2 - xdx                                                              
 200   bot = alog( zx1 / zx2 )                                                   
       ram = 1. / ( vkc * uest ) * ( top + g2 * bot )                            
       u2 = um - ram * uest**2                                                   
@@ -2028,7 +2028,7 @@ c     calculation of ra for heat follows : non-neutrality assumed
 c                                                                               
 c-----------------------------------------------------------------------        
 c                                                                               
-       zx1 = zwind - d                                                          
+       zx1 = zwind - xdx                                                          
        zx2 = 0.                                                                 
        arg1 = alog ( zx1 / z0 )                                                 
 c                                                                               
@@ -2084,8 +2084,8 @@ c      see notes for details
 c                                                                               
 c----------------------------------------------------------------------         
 c                                                                               
-       gfac = alog((zwind - d)/z0)                                              
-       hm1  = -0.95*tm*rhoair*cpair/(2.0*4.7*g*(zwind-d))*                      
+       gfac = alog((zwind - xdx)/z0)                                              
+       hm1  = -0.95*tm*rhoair*cpair/(2.0*4.7*gx*(zwind-xdx))*                      
      &          (2.0*um/3.0)**3*(vkc/gfac)**2                                   
        hm2  = 5.0*hm1                                                           
        us2  = vkc*um/(gfac+4.7)                                                 
@@ -2100,7 +2100,7 @@ c----------------------------------------------------------------------
 c                                                                               
 2000   continue                                                                 
 c                                                                               
-       call stab ( uest, zx1, zx2,       ht, ps1, ps2)                          
+       call stab ( uest, zx1, zx2, ht, ps1, ps2)                          
 c                                                                               
        y = um - uest/vkc * ( arg1 - ps1 )                                       
 c                                                                               
@@ -2207,14 +2207,14 @@ c
 c                                                                               
        do 1000 i=1,2                                                            
        zml = -uest**3 * rhoair * cpair * tm                                     
-       zml = zml / ( vkc*g*heat )                                               
+       zml = zml / ( vkc*gx*heat )                                               
        fac = 16.0 * zin/zml                                                     
        x(i) = ( 1. - fac )**0.25                                                
        zin = b                                                                  
 1000   continue                                                                 
 c                                                                               
        psione = 2.*alog((1.+x(1))/(1.+x(2)))+alog((1.+x(1)**2)/                 
-     &          (1.+x(2)**2))-2.*atan(x(1))+2.*atan(x(2))                       
+     &         (1.+x(2)**2))-2.*atan(x(1))+2.*atan(x(2))                       
        psione = amin1 ( argz * 0.75, psione )                                   
 c                                                                               
        psitwo = 2.*alog((1.+x(1)**2)/(1.+x(2)**2))                              
@@ -2240,7 +2240,7 @@ c
        if ( abs(heat) .le. 1.e-4 ) go to 100                                    
 c                                                                               
        zml = -uest**3. * rhoair * cpair * tm                                     
-       zml = zml / ( vkc*g*heat )                                               
+       zml = zml / ( vkc*gx*heat )                                               
 c                                                                               
        psione = -4.7 * ( a-b ) / zml                                            
        psione = amax1( -4.7, psione )                                           
@@ -2267,12 +2267,12 @@ c
       if ( zmet . gt. zl ) go to 100                                            
 c                                                                               
       top = 0.                                                                  
-      zx1 = zmet - d                                                            
-      zx2 = z2 - d                                                              
+      zx1 = zmet - xdx                                                            
+      zx2 = z2 - xdx                                                              
       go to 200                                                                 
 c                                                                               
-100   zx1 = zmet - d                                                            
-      zx2 = zl - d                                                              
+100   zx1 = zmet - xdx                                                            
+      zx2 = zl - xdx                                                              
       arg = alog( zx1 / zx2 )                                                   
       if ( heat .gt. 0. )                                                       
      &      call unstab ( uest, zx1, zx2, arg, heat, ps1, ps2)                  
@@ -2280,8 +2280,8 @@ c
      &      call   stab ( uest, zx1, zx2,      heat, ps1, ps2)                  
       top = arg - ps2                                                           
 c                                                                               
-      zx1 = zl - d                                                              
-      zx2 = z2 - d                                                              
+      zx1 = zl - xdx                                                              
+      zx2 = z2 - xdx                                                              
 c                                                                               
 200   arg = alog ( zx1 / zx2 )                                                  
       if ( heat .gt. 0. )                                                       
