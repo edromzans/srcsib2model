@@ -1,3 +1,4 @@
+###################################################################################################
 #Warning de compilação Fortran 77 debian 10 - fort77
 $ fort77 *.for -o SiB2run
    MAIN sib2:
@@ -45,9 +46,10 @@ Warning on line 1067: incompatible lengths for common block rause
 Warning on line 1143: incompatible lengths for common block rause
    tridia2:
    eqlin:
+>>>>>>>>>>>>>>>> C O R R I G I D O <<<<<<<<<<<<<<<<<<<<<<<<
+#################################################################################################
 
-
-
+##################################################################################################
 #Warning de compilação gfortan debian 10 
 $ gfortran *.for -o SiB2runF95
 comsibc.h:62:20:
@@ -76,15 +78,20 @@ comsibc.h:62:20:
                     1
 Warning: Named COMMON block ‘rause’ at (1) shall be of the same size as elsewhere (16 vs 52 bytes)
 
+>>>>>>>>>>>>>>>> C O R R I G I D O <<<<<<<<<<<<<<<<<<<<<<<<
+####################################################################################################
 
+
+
+###############################################################################################
 #Erro de execução com gfortran debian 10
  convergence failure in rasite - unstable case
     failure to converge after 490 iterations
     y =   550.20     lx = 1
     failure to converge after 490 iterations
     y =   71.010     lx = 2
-Note: The following floating-point exceptions are signalling: IEEE_OVERFLOW_FLAG IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
-STOP  SiB2 HAS DONE. 
+>>>>>>>>>>>>>>>> C O R R I G I D O <<<<<<<<<<<<<<<<<<<<<<<<
+#################################################################################################
 
 
 #Conversão de encoding e delimitador de linha para utf8-unix
@@ -135,7 +142,6 @@ Warning on line 1144: incompatible lengths for common block rause
    dynveg:
    varcal:
    cntrol:
-
 
 
 #g77 debian etch gcc-3.4##################################################
@@ -234,6 +240,7 @@ comsibc.h:62: (continued):
          common /rause/ z0, d, rbc, rdc
                  2
 Common block `rause' is 52 bytes in length at (1) but 16 bytes at (2)
+######################################################################
 
 
 ###Erro de execução g77###############################################
@@ -269,8 +276,18 @@ convergence failure in rasite - unstable case
     failure to converge after 490 iterations
     y = -0.59605E-07 lx = 1
 
+>>>>>>>>>>>>>>>> C O R R I G I D O <<<<<<<<<<<<<<<<<<<<<<<<
+###################################################################
 
 
+#SiB2 em C###############################################
+f2c -Nn802 *.F
+gcc -c -o sib2x.o sib2x.c
+gcc -c -o Sib2xa.o Sib2xa.c
+gcc -c -o Sib2xb.o Sib2xb.c
+
+gcc -o SiB2runF2C sib2x.o Sib2xa.o Sib2xb.o -lf2c -lm
+#########################################################
 
 
 

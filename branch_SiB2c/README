@@ -1,0 +1,13 @@
+Converting the fortran to C, using f2c.
+
+First rename all files .for to .F
+After execute:
+
+f2c -Nn802 *.F
+
+To compile and generate the executable file:
+gcc -c -o sib2x.o sib2x.c
+gcc -c -o Sib2xa.o Sib2xa.c
+gcc -c -o Sib2xb.o Sib2xb.c
+
+gcc -o SiB2runF2C sib2x.o Sib2xa.o Sib2xb.o -lf2c -lm

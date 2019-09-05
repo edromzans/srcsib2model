@@ -752,8 +752,12 @@ c
 c                                                                               
 1000  continue                                                                  
       icount = icount + 1                                                       
-c                                                                               
-      call rasite                                                               
+c
+      print *, '***********************************'
+      print '(A35,I3)', 'rotina endtem call rasite 1: icount=',icount
+      call rasite
+      print *, 'rotina endtem volta rasite 1'
+      print *, '***********************************'
 c                                                                               
       call rbrd                                                                 
 c                                                                               
@@ -793,9 +797,13 @@ c
                      lx = 2                                                     
                    finc = 50.                                                   
 2000  continue                                                                  
-c                                                                               
+c
+      print *, '***********************************'
+      print *, 'rotina endtem call rasite 2 ra'
       call rasite                                                               
-c                                                                               
+      print *, 'rotina endtem volta rasite 2 ra'
+      print *, '***********************************'
+c     
       call delhf                                                                
 c                                                                               
       call delef                                                                
@@ -856,8 +864,12 @@ c
       y = ht - hend                                                             
       i = i + 1                                                                 
       if ( i .gt. itrunk ) go to 200                                            
-c                                                                               
-      call newton(ht,y,finc,nox,nonpos,iwalk,lx)                                
+c
+      print *, '#############################################'
+      print '(A35,2I3)','rotina endtem call newton H: nox, lx', nox, lx
+      call newton(ht,y,finc,nox,nonpos,iwalk,lx)
+      print '(A35,2I3)','rotina endtem volta newton H: nox, lx', nox, lx
+      print *, '#############################################'
       if(nox.eq.0)go to 2000                                                    
 c                                                                               
 200    continue                                                                 
@@ -961,7 +973,9 @@ c
      &              - rngdtg * dtg * (1.-vcover*(1.-thermk) )                   
 c                                                                               
 c----------------------------------------------------------------------         
-c                                                                               
+c
+      print *, '&&&&&&&&&&&&&&&& stop!!! &&&&&&&&&&&&&&&'
+      stop                                                                          
       return                                                                    
       end                                                                       
 c======================================================================         
@@ -2055,8 +2069,12 @@ c
        call unstab ( uest, zx1, zx2, arg1, ht, ps1, ps2)                        
 c                                                                               
        y = um - uest/vkc * ( arg1 - ps1 )                                       
-c                                                                               
-       call newton ( uest, y, finc, nox, nonpos, iwalk, lx )                    
+c
+       print '(A35,2I3)', 'rotina rasite call newton u* UNST: nox, lx'
+     &  , nox, lx
+       call newton ( uest, y, finc, nox, nonpos, iwalk, lx )
+       print '(A35,2I3)', 'rotina rasite volta newton u* UNST: nox, lx'
+     &  , nox, lx
        if( nox .eq. 0 ) go to 1000                                              
 c                                                                               
        if( nox .eq. 2 ) write(6,900)                                            
@@ -2103,8 +2121,12 @@ c
        call stab ( uest, zx1, zx2, ht, ps1, ps2)                          
 c                                                                               
        y = um - uest/vkc * ( arg1 - ps1 )                                       
-c                                                                               
-       call newton ( uest, y, finc, nox, nonpos, iwalk, lx )                    
+c
+       print '(A35,2I3)', 'rotina rasite call newton u* EST: nox, lx'
+     &  , nox, lx
+       call newton ( uest, y, finc, nox, nonpos, iwalk, lx )
+       print '(A35,2I3)', 'rotina rasite volta newton u* EST: nox, lx'
+     &  , nox, lx
        if( nox .eq. 0 ) go to 2000                                              
 c                                                                               
        if( nox .eq. 2 ) write(6,910)                                            
@@ -2177,8 +2199,12 @@ c
        coef3 = corb1 * hrb / tm / ( z2-ha )                                     
 c                                                                               
        y = coef3 * rbbest**3 + ( u2*rbbest )**2 - corb2                         
-c                                                                               
+c
+       print '(A35,2I3)', 'rotina rasite call newton rb: nox, lx'
+     &  , nox, lx
        call newton( rbbest , y, finc , nox, nonpos, iwalk, lx)                  
+       print '(A35,2I3)', 'rotina rasite volta newton rb: nox, lx'
+     &  , nox, lx
        if( nox .ne. 1 ) go to 3000                                              
 c                                                                               
        ra  = raf + rbbest                                                       
@@ -2313,34 +2339,53 @@ c      l identifies which quantity is being calculated.
 c                                                                               
 c      control values: finc,ertol,nox,nonpos,l:must be set by user              
 c-----------------------------------------------------------------------        
-c                                                                               
-       dimension iter(3), iwalk(3), nex(3)                                      
+c
+       dimension iter(3), iwalk(3), nex(3)
        dimension zinc(3), a2(3), y1(3)                                          
        save iter, a2, y1
 c       save iter, iwalk, nex
 c       save zinc, a2, y1
        data cons/1.0/
        data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
-c                                                                               
+c
+       print *, '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+       print'(A45,3I10,3F10.2)','newton entra:iter iwalk nex zinc a2 y1'
+     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y1(l) 
+c
        ertol = 0.05 * finc                                                      
        iwalk(l) = iwolk                                                         
        nex(l)=nox                                                               
 c                                                                               
        if ( iter(l) .ge. 490 ) go to 160                                        
        if (ertol .lt. 0.000001) ertol=0.000001                                  
-       if (abs(y) .le. ertol) go to 150                                         
-       if((abs(y-y1(l))).le.0.01*ertol .and. iwalk(l).eq.0 ) go to 8            
+       if (abs(y) .le. ertol) then
+          print '(A45,2I10,2F8.2)','>>>>>>> g150 iter nox abs(y) ertol,' 
+     &      ,iter(l), nox, abs(y), ertol
+          go to 150
+       end if
+       if((abs(y-y1(l))).le.0.01*ertol .and. iwalk(l).eq.0 ) then
+          print '(A45,2I10,4F8.2)','>>>>>>>>g8 iter nox y y1(l) absy-y1
+     &    ertol', iter(l), nox, y, y1(l), abs(y-y1(l)), ertol
+          go to 8
+       end if
 c                                                                               
-       if(abs(y1(l)).gt.ertol) go to 1                                          
+       if(abs(y1(l)).gt.ertol) then
+          print '(A45,3I10,2F8.2)', 'newton g1: iter nox l y y1',
+     &    iter(l), nox, l, y, y1(l)
+       go to 1
+       end if
+       
        a2(l)=a1                                                                 
 c**    a1=a1-y                                                                  
        step = amin1( abs(y), abs(10.*finc) ) * sign(cons,y)                     
        a1=a1-step                                                               
        nex(l)=0                                                                 
        y1(l)=y                                                                  
-       iter(l)=1                                                                
+       iter(l)=1
+       print *, '-----------------> newton iwalk g101'
        if (iwalk(l) .eq. 3) go to 101                                           
-       iwalk(l)=0                                                               
+       iwalk(l)=0
+       print *, '-----------------> newton g101'
        go to 101                                                                
    1   iter(l)=iter(l)+1                                                        
        if(iter(l) .eq. 20) iwalk(l)=1                                           
@@ -2402,8 +2447,13 @@ c
  101   continue                                                                 
        if(nonpos.eq.1.and.a1.lt.0.0) a1=a2(l)/2.0                               
        nox = nex(l)                                                             
-       iwolk = iwalk(l)                                                         
-c                                                                               
+       iwolk = iwalk(l)
+c       
+       print'(A45,3I10,3F10.2)','newton sai:iter iwalk nex zinc a2 y1'
+     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y1(l) 
+c
+       print *, '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+c     
        return                                                                   
        end                                                                      
 c                                                                               
