@@ -291,9 +291,29 @@ gcc -o SiB2runF2C sib2x.o Sib2xa.o Sib2xb.o -lf2c -lm
 
 
 
+gfortran OKKK!!!
+gfortran -fno-automatic -finit-local-zero *.for -o SiB2runGfortran
 
 
 
+
+
+
+loop estranho em Sib2xb
+
+      do while (.not.conv)
+         do 50 i= 1, n          ! recupera passo anterior
+            x(i,1) = x(i,2)	
+ 50         x(i,2) = 0.
+c----------------------------------------------------------------------
+         do 56 i= 1, n
+            do 60 j= 1, (i-1)
+               if(inum.eq.2) x(i,2) = x(i,2) + a(i,j)*x(j,2) !G-Seidel
+ 60            if(inum.eq.1) x(i,2) = x(i,2) + a(i,j)*x(j,1) !Jacobi
+         do 65 j= (i+1), n
+ 65         x(i,2) = x(i,2) + a(i,j)*x(j,1)
+            x(i,2) = (b(i)-x(i,2))/a(i,i)
+ 56      continue
 
 
 

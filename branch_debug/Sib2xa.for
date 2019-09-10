@@ -861,7 +861,11 @@ c
       d1 = 1./ra + 1./rb + 1./rd                                                
       taen = ( (tgs+dtg)/rd + (tc+dtc)/rb + tm/ra ) / d1                        
       hend = ( taen - tm ) * rcp / ra + (ecidif + egidif)/dtt                   
-      y = ht - hend                                                             
+      y = ht - hend
+      print '(A45, 3F10.2)', ' endtem y ht hend #####--------------->'
+     & , y, ht, hend
+
+      
       i = i + 1                                                                 
       if ( i .gt. itrunk ) go to 200                                            
 c
@@ -974,8 +978,8 @@ c
 c                                                                               
 c----------------------------------------------------------------------         
 c
-      print *, '&&&&&&&&&&&&&&&& stop!!! &&&&&&&&&&&&&&&'
-      stop                                                                          
+c      print *, '&&&&&&&&&&&&&&&& stop!!! &&&&&&&&&&&&&&&'
+c      stop                                                                          
       return                                                                    
       end                                                                       
 c======================================================================         
@@ -2068,7 +2072,12 @@ c
 c                                                                               
        call unstab ( uest, zx1, zx2, arg1, ht, ps1, ps2)                        
 c                                                                               
-       y = um - uest/vkc * ( arg1 - ps1 )                                       
+       y = um - uest/vkc * ( arg1 - ps1 )
+       print *,'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+       print '(A45,6F10.2)', 'y um uest vkc arg1 ps1 call unstab --->'
+     &  , y,um,uest,vkc,arg1,ps1
+
+       
 c
        print '(A35,2I3)', 'rotina rasite call newton u* UNST: nox, lx'
      &  , nox, lx
@@ -2349,8 +2358,9 @@ c       save zinc, a2, y1
        data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
 c
        print *, '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-       print'(A45,3I10,3F10.2)','newton entra:iter iwalk nex zinc a2 y1'
-     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y1(l) 
+       print'(A45,3I10,4F10.2)','newton entra:iter iwalk nex zinc '//
+     & 'a2 y y1'
+     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y, y1(l) 
 c
        ertol = 0.05 * finc                                                      
        iwalk(l) = iwolk                                                         
@@ -2449,8 +2459,9 @@ c
        nox = nex(l)                                                             
        iwolk = iwalk(l)
 c       
-       print'(A45,3I10,3F10.2)','newton sai:iter iwalk nex zinc a2 y1'
-     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y1(l) 
+       print'(A45,3I10,4F10.2)','newton sai:iter iwalk nex zinc '// 
+     & 'a2 y y1'
+     &      ,iter(l), iwalk(l), nex(l), zinc(l), a2(l), y, y1(l) 
 c
        print *, '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 c     

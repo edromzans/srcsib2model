@@ -2317,8 +2317,6 @@ c
        dimension iter(3), iwalk(3), nex(3)                                      
        dimension zinc(3), a2(3), y1(3)                                          
        save iter, a2, y1
-c       save iter, iwalk, nex
-c       save zinc, a2, y1
        data cons/1.0/
        data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
 c                                                                               
