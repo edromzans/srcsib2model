@@ -86,11 +86,11 @@
                                                                         
                                                                         
       do 1000 iveg = 1, 2 
-      if ( (snoww(iveg)+capac(iveg)) .gt. 0.00001 ) go to 300 
-!new  www(1) = www(1) + (snoww(iveg)+capac(iveg)) / ( poros*zdepth(1) ) 
-      www(1) = www(1) + (snoww(iveg)+capac(iveg))/(poros(1)*zdepth(1) ) 
-      capac(iveg) = 0. 
-      snoww(iveg) = 0. 
+         if ( (snoww(iveg)+capac(iveg)) .gt. 0.00001 ) go to 300 
+    !new www(1) = www(1) + (snoww(iveg)+capac(iveg)) / ( poros*zdepth(1) ) 
+         www(1) = www(1) + (snoww(iveg)+capac(iveg))/(poros(1)*zdepth(1) ) 
+         capac(iveg) = 0. 
+         snoww(iveg) = 0. 
   300 continue 
  1000 continue 
                                                                         
@@ -122,43 +122,40 @@
                                                                         
 !      write(98,'22f8.7') (www(i),i= 1, nlayer)                         
       do 40 il= 1, nlayer 
-      if (extfrac(il).gt.0.) then 
-      facl    = 1./ hlat / 1.e3 / (poros(il)*zdepth(il)) 
-      if (il.eq.1) then 
+         if (extfrac(il).gt.0.) then 
+            facl    = 1./ hlat / 1.e3 / (poros(il)*zdepth(il)) 
+            if (il.eq.1) then 
 !     write(98,*)' updat2: prefer extraction il=1'                      
-      extrak     = amin1 (www(1), egs*extfrac(1)*facl) 
-      egsdif     = egs - extrak/facl 
-      egs        = extrak/facl 
-      hg         = hg + egsdif 
-      egmass     = egmass + egs/hlat 
-      www(1)     = www(1) - egs*facl 
-      else 
+               extrak     = amin1 (www(1), egs*extfrac(1)*facl) 
+               egsdif     = egs - extrak/facl 
+               egs        = extrak/facl 
+               hg         = hg + egsdif 
+               egmass     = egmass + egs/hlat 
+               www(1)     = www(1) - egs*facl 
+            else 
 !     write(98,*)' updat2: prefer extraction il=',il                    
-      ectil     = ect * facl * extfrac(il) 
-      extrak    = amin1 ( www(il), ectil ) 
-      ectdif    = (ectil - extrak)/facl 
-      ectnew    = ectnew + extrak/facl 
-      hc        = hc + ectdif 
-      ecmass    = ecmass + extrak/facl/hlat 
-      www(il)   = www(il) - extrak 
-      endif 
-      endif 
+               ectil     = ect * facl * extfrac(il) 
+               extrak    = amin1 ( www(il), ectil ) 
+               ectdif    = (ectil - extrak)/facl 
+               ectnew    = ectnew + extrak/facl 
+               hc        = hc + ectdif 
+               ecmass    = ecmass + extrak/facl/hlat 
+               www(il)   = www(il) - extrak 
+            endif
+         endif
                                                                         
 !HR..211108                                                             
-      extra2p(il) = extrak 
-                                                                        
-                                                                        
+         extra2p(il) = extrak 
+                                                                                      
    40 continue 
                                                                         
       ect = ectnew 
-                                                                        
-                                                                        
+                                                                                      
 !HR..211108                                                             
                                                                         
 !      write(98,'2(11(1x,f8.7))')(www(il),il=1,nlayer),                 
 !     &      (1.e+02*extra2p(il),il= 1, nlayer)                         
-                                                                        
-                                                                        
+                                                                              
 !h ...                                                                  
 !-----------------------------------------------------------------------
 !    calculation of total moisture and sensible heat fluxes from surface
@@ -298,23 +295,23 @@
 !                                                                       
       p0 = totalp * 0.001 
 !                                                                       
-      do 1000 iveg = 1, 2 
+      do 1000 iveg = 1, 2
+         
+         realc = 2. - iveg 
+         realg = iveg - 1. 
 !                                                                       
-      realc = 2. - iveg 
-      realg = iveg - 1. 
+         capacp = capac(iveg) 
+         snowwp = snoww(iveg) 
 !                                                                       
-      capacp = capac(iveg) 
-      snowwp = snoww(iveg) 
+         xsc = amax1(0., capac(iveg) - satcap(iveg) ) 
+         capac(iveg) = capac(iveg) - xsc 
+         xss = amax1(0., snoww(iveg) - satcap(iveg) ) * realc 
+         snoww(iveg) = snoww(iveg) - xss 
+         roff = roff + xsc + xss 
 !                                                                       
-      xsc = amax1(0., capac(iveg) - satcap(iveg) ) 
-      capac(iveg) = capac(iveg) - xsc 
-      xss = amax1(0., snoww(iveg) - satcap(iveg) ) * realc 
-      snoww(iveg) = snoww(iveg) - xss 
-      roff = roff + xsc + xss 
-!                                                                       
-      spechc = amin1( 0.05, ( capac(iveg) + snoww(iveg) ) ) * cw        &
-     &       + realc * zlt * clai + realg * csoil                       
-      ts = tc * realc + tg * realg 
+         spechc = amin1( 0.05, ( capac(iveg) + snoww(iveg) ) ) * cw    &
+     &                 + realc * zlt * clai + realg * csoil                       
+         ts = tc * realc + tg * realg 
 !                                                                       
 !---------------------------------------------------------------------- 
 !     proportional saturated area (xs) and leaf drainage(tex)           
@@ -325,61 +322,61 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      chiv = chil 
-      if ( abs(chiv) .le. 0.01 ) chiv = 0.01 
-      aa = 0.5 - 0.633 * chiv - 0.33 * chiv * chiv 
-      bb = 0.877 * ( 1. - 2. * aa ) 
-      exrain = aa + bb 
+         chiv = chil 
+         if ( abs(chiv) .le. 0.01 ) chiv = 0.01 
+         aa = 0.5 - 0.633 * chiv - 0.33 * chiv * chiv 
+         bb = 0.877 * ( 1. - 2. * aa ) 
+         exrain = aa + bb 
 !                                                                       
-      zload = capac(iveg) + snoww(iveg) 
-      fpi = ( 1.-exp( - exrain*zlt/vcover ) )*vcover*realc + realg 
-      tti = p0 * ( 1.-fpi ) 
-      xs = 1. 
-      if ( p0 .lt. 1.e-9 ) go to 200 
-      arg =  ( satcap(iveg)-zload )/( p0*fpi*ap ) -cp/ap 
-      if ( arg .lt. 1.e-9 ) go to 200 
-      xs = -1./bp * alog( arg ) 
-      xs = amin1( xs, 1. ) 
-      xs = amax1( xs, 0. ) 
-  200 tex = p0*fpi * ( ap/bp*( 1.- exp( -bp*xs )) + cp*xs ) -           &
-     &      ( satcap(iveg) - zload ) * xs                               
-      tex = amax1( tex, 0. ) 
+         zload = capac(iveg) + snoww(iveg) 
+         fpi = ( 1.-exp( - exrain*zlt/vcover ) )*vcover*realc + realg 
+         tti = p0 * ( 1.-fpi ) 
+         xs = 1. 
+         if ( p0 .lt. 1.e-9 ) go to 200 
+         arg =  ( satcap(iveg)-zload )/( p0*fpi*ap ) -cp/ap 
+         if ( arg .lt. 1.e-9 ) go to 200 
+         xs = -1./bp * alog( arg ) 
+         xs = amin1( xs, 1. ) 
+         xs = amax1( xs, 0. ) 
+  200    tex = p0*fpi * ( ap/bp*( 1.- exp( -bp*xs )) + cp*xs ) -       &
+     &         ( satcap(iveg) - zload ) * xs                               
+         tex = amax1( tex, 0. ) 
 !                                                                       
 !---------------------------------------------------------------------- 
 !     total throughfall (thru) and store augmentation                   
 !---------------------------------------------------------------------- 
 !                                                                       
-      if ( iveg .eq. 2 ) go to 300 
+         if ( iveg .eq. 2 ) go to 300 
 !                                                                       
-      thru = tti + tex 
-      pinf = p0 - thru 
-      if( tm .gt. tf ) capac(iveg) = capac(iveg) + pinf 
-      if( tm .le. tf ) snoww(iveg) = snoww(iveg) + pinf 
+         thru = tti + tex 
+         pinf = p0 - thru 
+         if( tm .gt. tf ) capac(iveg) = capac(iveg) + pinf 
+         if( tm .le. tf ) snoww(iveg) = snoww(iveg) + pinf 
 !                                                                       
-      call adjust ( tc, spechc, capacp, snowwp, iveg ) 
+         call adjust ( tc, spechc, capacp, snowwp, iveg ) 
 !                                                                       
-      p0 = thru 
-      go to 700 
+         p0 = thru 
+         go to 700 
 !                                                                       
-  300 continue 
+  300    continue 
 !                                                                       
-      if ( tg .gt. tf .and. snoww(2) .gt. 0. ) then 
+         if ( tg .gt. tf .and. snoww(2) .gt. 0. ) then 
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-      call patchs ( p0 ) 
-      go to 700 
+            call patchs ( p0 ) 
+            go to 700 
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      endif 
+         endif
 !                                                                       
-      thru = tti + tex 
-      if ( tg .le. tf .or. tm .le. tf ) thru = 0. 
-      pinf = p0 - thru 
-      if( tm .gt. tf ) capac(iveg) = capac(iveg) + pinf 
-      if( tm .le. tf ) snoww(iveg) = snoww(iveg) + pinf 
-      if( tm .le. tf ) go to 500 
+         thru = tti + tex 
+         if ( tg .le. tf .or. tm .le. tf ) thru = 0. 
+         pinf = p0 - thru 
+         if( tm .gt. tf ) capac(iveg) = capac(iveg) + pinf 
+         if( tm .le. tf ) snoww(iveg) = snoww(iveg) + pinf 
+         if( tm .le. tf ) go to 500 
                                                                         
 !                                                                       
 !---------------------------------------------------------------------- 
@@ -390,18 +387,18 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      equdep = satco(1) * dtt 
+         equdep = satco(1) * dtt 
 !                                                                       
-      xs = 1. 
-      if ( thru .lt. 1.e-9 ) go to 400 
-      arg = equdep / ( thru * ap ) -cp/ap 
-      if ( arg .lt. 1.e-9 ) go to 400 
-      xs = -1./bp * alog( arg ) 
-      xs = amin1( xs, 1. ) 
-      xs = amax1( xs, 0. ) 
-  400 roffo = thru * ( ap/bp * ( 1.-exp( -bp*xs )) + cp*xs )            &
-     &       -equdep*xs                                                 
-      roffo = amax1 ( roffo, 0. ) 
+         xs = 1. 
+         if ( thru .lt. 1.e-9 ) go to 400 
+         arg = equdep / ( thru * ap ) -cp/ap 
+         if ( arg .lt. 1.e-9 ) go to 400 
+         xs = -1./bp * alog( arg ) 
+         xs = amin1( xs, 1. ) 
+         xs = amax1( xs, 0. ) 
+  400    roffo = thru * ( ap/bp * ( 1.-exp( -bp*xs )) + cp*xs )        &
+     &           -equdep*xs                                                 
+         roffo = amax1 ( roffo, 0. ) 
                                                                         
 !HR..                                                                   
 !      write(98,'(20a10)')                                              
@@ -429,24 +426,23 @@
 !	qstar (f* de EN-89)                                                   
 !                                                                       
                                                                         
-      if (iinf.eq.1) then 
-         q0 = amax1 (0., (1.0 - www(1))*zdepth(1)*poros(1) ) 
-                                               ! m/s                    
-         q0 = ( amin1 (q0, thru-roffo) ) / dtt 
-         roff = roff + amax1 ( 0., thru - q0*dtt)	 
-      endif 
+         if (iinf.eq.1) then 
+            q0 = amax1 (0., (1.0 - www(1))*zdepth(1)*poros(1) )                     
+            q0 = ( amin1 (q0, thru-roffo) ) / dtt                 ! m/s
+            roff = roff + amax1 ( 0., thru - q0*dtt)	 
+         endif
+         
+         if (iinf.eq.2.or.iinf.eq.6) then 
+            q0 = amax1 (0., thru - roffo)/dtt 
+            roff = roff +  roffo 
+         endif
                                                                         
-      if (iinf.eq.2.or.iinf.eq.6) then 
-         q0 = amax1 (0., thru - roffo)/dtt 
-         roff = roff +  roffo 
-      endif 
+         if (iinf.eq.3.or.iinf.eq.4.or.iinf.eq.5) then 
+            q0 = amax1 (0., thru)/dtt 
+         endif
                                                                         
-      if (iinf.eq.3.or.iinf.eq.4.or.iinf.eq.5) then 
-         q0 = amax1 (0., thru)/dtt 
-      endif 
-                                                                        
-      croff = croff + roff 
-      cthru = thru 
+         croff = croff + roff 
+         cthru = thru 
                                                                         
 !====================================================================   
                                                                         
@@ -596,9 +592,9 @@
       rstfac2p=0. 
 !     write(98,'22f8.7') (www(i),i= 1, nlayer)                          
       do 40 i= 2, nlayer 
-        phroot=phsat(i)*((amax1(0.02,www(i)))**(-bee(i))) 
-        phroot=amax1(phroot,-2.e4) 
-        rstfac2p = rstfac2p + extfrac(i)*(1./(1+exp(0.02*(phc-phroot)))) 
+         phroot=phsat(i)*((amax1(0.02,www(i)))**(-bee(i))) 
+         phroot=amax1(phroot,-2.e4) 
+         rstfac2p = rstfac2p + extfrac(i)*(1./(1+exp(0.02*(phc-phroot)))) 
 !	if (nymd.eq.40101512.or.nymd.eq.40041512) then                        
 !	write (98,'a60')                                                      
 !     &  ' i,zdepth(i),www(i),psi(i),phroot,rstfac2p,extfrac,fpsi'  	   
@@ -676,18 +672,15 @@
 !HR                                                                     
       dimension qdowrd(nlayer), qupwrd(nlayer), qhorton(nlayer) 
                                                                         
-                                                                        
       do 1000 i= 1, nlayer 
          temw(i)= amax1( 0.03, www(i) ) 
          temwp(i)= temw(i) ** (-bee(i)) 
          temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.) 
 !H                                                                      
-                         ! fluxos downward (drenagem rapida + difusiva),
-         qdowrd (i) = 0.	 
-                         ! fluxos upward (capilar)                      
-         qupwrd (i) = 0.	 
-                         ! infiltração maxima Hortoniana EN-89        
-         qhorton(i) = 0.	 
+         qdowrd (i) = 0. !fluxos downward (drenagem rapida + difusiva),
+                                          !i=1 (infiltracao superficie)
+         qupwrd (i) = 0. !fluxos upward (capilar)
+         qhorton(i) = 0. !infiltração maxima Hortoniana EN-89	 
  1000 continue 
                                                                         
 !-----------------------------------------------------------------------
@@ -695,9 +688,8 @@
 !-----------------------------------------------------------------------
       if (iinf.eq.1) then 
          www(1) =  www(1) + q0*dtt/(poros(1)*zdepth(1)) 
-         q0 = 0. 
-                                    ! infiltração superficie (m/s)    
-         qdowrd(1) = qdowrd(1) + q0 
+         q0 = 0.                
+         qdowrd(1) = qdowrd(1) + q0 ! infiltração superficie (m/s)     
       endif 
 !-----------------------------------------------------------------------
 !	iinf  > 1                                                             
@@ -706,8 +698,7 @@
          q0now = q0 
          wavend = .false. 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                ! throughfall event                     
-         if (q0now.gt.0.) then 
+         if (q0now.gt.0.) then ! throughfall event                     
 !.......................................................................
 !	capacidade infiltração da camada i                                  
 !.......................................................................
@@ -721,66 +712,57 @@
 !	call hydcon (avk, i,temwp(i),temwp(i+1),temwpp(i),temwpp(i+1))        
 !	avk = sqrt( satco(i)*satco(i+1) )                                     
 !	qstar = - 2.*avk*(dpdw*(1.-www(i+1))/(zdepth(i)+zdepth(i+1))-1.)	     
-                  zpond = amax1(0., (1.-www(i)) * zdepth(i)*poros(i)) 
-                                           ! dpsi/dw at saturation thres
-                  call retec ( dpdw, 1, i) 
-                  xni = dpdw / zdepth(i)	 
-                                                            ! infiltraç
-                  qstar = satco(i)*( xni*www(i) + 1. - xni) 
-                                            ! only negative flux is down
-                  qstar = amin1 (qstar, 0.) 
-                                     ! physical drainage                
-                  qstar = abs(qstar) 
-!		 		                                                                  
-                                 ! infiltração ilimitada,  sem Runoff-
-                  if (iinf.ne.4)                                        &
-     &            qstar = amax1(cs * qstar, 1.e+20)                     
-                                ! oferta sempre>0                       
-                  q0 = q0now 
-                                                          ! infiltrado >
-                  q0now = amin1( q0now, zpond/dtt, qstar) 
-                                                 ! diagnostico m/s	     
-                  qdowrd (i) = qdowrd(i) + q0now 
-                                     ! diagnostico m/s                  
-                  qhorton(i) = qstar 
-                                        ! há oferta (mas não infiltra 
-                  if (q0now.eq.0.) then 
-                     if (iinf.eq.4.or.iinf.eq.5.or.iinf.eq.6) wavend =  &
+               zpond = amax1(0., (1.-www(i)) * zdepth(i)*poros(i)) 
+               call retec ( dpdw, 1, i)! dpsi/dw at saturation
+                                       ! threshold p/ capac infiltracao 
+               xni = dpdw / zdepth(i)	 
+               qstar = satco(i)*( xni*www(i) + 1. - xni) ! infiltração
+                                                         !      Horton 
+               qstar = amin1 (qstar, 0.) ! only negative flux is
+                                         ! downward eq(13) EN-89
+               qstar = abs(qstar) ! physical drainage
+
+               if (iinf.ne.4)                                          &
+      &             qstar = amax1(cs * qstar, 1.e+20) ! infiltração                  
+                           ! ilimitada, sem Runoff-Horton (iinf=2,6,3,5) 
+                                      
+               q0 = q0now ! oferta sempre>0                                        
+               q0now = amin1( q0now, zpond/dtt, qstar) ! infiltrado >=0
+               qdowrd (i) = qdowrd(i) + q0now ! diagnostico m/s                    
+               qhorton(i) = qstar ! diagnostico m/s
+                                  
+               if (q0now.eq.0.) then ! há oferta (mas não infiltra em
+                                     ! alguns casos iinf)
+                  if (iinf.eq.4.or.iinf.eq.5.or.iinf.eq.6) wavend =  &
      &                 .true.				                                       
-                  endif 
-                                                                   ! abs
-                  www(i) = www(i) + q0now*dtt/(zdepth(i)*poros(i)) 
-                                                  ! check arredon/to    
-                  wover = amax1( 0., (www(i)-1.)) 
-                                         !..                            
-                  www(i)= www(i) - wover 
-                                                        !..             
-                  roff= roff + wover*poros(i)*zdepth(i) 
-                                                  ! atualiza oferta de i
-                  q0now = amax1( 0., q0 - q0now ) 
-                                      ! oferta cessou                   
-                  if (q0now.eq.0..or.                                   &
-     &                 (q0now.gt.0..and.i.eq.nlayer)) then              
-                                                           ! onda atingi
-                     wavend =.true. 
-                  endif	 
+               endif
+                             
+               www(i) = www(i) + q0now*dtt/(zdepth(i)*poros(i)) !
+                                    !absorvido (ou não, se infiltrado=0)
+               wover = amax1( 0., (www(i)-1.)) ! check arredon/to
+               www(i)= www(i) - wover 
+               roff= roff + wover*poros(i)*zdepth(i)
+               
+               q0now = amax1( 0., q0 - q0now ) ! atualiza oferta de
+                                                       !infiltração
+               if (q0now.eq.0..or.                                   &
+     &              (q0now.gt.0..and.i.eq.nlayer)) then              
+                  wavend =.true.
+                  ! oferta cessou
+                  ! onda atingiu camada profunda saturada
+               endif
 !	write(*,*) ' i layer,  q0now =' , i, q0now                            
 !	qexcess =  amax1 (0., ( q0now -  amin1 ( q0now, qstar ) ) )           
 !	roff = roff + qexcess*dtt	                                            
 !	croff = croff + qexcess*dtt	                                          
    75          continue 
-                                !  wavend = F                           
-            end do 
-                                ! throughfall event                     
-         endif 
-                                                                        
+            end do       !  wavend = F
+         endif           ! throughfall event
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                         !...excess to surface runoff   
-               croff = croff + q0now*dtt 
-               roff  =  roff + q0now*dtt	 
+         croff = croff + q0now*dtt !...excess to surface runoff
+         roff  =  roff + q0now*dtt	 
 !-----------------------------------------------------------------------
-                          !  option iinf > 1                            
-      endif 
+      endif              !  option iinf > 1
 !---------------------------------------------------------------------- 
 !                                                                       
 !    calculation of inter-layer exchanges of water due to gravitation   
@@ -801,10 +783,8 @@
 !                                                                       
 !-----------------------------------------------------------------------
       do 49 i= 1, nlayer 
-                                        ! W                             
-         temw(i)= amax1( 0.03, www(i) ) 
-                                        ! Psi                           
-         temwp(i)= temw(i) ** (-bee(i)) 
+         temw(i)= amax1( 0.03, www(i) )        ! W 
+         temwp(i)= temw(i) ** (-bee(i))        ! Psi
          temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.)	 
    49 continue 
 !-------------------------------------------------------------------    
@@ -857,7 +837,7 @@
             dpsidz = dpsidz - phsat(i+1) * temwp(i+1) 
             dpsidz = 2.* dpsidz / (zdepth(i) + zdepth(i+1)) 
             qqq(i) = -avk * (dpsidz + 1.)	 
-         endif 
+         endif
          jqini = -999. 
 !... 	matriz multi-camada: esquema backward                             
          if (jesq.eq.1) then 
@@ -876,7 +856,7 @@
 !     &   nymd, i, www(i), avk, dpdw, avdif1*3.6e5, avdif2*3.6e5,  ! x 3
 !     &    avdif*3.6e5,log(avdif1*3.6e5,), log(avdif2*3.6e5,),          
 !     &    log(avdif* 3.6e5)                                            
-         endif 
+         endif
 !...     matriz multi-camada: esquema Crank-Nicolson                    
          if (jesq.eq.2) then	 
             a(i) = -dtt*avdif / (zdepth(i) * (zdepth(i) + zdepth(i+1))) 
@@ -901,7 +881,7 @@
 !     &   nymd, i, www(i), avk, dpdw, avdif1*3.6e5, avdif2*3.6e5,	! x 3.
 !     &    avdif*3.6e5,log(avdif1*3.6e5,), log(avdif2*3.6e5,),          
 !     &    log(avdif* 3.6e5)                                            
-         endif 
+         endif
 !..                                                                     
 !HHH 	qng incrementado em W no final apenas                             
 !HH	if (i.eq.nlayer-1) d(i) = d(i) + qng                                
@@ -960,10 +940,9 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-                                                                        
       pows= 2.*bee(nlayer)+2. 
       qng= temw(nlayer)**(-pows) +                                      &
-     & satco(nlayer)/zdepth(nlayer)/poros(nlayer)*slope*pows*dtt        
+     &        satco(nlayer)/zdepth(nlayer)/poros(nlayer)*slope*pows*dtt        
       qng= qng ** (1./pows) 
       qng= -( 1./qng-www(nlayer) )* poros(nlayer) * zdepth(nlayer)/dtt 
                                                                         
@@ -984,8 +963,8 @@
       www(nlayer)= www(nlayer)-                                         &
      & qng*dtt/(poros(nlayer)*zdepth(nlayer))                           
       roff= roff + qng*dtt 
-                                ! arredondamento ...                    
-      do 401 i= 1, nlayer 
+                                                   
+      do 401 i= 1, nlayer ! arredondamento ... 
          excess= amax1( 0., (www(i)-1.)) 
          www(i)= www(i) - excess 
          roff= roff + excess*poros(i)*zdepth(i) 
@@ -1021,8 +1000,8 @@
       j = i + 1	 
 !                                                                       
       if (i.gt.1) then 
-      w0 = amin1(www(i-1),1.) 
-      w0 = amax1(www(i-1),0.05) 
+         w0 = amin1(www(i-1),1.) 
+         w0 = amax1(www(i-1),0.05) 
       endif 
       w1 = amin1(www(i),1.) 
       w1 = amax1(www(i),0.05) 
@@ -1030,8 +1009,8 @@
       w2 = amax1(www(j),0.05) 
 !...	jhorton = 1  (calcula proximo saturacao; Runoff Horton)            
       if (jhort.eq.1) then 
-      w1 = 1.0 
-      w2 = 0.95 
+         w1 = 1.0 
+         w2 = 0.95 
       endif 
                                                                         
       psi1 = phsat(i)* (w1**(-bee(i))) 
@@ -1067,19 +1046,17 @@
 !...  calculo derivada psi(W) nas camada i,i+1 - CH-78                  
       dpdw1 = - bee(i) * phsat(i) / (w1 ** (bee(i) + 1.)) 
       dpdw2 = - bee(j) * phsat(j) / (w2 ** (bee(j) + 1.)) 
-                           ! media ponderada espessura	                 
-      if (jdpsi.eq.2) then	 
+!...                           
+      if (jdpsi.eq.2) then ! media ponderada espessura	                 	 
          dpdw = ( dpdw1  * zdepth(i) +  dpdw2  * zdepth(i+1) ) /        &
      &   ( zdepth(i+1) + zdepth(i) )                                    
       endif	 
 !...	                                                                   
-                           ! media geometrica	                          
-      if (jdpsi.eq.3) then	 
+      if (jdpsi.eq.3) then ! media geometrica	                          	 
          dpdw = sqrt( dpdw1 * dpdw2 ) 
       endif	 
 !...                                                                    
-                           ! media aritmetica	                          
-      if (jdpsi.eq.4) then	 
+      if (jdpsi.eq.4) then ! media aritmetica	                          	 
          dpdw = ( dpdw1 + dpdw2 )/2. 
       endif	 
       return 
@@ -1105,8 +1082,7 @@
       avk1 = satco(i)* (w1**(2.*bee(i)+3.))      	 
       avk2 = satco(j)* (w2**(2.*bee(j)+3.)) 
 !...                                                                    
-                           ! metodo ME-82                               
-      if (jkcon.eq.1) then	 
+      if (jkcon.eq.1) then ! metodo ME-82                               	 
          rsame= 0. 
          avb = (bee(i) + bee(j)) / 2.            	 
          div= psi2 - psi1 
@@ -1120,21 +1096,18 @@
       avk    = amin1 (avk, avkmax ) 
       endif 
 !...                                                                    
-                           ! media ponderada espessura	                 
-      if (jkcon.eq.2) then	 
+      if (jkcon.eq.2) then ! media ponderada espessura	                 	 
          avk = ( avk1  * zdepth(i) +  avk2  * zdepth(i+1) ) /           &
      &   ( zdepth(i+1) + zdepth(i) )                                    
       endif	 
 !...	                                                                   
-                           ! media geometrica	                          
-      if (jkcon.eq.3) then	 
+      if (jkcon.eq.3) then ! media geometrica	                          	 
          avk = sqrt( avk1 * avk2 ) 
       endif	 
-!                                                                       
-                           ! media aritmetica	                          
-      if (jkcon.eq.4) then	 
+!...                                                                       
+      if (jkcon.eq.4) then ! media aritmetica	                          	 
          avk = ( avk1 + avk2 )/2. 
-      endif 
+      endif
 !----------------------------------------------------------------       
 !      conductivites and baseflow reduced when temperature drops        
 !      below freezing                                                   
@@ -1164,19 +1137,17 @@
 !             a   : inferior diagonal coefs                             
 !--------------------------------------------------------------         
       dimension c(n+1), a(n+1), b(n+1), d(n+1) 
-      c(1) = c(1)/b(1) 
+      c(1) = c(1)/b(1)
       d(1) = d(1)/b(1) 
                                                                         
       do 10 i = 2, (n-1), 1 
          ii = (i-1) 
          b(i) = b(i) - c(ii)*a(i) 
          if (i .eq. n) go to 10 
-                                ! calculado                             
-         c(i) = c(i) / b(i) 
+         c(i) = c(i) / b(i) ! calculado
    10    d(i) = (d(i) - d(ii)*a(i)) / b(i) 
          do 20 k = 1, (n-1), 1 
-                      ! back substitution                               
-            i = n -k		 
+            i = n - k ! back substitution                          		 
    20       d(i) = d(i) - c(i) * d(i+1) 
       return 
       END                                           
@@ -1199,22 +1170,20 @@
       parameter (nmax=30, mmax=30, kmax = 100) 
       real d(n), sup(n), sub(n), diag(n) 
       real a(mmax,nmax), b(mmax), x(nmax,2), dif(nmax) 
-                                      ! critérios convergencia         
-      parameter (eps=1.e-06,itmax=50) 
+      parameter (eps=1.e-06,itmax=50) ! critérios convergencia         
       character aconv(3)*20 
       logical conv 
                                                                         
       do 1 k= 1,3 
     1    aconv(k) = ' ' 
-                             ! este caso matriz n x n                   
-      m = n 
+
+      m = n                     ! este caso matriz n x n                    
+
       do 10 i= 1,n 
-                                ! cond.inicial column vector X(n)       
-         x(i,2) = d(i) 
+         x(i,2) = d(i)          ! cond.inicial column vector X(n)       
          dif (i) = 0. 
          do 20 j= 1,m 
-                                ! matrix A(m,n)                         
-   20       a(j,i) = 0. 
+   20       a(j,i) = 0.         ! matrix A(m,n)
    10 continue 
                                                                         
 !...	atribuicao matriz eqs Jacobi c/ input esquema soil multi-layer     

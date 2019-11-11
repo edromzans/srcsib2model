@@ -53,12 +53,11 @@
 !...  output files opening                                               
       open(98,file='sib2diag.dat',status='unknown') 
       open(itmp1,file='sib2dt.dat',status='unknown')	 
-!...  umidade do so
-      open(itmp2,file='sib2dt_SM.dat',status='unknown')
+      open(itmp2,file='sib2dt_SM.dat',status='unknown') !umidade do solo
 !...      
-!H      open(itmp3,file='sib2dt_Qu.dat',status='unknown')		! vazão Q up
-!H      open(itmp4,file='sib2dt_Qd.dat',status='unknown')		! vazão Q do
-!H      open(itmp5,file='sib2dt_Qh.dat',status='unknown')		! vazão Q Ho
+!H      open(itmp3,file='sib2dt_Qu.dat',status='unknown') ! vazão Q upward     
+!H      open(itmp4,file='sib2dt_Qd.dat',status='unknown') ! vazão Q downward 
+!H      open(itmp5,file='sib2dt_Qh.dat',status='unknown') ! vazão Q Hortoniana
 !...
 !     parameters file  
       open(ichi, file='data1', status='old') 
@@ -74,75 +73,63 @@
 !      write( *,'(a20,2i10)')'iter nymd:',iter,nymd                     
          call const2 
 !       write(98,'(A20)')'  to call driver'                             
-         call driver (iu, icho, isnow, ichi, itero, nyfirst) 
-                                                ! display screen cada di
-         if (mod(iter,int(86400./dtt)).eq.0) then	 
+         call driver (iu, icho, isnow, ichi, itero, nyfirst)
+         if (mod(iter,int(86400./dtt)).eq.0) then ! display screen cada dia	 
             write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
             write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
          endif
          
-!      if (mod(iter,365*int(86400./dtt)).eq.0) then  !display screen cad
-!      write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd     
-!      write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd     
-!      endif                                                            
-!				!display screen cada passo de tempo                                
-!      write(98,'(a20,i5,i12)')'  iter  nymd:',iter,nymd                
-!      write(*,'(a20,i5,i12)')'  iter nymd:',iter,nymd                  
-!       write(98,'(A20)')'   passed driver'                             
-                                                                        
+         !if (mod(iter,365*int(86400./dtt)).eq.0) then  !display screen cada ano
+         !write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd     
+         !write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd     
+         !endif                                                            
+         !!display screen cada passo de tempo                                
+         !write(98,'(a20,i5,i12)')'  iter  nymd:',iter,nymd                
+         !write(*,'(a20,i5,i12)')'  iter nymd:',iter,nymd                  
+         !write(98,'(A20)')'   passed driver'                             
+         
          if (nymd.gt.nylast) goto 1001 
-                                                                                    
-!	write(98,'(A20)')'  to call optima'                                   
-!	if (lopt) call optima (xx, mo, no, ff, iqc, itero)                    
-!	write(98,'(A20)')'  passed optima'                                    
-                                                                        
-!       write(98,'(A20)')'  to call balan'                              
+
+         !write(98,'(A20)')'  to call optima'                                   
+         !if (lopt) call optima (xx, mo, no, ff, iqc, itero)                    
+         !write(98,'(A20)')'  passed optima'                                    
+         !write(98,'(A20)')'  to call balan'                              
          call balan( 1, totwb ) 
-!       write(98,'(A20)')'   passed balan'                              
-!      print*,maxit                                                     
-                                                                        
-!       write(98,'(A20)')'  to call inter2'                             
+         !write(98,'(A20)')'   passed balan'                              
+         !print*,maxit                                                     
+         !write(98,'(A20)')'  to call inter2'                             
          call inter2 
-!       write(98,'(A20)')'   passed inter2'                             
-                                                                        
-!       write(98,'(A20)')'  to call rada2'                              
+         !write(98,'(A20)')'   passed inter2'                             
+         !write(98,'(A20)')'  to call rada2'                              
          call rada2 
-!       write(98,'(A20)')'   passed rada2'                              
-                                                                        
-!       write(98,'(A20)')'  to call begtem'                             
+         !write(98,'(A20)')'   passed rada2'                              
+         !write(98,'(A20)')'  to call begtem'                             
          call begtem 
-!       write(98,'(A20)')'   passed begtem'                             
-                                                                        
-!       write(98,'(A20)')'  to call endtem'                             
+         !write(98,'(A20)')'   passed begtem'                             
+         !write(98,'(A20)')'  to call endtem'                             
          call endtem (ipbl) 
-!       write(98,'(A20)')'   passed endtem'                             
-                                                                        
-!       write(98,'(A20)')'  to call updat2'                             
+         !write(98,'(A20)')'   passed endtem'                             
+         !write(98,'(A20)')'  to call updat2'                             
          call updat2 
-!       write(98,'(A20)')'   passed updat2'                             
-                                                                        
-!       write(98,'(A20)')'  to call balan'                              
+         !write(98,'(A20)')'   passed updat2'                             
+         !write(98,'(A20)')'  to call balan'                              
          call balan( 2, totwb ) 
-!       write(98,'(A20)')'   passed balan'                              
-                                                                        
-!       write(98,'(A20)')'  to call outer'                              
+         !write(98,'(A20)')'   passed balan'                              
+         !write(98,'(A20)')'  to call outer'                              
          call outer(itero) 
-!       write(98,'(A20)')'   passed outer'                              
-                                                                        
+         !write(98,'(A20)')'   passed outer'                              
          if (nymd.eq.nylast) goto 1001 
  1000 continue 
-                                                                        
 !---------------------------------------------------------------------- 
-                                                                        
  1001 continue 
-                                                                        
+!                                                                        
       close(ichi) 
       close(iu) 
       close(itmp1) 
       close(itmp2) 
-!H      close(itmp3)                                                    
-!H      close(itmp4)                                                    
-!H      close(itmp5)                                                    
+!H     close(itmp3)                                                    
+!H     close(itmp4)                                                    
+!H     close(itmp5)                                                    
       close(98) 
 !                                                                       
       stop ' SiB2 HAS DONE. ' 
@@ -170,11 +157,9 @@
       cgsto = shf - gflux 
                                                                         
 !..   fco2 = co2 flux in umol m-2 s-1                                   
-                                                                  !Rs ca
-      fco2    = (respg - assimn) * 1.e06 
-                                                                        
-                                                                  !Rs ob
-      if (xmrsco2.ne.-9999.) fco2 = xmrsco2 - assimn*1.e06 
+      fco2    = (respg - assimn) * 1.e06                   !Rs calculado
+      
+      if (xmrsco2.ne.-9999.) fco2 = xmrsco2 - assimn*1.e06 !Rs observado
                                                                         
       radtot = radt(1) + radt(2) 
       elat   = etmass / dtt * hlat 
@@ -185,9 +170,9 @@
       tg4  = tgs * tgs * tgs * tgs 
       zlwf =  tc4 * stefan * vcover * ( 1. - thermk )                   &
      &     + (1. - vcover * ( 1. - thermk ) ) * stefan * tg4            
-                                                                        
+!                                                                       
       tgeff= sqrt ( sqrt ( zlwf/stefan ) ) 
-                                                                        
+!                                                                        
 !=======================================================================
 !... list of all variables to write out                                 
 !=======================================================================
@@ -272,30 +257,20 @@
 !.. soil variables (up to nlayer = 50 MAXIMUM)                          
 !71..120     qqq(i) interlayer i to i+1 water flux (m s-1) (+ downward) 
 !121..170    www(i) soil wetness at layer i                             
-                                                                        
 !------------------------------------------------------------------     
 !	variables atribution                                                  
 !------------------------------------------------------------------     
-                                                                        
   700 continue 
-                                                                        
+!                                                                        
       rvar(1) = elat 
-                           ! mm                                         
-      rvar(2) = ect / hlat	 
-                           ! mm                                         
-      rvar(3) = eci / hlat	 
-                           ! mm                                         
-      rvar(4) = egs / hlat	 
-                            ! mm                                        
-      rvar(5) = egi / hlat 	 
-                                    ! mm                                
-      rvar(6) = q0  * 1000. * dtt 
-                                    ! mm		                              
-      rvar(7) = qng * 1000. * dtt 
-                                    ! mm                                
-      rvar(8) = croff * 1000. 
-                                    ! mm                                
-      rvar(9) = roff * 1000. 
+      rvar(2) = ect / hlat            !mm
+      rvar(3) = eci / hlat            !mm
+      rvar(4) = egs / hlat            !mm
+      rvar(5) = egi / hlat            !mm
+      rvar(6) = q0  * 1000. * dtt     !mm
+      rvar(7) = qng * 1000. * dtt     !mm
+      rvar(8) = croff * 1000.         !mm
+      rvar(9) = roff * 1000.          !mm
       rvar(10) = hflux 
       rvar(11) = hc 
       rvar(12) = hg 
@@ -325,31 +300,25 @@
       rvar(36) = respc * 1.e+6 
       rvar(37) = pco2a 
       rvar(38) = rst 
-                                ! stomat conductance mm /s              
-      rvar(39) = gsh2o * 18. 
+      rvar(39) = gsh2o * 18. ! stomat conductance mm /s               
       rvar(40) = rstfac(1) 
       rvar(41) = rstfac(2) 
       rvar(42) = rstfac(3) 
       rvar(43) = rstfac(4) 
 !                                                                       
-                                   ! total interception loss            
-      rvar(44) = rvar(3) + rvar(5) 
-                                     ! column energy storage            
-      rvar(45) = rvar(13) + rvar(14) 
-!     rvar(46) = rvar(1)/hlat*dtt		! Evptrans (mm)                      
-                                                 ! Evptrans (mm)	       
-      rvar(46) = rvar(2)+rvar(3)+rvar(4)+rvar(5) 
-!     rvar(47) = blank                                                  
-!     rvar(48) = blank                                                  
-!     rvar(49) = blank                                                  
-!     rvar(50) = blank                                                  
+      rvar(44) = rvar(3) + rvar(5) ! total interception loss
+      rvar(45) = rvar(13) + rvar(14) ! column energy storage
+!      rvar(46) = rvar(1)/hlat*dtt ! Evptrans (mm)                      
+      rvar(46) = rvar(2)+rvar(3)+rvar(4)+rvar(5) ! Evptrans (mm) 
+!      rvar(47) = blank                                                  
+!      rvar(48) = blank                                                  
+!      rvar(49) = blank                                                  
+!      rvar(50) = blank                                                  
 !                                                                       
       rvar(51) = swdown 
-                                       ! Rn observada (for Ld calculatio
-      rvar(52) = rnetm 
+      rvar(52) = rnetm ! Rn observada (for Ld calculatio 
       rvar(53) = em 
-                             ! Celsius                                  
-      rvar(54) = tm -273.15		 
+      rvar(54) = tm -273.15 ! Celsius		 
       rvar(55) = um 
       rvar(56) = udm 
       rvar(57) = ppl+ppc 
@@ -361,65 +330,46 @@
       rvar(63) = xalbedo 
 !                                                                       
       rvar(64) = xmrsco2 
-                                           ! Rsc calculado              
-      rvar(65) = rvar(35) + rvar(36) 
+      rvar(65) = rvar(35) + rvar(36) ! Rsc calculado 
       rvar(66) = ustar 
       rvar(67) = xmustar 
-!	rvar(69) = blank                                                      
-!	rvar(70) = blank                                                      
-                                                                        
+!      rvar(69) = blank                                                      
+!      rvar(70) = blank                                                      
       do 40 in=1,nlayer 
-      rvar(70+in) = qqq(in) 
-   40 rvar(120+in) = www(in) 
-                                                                        
+         rvar(70+in) = qqq(in) 
+   40    rvar(120+in) = www(in) 
+!                                                                        
 !--------------------------------------------------------------------   
 !	write out variables                                                   
 !--------------------------------------------------------------------   
-                                                                        
-                                                      ! write labels    
-      if (itero.eq.1) then 
-                                                                        
-      write(itmp1,'(a8,100(1x,a9))')'NYMD',                             &
-     & 'Tm', 'em','um',                                                 &
-     & 'Ki','Rn_m','alb','Ldwn','Lupw', 'Rn_C','H_C',                   &
-     & 'LE_C','G_C','J_C','Fc_C','Rsc_C','An_C','u*_C',                 &
-     & 'Td','W1_C','W2_C','W3_C','gcond',                               &
-     & 'Evpt','Trans','Esoil','Einterc','Prec','Rss','Rs','Runoff',     &
-     & 'PARidir','PARidif','albPARdir','albPARdif'                      
-                                                                        
-      write(itmp2,'(a8,9(7x,a2,i1),90(7x,a1,i2))')                      &
-     & 'NYMD',('W_',i,i=1,9),('W',i,i=10,nlayer)                        
-                                                                        
+!                                                                        
+      if (itero.eq.1) then                             ! write labels 
+         write(itmp1,'(a8,100(1x,a9))')'NYMD',                            &
+         'Tm', 'em','um',                                                 &
+         'Ki','Rn_m','alb','Ldwn','Lupw', 'Rn_C','H_C',                   &
+         'LE_C','G_C','J_C','Fc_C','Rsc_C','An_C','u*_C',                 &
+         'Td','W1_C','W2_C','W3_C','gcond',                               &
+         'Evpt','Trans','Esoil','Einterc','Prec','Rss','Rs','Runoff',     &
+         'PARidir','PARidif','albPARdir','albPARdif'                      
+         write(itmp2,'(a8,9(7x,a2,i1),90(7x,a1,i2))')                     &
+         'NYMD',('W_',i,i=1,9),('W',i,i=10,nlayer)                        
       endif 
                                                                         
                                                                         
-      write(itmp1,'(i8.8,50(1x,f9.3))') nymd,                           &
-     & rvar(54), rvar(53), rvar(55), 		    	                            &
-     & rvar(51), rvar(52), rvar(19),rvar(28),rvar(18),                  &
-     & rvar(17), rvar(10), rvar(01),rvar(15),rvar(45), 	                &
-     & rvar(34), rvar(65), rvar(33),rvar(66),		                         &
-     & rvar(21), rvar(121),rvar(122),rvar(123),                         &
-     & rvar(39), rvar(46),rvar(2),rvar(4),rvar(44),    	                &
-     & rvar(57), rvar(7), rvar(8), rvar(9),                             &
-     & rvar(24), rvar(25), rvar(29), rvar(30)                           
-                                                                        
-                                            ! tm, em, um                
-                                                        ! Ki,Rn, alb,Ldw
-                                                        ! Rn,H,LE,G,J   
-                                               ! Fc,Rsc,An ,u*          
-                                                        ! Td, W1,W2,W3  
-                                                        ! gc, Evptran, T
-                                                        ! precip, Qng  ,
-                                                        ! PARidir, PARid
-                                                                        
+      write(itmp1,'(i8.8,50(1x,f9.3))') nymd,&
+     & rvar(54), rvar(53), rvar(55),&                   ! tm,em,um       
+     & rvar(51), rvar(52), rvar(19),rvar(28),rvar(18),& ! Ki,Rn,alb,Ldwn,Lupw
+     & rvar(17), rvar(10), rvar(01),rvar(15),rvar(45),& ! Rn,H,LE,G,J     
+     & rvar(34), rvar(65), rvar(33),rvar(66),&          ! Fc,Rsc,An ,u*   
+     & rvar(21), rvar(121),rvar(122),rvar(123),&        ! Td,W1,W2,W3    
+     & rvar(39), rvar(46),rvar(2),rvar(4),rvar(44),&    ! gc,Evptran,Transp,Esoil,Einterc
+     & rvar(57), rvar(7), rvar(8), rvar(9),&            ! precip,Qng,Croff,Runoff
+     & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif                                                                        
       write(itmp2,'(i8.8,50(1x,f9.3))') nymd,(www(i),i=1,nlayer) 
-                                                                        
 !      write(*,'(i8.8,11(1x,f6.3))') nymd,(www(i),i=1,nlayer)           
-                                                                        
       return 
       END                                           
-                                                                        
-                                                                        
+!                                                                        
 !=======================================================================
 !                                                                       
       subroutine driver (iu, icho, isnow, ichi, itero, nyfirst) 
@@ -448,33 +398,25 @@
 !-----------------------------------------------------------------------
 !...    open monthly input forcing met data / read green phenology      
 !-----------------------------------------------------------------------
-                                                                        
       if (itero.eq.0) then 
-                                                                        
-      read(ichi,*) 
-      read(ichi,*) (greex(mm),mm=1,12) 
-      read(ichi,*) (zltex(mm),mm=1,12) 
-      read(ichi,*) ( vmex(mm),mm=1,12) 
-                                                                        
-      write(98,*) 'Greex' ,(greex(mm),mm=1,12) 
-      write(98,*) 'Zltes' ,(zltex(mm),mm=1,12) 
-!      write(*,*) 'passei..' ,(zltex(mm),mm=1,12)                       
-                                                                        
-      read(ichi,*) 
-      read(ichi,*) cfinp 
-      write( *,'(a25,a40)')' # opening file counting ',cfinp 
-      write(98,'(a25,a40)')' # opening file counting ',cfinp 
-      open(iu, file= cfinp, status='old') 
-      read(iu,*) 
-                                                                        
+         read(ichi,*) 
+         read(ichi,*) (greex(mm),mm=1,12) 
+         read(ichi,*) (zltex(mm),mm=1,12) 
+         read(ichi,*) ( vmex(mm),mm=1,12) 
+         write(98,*) 'Greex' ,(greex(mm),mm=1,12) 
+         write(98,*) 'Zltes' ,(zltex(mm),mm=1,12) 
+         !write(*,*) 'passei..' ,(zltex(mm),mm=1,12)                       
+         read(ichi,*) 
+         read(ichi,*) cfinp 
+         write( *,'(a25,a40)')' # opening file counting ',cfinp 
+         write(98,'(a25,a40)')' # opening file counting ',cfinp 
+         open(iu, file= cfinp, status='old') 
+         read(iu,*) 
       endif 
-                                                                        
   851 CONTINUE 
-!...                                                                    
 !---------------------------------------------------------------------  
 !       read in meteorological forcing data                             
 !---------------------------------------------------------------------  
-                                                                        
       xmevap  = -9999. 
       xmsensh = -9999. 
       xmgheat = -9999. 
@@ -484,10 +426,8 @@
       xmustar = -9999. 
       xalbedo = -9999. 
       zlwd    = -9999. 
-                                                                        
   100 continue 
-                                                                        
-!-----------------------------------------------------------------------
+!---------------------------------------------------------------------##
 !     Defining a default format to read data2                           
 !     and check iwl flag to read                                        
 !     Evandro M Anselmo 16/08/2019                                      
@@ -497,21 +437,17 @@
       else 
          read(iu,*,end=1000) nymd, swdown, em, tm, um, tprec, rnetm 
       end if 
-!-----------------------------------------------------------------------
+!---------------------------------------------------------------------##
                                                                         
 !-----Com-rnetm---------------------------------------------------------
 ! 201  read(iu,*,end=1000) nymd, swdown, em, tm, um, tprec, rnetm       
 ! 201  read(iu,*,end=1000) nymd, swdown, rnetm, em, tm, um, tprec       
 !-----------------------------------------------------------------------
-                                                                        
-                                                                        
       if (nymd.ge.nyfirst) then 
-                                  ! incremento iteracoes apos nyfirst   
-      itero = itero + 1 
+         itero = itero + 1           ! incremento iteracoes apos nyfirst 
       else 
-      goto 201 
+         goto 201 
       endif 
-                                                                        
 !...  checa qualidade forcantes                                         
       iqc  =  1 
       vchec(1) = swdown 
@@ -521,78 +457,53 @@
       vchec(5) = um 
       vchec(6) = tprec 
 !      if (tprec.eq.-9999.0) tprec = 0.                                 
-                                                                        
       do 55 k=1,6 
-   55 if (vchec(k).eq.-9999.) iqc = 0 
-                                                                        
+   55    if (vchec(k).eq.-9999.) iqc = 0 
       if (iqc.eq.0) then 
-      write(* ,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
-      write(98,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
-      stop 
+         write(* ,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
+         write(98,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
+         stop 
       endif 
-                                                                        
-                                                                        
-                                                                        
 !... vegetation phenology	and co2 concentration diurnal cycle           
       ihour = mod(nymd,100) 
       imont = int(mod(nymd,1000000)/10000) 
       idddd = int(mod(nymd,10000)/100) 
-                                                                        
-                                                                        
 !... ico2m=  0:  pco2m constant = 34 (set in const2 every time step)    
 !            1:  pco2m read in as xco2m (have to be a forcing data)     
 !            2:  pco2m com ciclo diurno forcado                         
-                                                                        
-      if (ico2m.eq.0) co2amp = 0. 
-                                                                        
-                                          ! amplitude (ppm)             
-      if (ico2m.eq.2) co2amp = 100. 
-                                                                        
+      if (ico2m.eq.0) co2amp = 0.                                                        
+      if (ico2m.eq.2) co2amp = 100. ! amplitude (ppm)
       pco2m = facco2*(340 + co2amp/2.*cos(2.*pie * real(ihour - 8)/24.)) 
-                                                                        
-                                                           !xco2m in ppm
-      if(ico2m.eq.1.and.xco2m.ne.-9999.) pco2m = xco2m 
-                                                                        
-                               !0.1 ppm                                 
-      pco2m = pco2m * 0.1 
-                                                                        
-                                                                        
-!	write(*,'(2(a10,f12.7))') 'pco2m=',pco2m,'real(ihour)',real(ihour)    
-                                                                        
+      if(ico2m.eq.1.and.xco2m.ne.-9999.) pco2m = xco2m !xco2m in ppm 
+      pco2m = pco2m * 0.1 !0.1 ppm 
+!      write(*,'(2(a10,f12.7))') 'pco2m=',pco2m,'real(ihour)',real(ihour)    
 !..   interpola mes a mes (N - green fraction, L - LAI)                 
-                                                                        
-                                                                        
-!     write(*,*) 'antes N ' ,(greex(mm),mm=1,12)                        
-!     write(*,*) 'antes L' ,KK,(zltex(mm),mm=1,12)                      
-                                                                        
+!      write(*,*) 'antes N ' ,(greex(mm),mm=1,12)                        
+!      write(*,*) 'antes L' ,KK,(zltex(mm),mm=1,12)                      
       do 360 kk = 1,3 
-                                                                        
-      do 350 jj = 1,12 
-      if (kk.eq.1) feno(jj) = greex (jj) 
-      if (kk.eq.2) feno(jj) = zltex (jj) 
-  350 if (kk.eq.3) feno(jj) =  vmex (jj) * 1.e-06 
-                                                                        
-      gprev = feno(imont-1) 
-      gpres = feno(imont) 
-      gpost = feno(imont+1) 
-      if (imont.eq.01) gprev = feno(12) 
-      if (imont.eq.12) gpost = feno(01) 
-                                                                        
-      if (idddd.gt.15) then	 
-      gfrac = 0.5* (real(idddd-15)/real(diames(imont) - idddd + 15)) 
-      fenot = (1.-gfrac) * gpres + gfrac * gpost 
-      else 
-      gfrac = 0.5* (real(15 - idddd)/ real(idddd + 15)) 
-      fenot = (1.-gfrac) * gpres + gfrac * gprev 
-      endif 
-                                                                        
-      if (kk.eq.1) green = fenot 
-      if (kk.eq.2) zlt   = fenot 
-  360 if (kk.eq.3) vmax0 = fenot 
-                                                                        
+         do 350 jj = 1,12 
+            if (kk.eq.1) feno(jj) = greex (jj) 
+            if (kk.eq.2) feno(jj) = zltex (jj) 
+  350       if (kk.eq.3) feno(jj) =  vmex (jj) * 1.e-06 
+!                                                                        
+         gprev = feno(imont-1) 
+         gpres = feno(imont) 
+         gpost = feno(imont+1) 
+         if (imont.eq.01) gprev = feno(12) 
+         if (imont.eq.12) gpost = feno(01) 
+!                                                                        
+         if (idddd.gt.15) then	 
+            gfrac = 0.5* (real(idddd-15)/real(diames(imont) - idddd + 15)) 
+            fenot = (1.-gfrac) * gpres + gfrac * gpost 
+         else 
+            gfrac = 0.5* (real(15 - idddd)/ real(idddd + 15)) 
+            fenot = (1.-gfrac) * gpres + gfrac * gprev 
+         endif
+!                                                                        
+         if (kk.eq.1) green = fenot 
+         if (kk.eq.2) zlt   = fenot 
+  360    if (kk.eq.3) vmax0 = fenot 
   361 continue 
-                                                                        
-                                                                        
 ! --------------------------------------------------------------------- 
 !                                                                       
 !     isnow = 0 : conventional run with received met data.              
@@ -622,9 +533,9 @@
       ptot = ptot + tprec 
       ppl = tprec 
       ppc = tprec-ppl 
-                                                                        
+!                                                                        
       call radc2 
-                                                                        
+!                                                                        
       cloud = (1160.*sunang - swdown) / (963. * sunang) 
       cloud = amax1(cloud,0.) 
       cloud = amin1(cloud,1.) 
@@ -644,18 +555,16 @@
       radn(2,2) = difrat*(1.-vnrat)*swdown 
       if (ilw.eq.3) radn(3,2) = 0.0 
       if (ilw.eq.1) radn(3,2) = zlwd 
-                                                                        
+!                                                                        
       if (ilw.eq.1.and.zlwd.le.100.)                                    &
-     & stop 'warning: checar ilw: incompativel'                         
-                                                                        
+      stop 'warning: checar ilw: incompativel'                         
+!                                                                        
       return 
-                                                                        
+!                                                                        
  1000 write(icho, 90)iu, nymd 
    90 format(5x,'eof encountered for unit= ',i2,' eof date = ',i8) 
       stop 
-                                                                        
       END                                           
-                                                                        
 !=======================================================================
 !                                                                       
       subroutine balan ( iplace, totwb ) 
@@ -675,17 +584,15 @@
 !	write(98,*)'====================================================='    
       totwb = 0. 
       do 20 i=1,nlayer 
-!	write(98,'(1x,a3,1x,i3,1x,f20.10)') '  w',i,www(i)                    
+!      write(98,'(1x,a3,1x,i3,1x,f20.10)') '  w',i,www(i)                    
    20 totwb = totwb + ( www(i) * poros(i) * zdepth(i) ) 
       totwb = totwb + (capac(1) + capac(2) + snoww(1) + snoww(2)) 
                                                                         
 !      totwb1 = dble(totwb)                                             
-                                                                        
 !      write(98,'(1x,a10,2a13,/,1x,f12.5,1x,f12.10,1x,f12.5)')          
 !     .    ' S ',' M ',' To1',                                          
 !     .   totwb1*1000.,                                                 
 !     .   (capac(1)+capac(2)+snoww(1)+snoww(2))*1000., totwb*1000.      
-                                                                        
 !                                                                       
       goto 200 
 !                                                                       
@@ -694,31 +601,29 @@
       endwb = 0. 
       do 40 i=1,nlayer 
    40 endwb = endwb +  (www(i) * poros(i) * zdepth(i)) 
-                                                                        
+!                                                                        
       endwb = endwb +  (capac(1) + capac(2) + snoww(1) + snoww(2))      &
      &    -  (ppl+ppc)/1000. +  (etmass)/1000. + roff                   
-                                                                        
+!                                                                        
 !      errorw= totwb1 - dble(endwb)                                     
       errorw= totwb - endwb 
-                                                                        
-                                                                        
+!                                                                        
       pmeter= (ppl+ppc)/1000. 
       emeter= etmass/1000. 
 !                                                                       
       if (abs(errorw) .gt. 0.0001) then 
-      write( *,'(a40)') ' ---> warning: water balance violation' 
-      write(*,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
-      write(98,'(a40)') ' ---> warning: water balance violation' 
-      write(98,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
-!	do 35 i=1,nlayer                                                      
-! 35	write(98,'(1x,a3,1x,i3,1x,f20.10)') '  w',i,www(i)                 
-!      write(98,'(1x,a10,5a13,/,1x,f12.5,2(1x,f12.10),3(1x,f12.5))')    
-!     .  ' S ',' M ',' E',' R',' -Pr',                                  
-!     .' To2', endwb1*1000.,(capac(1)+capac(2)+snoww(1)+snoww(2))*1000.,
-!     . dble(etmass), dble(roff)*1000.,-dble(ppl+ppc),endwb*1000.       
-!      write(98,'(1x,a20,1x,f20.10)')'Error To1-To2(mm):',errorw*1000.d0
-!      write(98,*)                                                      
-                                                                        
+         write( *,'(a40)') ' ---> warning: water balance violation' 
+         write(*,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
+         write(98,'(a40)') ' ---> warning: water balance violation' 
+         write(98,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
+         !	do 35 i=1,nlayer                                                      
+         ! 35	write(98,'(1x,a3,1x,i3,1x,f20.10)') '  w',i,www(i)                 
+         !      write(98,'(1x,a10,5a13,/,1x,f12.5,2(1x,f12.10),3(1x,f12.5))')    
+         !     .  ' S ',' M ',' E',' R',' -Pr',                                  
+         !     .' To2', endwb1*1000.,(capac(1)+capac(2)+snoww(1)+snoww(2))*1000.,
+         !     . dble(etmass), dble(roff)*1000.,-dble(ppl+ppc),endwb*1000.       
+         !      write(98,'(1x,a20,1x,f20.10)')'Error To1-To2(mm):',errorw*1000.d0
+         !      write(98,*)                                                      
       endif 
 !                                                                       
       cbal = radt(1) - chf - (ect+hc+eci)/dtt 
@@ -729,10 +634,10 @@
       errore= zlhs - zrhs 
 !                                                                       
       if(abs(errore) .gt. 1.) then 
-      write(*,'(a40)') ' ---> warning: energy balance violation' 
-      write(98,910) nymd, zlhs, zrhs, radt(1), radt(2), chf, shf,       &
-     &       hflux, ect/dtt, eci/dtt, egi/dtt, egs/dtt, hc/dtt, hg/dtt, &
-     &       heaten/dtt, cbal, gbal                                     
+         write(*,'(a40)') ' ---> warning: energy balance violation' 
+         write(98,910) nymd, zlhs, zrhs, radt(1), radt(2), chf, shf,    &
+         hflux, ect/dtt, eci/dtt, egi/dtt, egs/dtt, hc/dtt, hg/dtt,     &
+         heaten/dtt, cbal, gbal                                     
       endif 
   910 format(//,10x,'---> warning: energy balance violation **',//,     &
      & /,1x,'date ', i8,                                                &
@@ -887,12 +792,12 @@
       read(ichi, *) istype, sodep,  (soref(iwave),iwave=1,2) 
                                                                         
       if (pfirst) then 
-      pfirst=.false. 
-   50 format(/,6(1x,e12.6),/) 
-      write(98,'(a72)')' ivtype' 
-      write(98,*) ivtype 
-      write(98,'(a72)') ' istype, sodep,  (soref(iwave),iwave=1,2)' 
-      write(98,*) istype, sodep,  (soref(iwave),iwave=1,2) 
+         pfirst=.false. 
+   50    format(/,6(1x,e12.6),/) 
+         write(98,'(a72)')' ivtype' 
+         write(98,*) ivtype 
+         write(98,'(a72)') ' istype, sodep,  (soref(iwave),iwave=1,2)' 
+         write(98,*) istype, sodep,  (soref(iwave),iwave=1,2) 
       endif 
                                                                         
       call soipar (ichi) 
@@ -925,8 +830,7 @@
 !                                                                       
       read(ichi,*) 
       read(ichi,*) 
-                                                               !(iw,iliv
-      read(ichi,*)(tran(iw,1), iw=1,2), (tran(iw,2), iw=1,2) 
+      read(ichi,*)(tran(iw,1), iw=1,2), (tran(iw,2), iw=1,2) !(iw,ilive)
       read(ichi,*)(ref (iw,1), iw=1,2), (ref (iw,2), iw=1,2) 
 !                                                                       
       read(ichi,*) 
@@ -937,24 +841,23 @@
       read(ichi,*)  acoef, bcoef, ccoef 
 !                                                                       
       if (pfirst) then 
-      pfirst=.false. 
-   50 format(/,6(1x,e12.6,/)) 
-      write(98,'(a72)') ' z2, z1, vcover, chil' 
-      write(98,*) z2, z1, vcover, chil 
-      write(98,'(a72)') ' rootd, phc ' 
-      write(98,*) rootd, phc 
-      write(98,'(a72)') ' (tran(iw,2), iw=1,2)' 
-      write(98,*) (tran(iw,1), iw=1,2) 
-      write(98,'(a72)') ' (ref (iw,2), iw=1,2)' 
-      write(98,*) (ref (iw,2), iw=1,2) 
-      write(98,'(a72)') 'effcon, gradm, binter, respcp, atheta, btheta' 
-      write(98,*) effcon, gradm, binter, respcp, atheta, btheta 
-      write(98,'(a72)') ' trda, trdm, trop, slti, hlti, shti, hhti' 
-      write(98,*) trda, trdm, trop, slti, hlti, shti, hhti 
-      write(98,'(a72)') ' acoef, bcoef, ccoef' 
-      write(98,*) acoef, bcoef, ccoef 
+         pfirst=.false. 
+   50    format(/,6(1x,e12.6,/)) 
+         write(98,'(a72)') ' z2, z1, vcover, chil' 
+         write(98,*) z2, z1, vcover, chil 
+         write(98,'(a72)') ' rootd, phc ' 
+         write(98,*) rootd, phc 
+         write(98,'(a72)') ' (tran(iw,2), iw=1,2)' 
+         write(98,*) (tran(iw,1), iw=1,2) 
+         write(98,'(a72)') ' (ref (iw,2), iw=1,2)' 
+         write(98,*) (ref (iw,2), iw=1,2) 
+         write(98,'(a72)') 'effcon, gradm, binter, respcp, atheta, btheta' 
+         write(98,*) effcon, gradm, binter, respcp, atheta, btheta 
+         write(98,'(a72)') ' trda, trdm, trop, slti, hlti, shti, hhti' 
+         write(98,*) trda, trdm, trop, slti, hlti, shti, hhti 
+         write(98,'(a72)') ' acoef, bcoef, ccoef' 
+         write(98,*) acoef, bcoef, ccoef 
       endif 
-                                                                        
       return 
       END                                           
 !                                                                       
@@ -985,24 +888,23 @@
    20   extmax = extmax + extfrac(il) 
                                                                         
       if (pfirst) then 
-      pfirst=.false. 
-      write(98,'(a72)') ' iinf  slope ' 
-      write(98,*)          iinf, slope 
-      write(98,'(a60)')                                                 &
-     &'zdepth(i) extfrac(i) bee(i) phsat(i) satco(i) poros(i) www(i)'   
-      do 19 i=1,nlayer 
-   19 write(98, '(3(1x,f6.4),2(1x,e10.3),3(1x,f6.4),/)')                &
-     &zdepth(i),extfrac(i),bee(i),phsat(i),satco(i),poros(i),www(i)     
-      write(98,*) ' extmax(%): ',extmax*100. 
+         pfirst=.false. 
+         write(98,'(a72)') ' iinf  slope ' 
+         write(98,*)          iinf, slope 
+         write(98,'(a60)')                                              &
+         'zdepth(i) extfrac(i) bee(i) phsat(i) satco(i) poros(i) www(i)'   
+         do 19 i=1,nlayer 
+   19    write(98, '(3(1x,f6.4),2(1x,e10.3),3(1x,f6.4),/)')             &
+         zdepth(i),extfrac(i),bee(i),phsat(i),satco(i),poros(i),www(i)     
+         write(98,*) ' extmax(%): ',extmax*100. 
                                                                         
-      if (extmax.gt.1.00001.or.extfrac(1).lt.1.) then 
-      write(*,29) '!!! warning: extfrac violation ', extmax*100.,' %' 
-      write(98,29)'!!! warning: extfrac violation ', extmax*100.,' %' 
-   29 format(a32,f20.10,a3) 
-      stop 
-      endif 
-              !if pfirst                                                
-      endif			 
+         if (extmax.gt.1.00001.or.extfrac(1).lt.1.) then 
+            write(*,29) '!!! warning: extfrac violation ', extmax*100.,' %' 
+            write(98,29)'!!! warning: extfrac violation ', extmax*100.,' %' 
+   29       format(a32,f20.10,a3) 
+            stop 
+         endif
+      endif !if pfirst			 
 !...                                                                    
       return 
       END                                           
@@ -1024,10 +926,10 @@
       read(ichi, *) 
       read(ichi, *) fparc 
       if (pfirst) then 
-      pfirst=.false. 
-      write(98,'(a72)') ' fparc' 
-      write(98,*) fparc 
-   50 format(6(1x,e12.6)) 
+         pfirst=.false. 
+         write(98,'(a72)') ' fparc' 
+         write(98,*) fparc 
+   50    format(6(1x,e12.6)) 
       endif 
 !                                                                       
       return 
@@ -1053,19 +955,16 @@
       read(ichi,*) 
       read(ichi,*) 
       read(ichi,*) corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet 
-                                                                        
 !      write(*,'(a72)') ' vmax0, gmudmu, green, zlt'                    
 !      write(*,*) vmax0, gmudmu, green, zlt                             
 !      write(*,'(a72)') ' z0d, dd, cc1, cc2'                            
 !      write(*,*) z0d, dd, cc1, cc2                                     
 !      write(*,'(a72)')'corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet'
 !      write(*,*) corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet       
-                                                                        
-                                                                        
 !new...                                                                 
       sodep1=0. 
       do 10 i=1,nlayer 
-   10   sodep1 = sodep1 + zdepth(i) 
+   10 sodep1 = sodep1 + zdepth(i) 
 !new...                                                                 
                                                                         
       rootd = amin1( rootd, sodep1*0.75 ) 
@@ -1073,12 +972,10 @@
       scatp    =     green   * ( tran(1,1) + ref(1,1) )                 &
      &         +( 1.-green ) * ( tran(1,2) + ref(1,2) )                 
       park = sqrt(1.-scatp) * gmudmu 
-!     fparc = 1. - exp ( -park*zlt )                                    
-                                                                        
+!      fparc = 1. - exp ( -park*zlt )                                    
       fparc = 1. - exp ( -park*zlt ) 
                                                                         
 !h007      zlt = -1./park*alog( 1.-fparc )                              
-                                                                        
                                                                         
 !      write(*,'(a72)') ' rootd '                                       
 !      write(*,*) rootd                                                 
@@ -1088,25 +985,23 @@
 !      write(*,*) park                                                  
 !      write(*,'(a72)') ' zlt'                                          
 !      write(*,*) zlt                                                   
-                                                                        
-                                                                        
       if (pfirst) then 
-      pfirst=.false. 
-   50 format(/,6(1x,e12.6),/) 
-      write(98,'(a72)') ' vmax0, gmudmu, green, zlt' 
-      write(98,*) vmax0, gmudmu, green, zlt 
-      write(98,'(a72)') ' z0d, dd, cc1, cc2' 
-      write(98,*) z0d, dd, cc1, cc2 
-      write(98,'(a72)')'corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet' 
-      write(98,*) corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet 
-      write(98,'(a72)') ' rootd ' 
-      write(98,*) rootd 
-      write(98,'(a72)') ' scatp ' 
-      write(98,*) scatp 
-      write(98,'(a72)') ' park ' 
-      write(98,*) park 
-      write(98,'(a72)') ' zlt' 
-      write(98,*) zlt 
+         pfirst=.false. 
+   50    format(/,6(1x,e12.6),/) 
+         write(98,'(a72)') ' vmax0, gmudmu, green, zlt' 
+         write(98,*) vmax0, gmudmu, green, zlt 
+         write(98,'(a72)') ' z0d, dd, cc1, cc2' 
+         write(98,*) z0d, dd, cc1, cc2 
+         write(98,'(a72)')'corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet' 
+         write(98,*) corb1, corb2, ha, g1, g2, g3, ztz0, zwind, zmet 
+         write(98,'(a72)') ' rootd ' 
+         write(98,*) rootd 
+         write(98,'(a72)') ' scatp ' 
+         write(98,*) scatp 
+         write(98,'(a72)') ' park ' 
+         write(98,*) park 
+         write(98,'(a72)') ' zlt' 
+         write(98,*) zlt 
       endif 
                                                                         
       return 
@@ -1128,7 +1023,6 @@
 !                                                                       
 !       write(98,*)'  entrando cntrol'                                  
 !       write(*,*)'  entrando cntrol'                                   
-                                                                        
   900 format(18a4) 
       read(ichi,*) 
       read(ichi,*) 
@@ -1144,70 +1038,66 @@
    49 format(/,a24,1x,i2,1x,a5,/) 
                                                                         
       if (pfirst) then 
-      pfirst=.false. 
-      write(98,*)                                                       &
-     & zlat, zlong,time,month,day,year,maxit,nyfirst,nylast             
-   50 format(                                                           &
-     &'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,         &
-     & 3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
-      write(icho,800) zlat, zlong,nyfirst,nylast,maxit 
-  800 format(10x,32('*')/10x,'*       SiB2 off-line run      *'/10x,    &
-     &32('*')/5x,'latitude : ',f6.2,5x,' longitude : ',f7.2/,           &
-     & 4x,' run length: nyfirst - nylast',4x,i8,4x,i8,/,                &
-     & 4x,'             maxit           ',4x,i8,/)                      
+         pfirst=.false. 
+         write(98,*)                                                    &
+         zlat, zlong,time,month,day,year,maxit,nyfirst,nylast             
+   50    format(                                                        &
+         'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,      &
+     &   3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
+         write(icho,800) zlat, zlong,nyfirst,nylast,maxit 
+  800    format(10x,32('*')/10x,'*       SiB2 off-line run      *'/10x, &
+     &   32('*')/5x,'latitude : ',f6.2,5x,' longitude : ',f7.2/,        &
+     &   4x,' run length: nyfirst - nylast',4x,i8,4x,i8,/,              &
+     &   4x,'             maxit           ',4x,i8,/)                                                                        
+         if(itrunk .eq. 1) write(icho,801) 
+         if(itrunk .ge. 2) write(icho,802) itrunk 
+  801    format(5x,'resistances calculated from initial fluxes') 
+  802    format(5x,'resistances calculated by iteration, itrunk=',i4) 
+         if(ilw .eq. 1) write(icho,816) 
+         if(ilw .eq. 2) write(icho,817) 
+         if(ilw .eq. 3) write(icho,818) 
+  816    format(5x,'downward longwave radiation read in as data') 
+  817    format(5x,'downward longwave radiation computed from brunts',  &
+     &   ' equation' )                                                    
+  818    format(5x,'downward longwave radiation computed as residual in &
+     &   energy balance', /, 5x,'net radiation read in as data ')             
                                                                         
-      if(itrunk .eq. 1) write(icho,801) 
-      if(itrunk .ge. 2) write(icho,802) itrunk 
-  801 format(5x,'resistances calculated from initial fluxes') 
-  802 format(5x,'resistances calculated by iteration, itrunk=',i4) 
-      if(ilw .eq. 1) write(icho,816) 
-      if(ilw .eq. 2) write(icho,817) 
-      if(ilw .eq. 3) write(icho,818) 
-  816 format(5x,'downward longwave radiation read in as data') 
-  817 format(5x,'downward longwave radiation computed from brunts',     &
-     & ' equation' )                                                    
-  818 format(5x,'downward longwave radiation computed as residual in ene&
-     &rgy balance', /, 5x,'net radiation read in as data ')             
+         !      if (iinf.eq.1) write(*,*)'Infiltration=1 top layer diffusion'    
+         !      if (iinf.eq.2) write(*,*)                                        
+         !     &           'Infiltration=2 wave front, w/  overland flow'        
+         !      if (iinf.eq.3) write(*,*)                                        
+         !     &           'Infiltration=3 wave front, w/o overland flow'        
+         !      if (iinf.eq.4) write(*,*)                                        
+         !     &  'Infiltration=4 wave front w/ sat impeding, w/o overland flow' 
+         
+         write(*,'(a28,/,3(5x,a25,2x,f9.4,/),10(5x,a25,2x,i2,/))')      &
+     &   ' Soil hydrology parameters: ',                                &
+     &   ' slope qng     - slope  ', slope,                             &
+     &   ' qstar Horton  - xcs    ', xcs  ,                             &
+     &   ' Liston qng    - xkb    ', xkb  ,                             &
+     &   ' ativar qng    - jqng   ', jqng ,                             &
+     &   ' infiltration  - iinf   ', iinf ,                             &
+     &   ' numer scheme  - jesq   ', jesq ,                             &
+     &   ' C(psi) calc   - jdpsi  ', jdpsi,                             &
+     &   ' K(psi) calc   - jkcon  ', jkcon,                             &
+     &   ' linear system - jsys   ', jsys ,                             &
+     &   ' Jacobi/Gauss  - jjgs   ', jjgs ,                             &
+     &   ' Q initial     - jqini  ', jqini                               
+                                                                                 
+         ydep(1) = zdepth(1)/2. 
+         eacum(2) = extfrac(2) 
+         eacum(1) = extfrac(1) 
                                                                         
-!      if (iinf.eq.1) write(*,*)'Infiltration=1 top layer diffusion'    
-!      if (iinf.eq.2) write(*,*)                                        
-!     &           'Infiltration=2 wave front, w/  overland flow'        
-!      if (iinf.eq.3) write(*,*)                                        
-!     &           'Infiltration=3 wave front, w/o overland flow'        
-!      if (iinf.eq.4) write(*,*)                                        
-!     &  'Infiltration=4 wave front w/ sat impeding, w/o overland flow' 
+         do i=2,nlayer 
+            ydep(i) = zdepth(i-1) + zdepth(i)/2. 
+            if (i.ge.3) eacum(i) = eacum(i-1) + extfrac(i) 
+         enddo
                                                                         
-      write(*,'(a28,/,3(5x,a25,2x,f9.4,/),10(5x,a25,2x,i2,/))')         &
-     &  ' Soil hydrology parameters: ',                                 &
-     &  ' slope qng     - slope  ', slope,                              &
-     &  ' qstar Horton  - xcs    ', xcs  ,                              &
-     &  ' Liston qng    - xkb    ', xkb  ,                              &
-     &  ' ativar qng    - jqng   ', jqng ,                              &
-     &  ' infiltration  - iinf   ', iinf ,                              &
-     &  ' numer scheme  - jesq   ', jesq ,                              &
-     &  ' C(psi) calc   - jdpsi  ', jdpsi,                              &
-     &  ' K(psi) calc   - jkcon  ', jkcon,                              &
-     &  ' linear system - jsys   ', jsys ,                              &
-     &  ' Jacobi/Gauss  - jjgs   ', jjgs ,                              &
-     &  ' Q initial     - jqini  ', jqini                               
-                                                                        
-                                                                        
-      ydep(1) = zdepth(1)/2. 
-      eacum(2) = extfrac(2) 
-      eacum(1) = extfrac(1) 
-                                                                        
-      do i=2,nlayer 
-      ydep(i) = zdepth(i-1) + zdepth(i)/2. 
-      if (i.ge.3) eacum(i) = eacum(i-1) + extfrac(i) 
-      enddo 
-                                                                        
-      write (*,'(a44,/,50(i3,3x,f6.0,3x,f7.2,3x,f7.2,3x,f7.3,/))')      &
-     & 'Layer Depth_cm  Root % Root_acum %  Winicial',                  &
-     & (i, 100.*ydep(i), extfrac(i)*100.,eacum(i),www(i),i=1,nlayer)    
-                                                                        
-      endif 
-                                                                        
+         write (*,'(a44,/,50(i3,3x,f6.0,3x,f7.2,3x,f7.2,3x,f7.3,/))')   &
+     &   'Layer Depth_cm  Root % Root_acum %  Winicial',                &
+     &   (i, 100.*ydep(i), extfrac(i)*100.,eacum(i),www(i),i=1,nlayer)    
+      endif
       write(98,*)'  saindo cntrol' 
-!       write(*,*)'  saindo cntrol'                                     
+!     write(*,*)'  saindo cntrol'                                     
       return 
       END
