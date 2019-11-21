@@ -319,3 +319,8 @@ c----------------------------------------------------------------------
 
 
 
+
+f2py3.7 --fcompiler=gnu95 --f90flags='-fno-automatic -finit-local-zero' -c *.f95 -m sib2pymod
+
+
+

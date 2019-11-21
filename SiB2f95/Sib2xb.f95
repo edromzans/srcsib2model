@@ -627,9 +627,9 @@
 !                                                                       
       fac = amin1( www(1), 1. ) 
       fac = amax1( fac, 0.02  ) 
-!      rsoil =  amax1 (0.1, 694. - fac*1500.) + 23.6                    
+      rsoil =  amax1 (0.1, 694. - fac*1500.) + 23.6                    
                                                    !Cinthia_cerrado16Out
-      rsoil =  amax1 (0.1, 1001. - exp(fac*6.686)) 
+      !rsoil =  amax1 (0.1, 1001. - exp(fac*6.686)) 
 !                                                                       
       psit = phsat(1) * fac ** (- bee(1) ) 
       argg = amax1(-10.,(psit*gx/461.5/tgs)) 
