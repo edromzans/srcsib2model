@@ -1,6 +1,8 @@
 !=======================================================================
 !                                                                       
-      subroutine sib2(parametro) 
+      subroutine sib2(trans_viva, trans_seca, ref_viva, ref_seca,& 
+           nlinha, ts_rn_c)
+
 !                                                                       
 !=======================================================================
 !                                                                       
@@ -44,13 +46,26 @@
 !-----------------------------------------------------------------------
 !...  variables only important to the optimization module                
       integer itero, maxit 
-!...                                                                    
+!...
+      !variaveis Otimizacao lmfit
+      integer, parameter :: dp = selected_real_kind(15,307) ! double precision
+      real, intent(in) :: trans_viva 
+      real, intent(in) :: trans_seca
+      real, intent(in) :: ref_viva
+      real, intent(in) :: ref_seca
+      real, intent(out) :: ts_rn_c(nlinha) !  ts_rn_c(79000)
+      !...
+
+      
       include 'pardif.h' 
       include 'comsibc.h' 
       data ichi, icho, iu /1,6,8/ 
       data itmp1/88/,itmp2/78/,itmp3/79/,itmp4/80/,itmp5/81/,           &
      &     itero/0/, ipbl/0/, isnow/0/                                  
-!...  output files opening                                               
+
+      ts_rn_c = -999.0
+      
+      !...  output files opening                                               
       open(98,file='sib2diag.dat',status='unknown') 
       open(itmp1,file='sib2dt.dat',status='unknown')	 
       open(itmp2,file='sib2dt_SM.dat',status='unknown') !umidade do solo
@@ -63,9 +78,24 @@
       open(ichi, file='data1', status='old') 
 !
 !      write(98,'(20a11)')                                              
-!     & 'xs','P','D','Pinf','Dc','Dd','Ri','R','Pi','q0'                
-!
-      call veginc(ichi) 
+      !     & 'xs','P','D','Pinf','Dc','Dd','Ri','R','Pi','q0'
+      
+      ! #############################################################################
+      ! Evandro, mudanca de parametros para otimizacao
+      
+      print *, tran, ' tran <<<<<<<<<<<<<<<<<<<<<<<<-------------------------'
+      call veginc(ichi)
+      !print *, tran
+      !print *, param_tran
+      !tran = param_tran
+      tran(1,1) = trans_viva
+      tran(2,1) = trans_seca
+      tran(1,2) = ref_viva
+      tran(2,2) = ref_seca
+      print *, tran, ' tran depois <<<<<<<<<<<<<<<<<<<<<<<<-------------------------'
+
+
+      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 
 !... simulation start: at nyfirst (data1)                               
 !... simulation end  : at maxit or nylast (most limiting out of two)    
@@ -75,8 +105,9 @@
 !       write(98,'(A20)')'  to call driver'                             
          call driver (iu, icho, isnow, ichi, itero, nyfirst)
          if (mod(iter,int(86400./dtt)).eq.0) then ! display screen cada dia	 
-            write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
-            write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
+            ! write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
+            ! write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd
+            !print *, radtot !rvar(17)
          endif
          
          !print *, gradm, ' <<<<<!!!!' 
@@ -119,8 +150,14 @@
          !write(98,'(A20)')'  to call balan'                              
          call balan( 2, totwb ) 
          !write(98,'(A20)')'   passed balan'                              
-         !write(98,'(A20)')'  to call outer'                              
-         call outer(itero) 
+         !write(98,'(A20)')'  to call outer'
+
+         !Calibracao 
+         call outer(itero, radtot) ! adiciona saida para Rn_C 
+          
+         ts_rn_c(itero) = radtot
+         !print *, radtot, ' radtot', itero, ts_rn_c(itero)
+         
          !write(98,'(A20)')'   passed outer'                              
          if (nymd.eq.nylast) goto 1001 
  1000 continue 
@@ -136,8 +173,9 @@
 !H     close(itmp5)                                                    
       close(98) 
 !                                                                       
-      print *, parametro, ' <--------------------'
-      stop ' SiB2 HAS DONE. ' 
+      !stop ' SiB2 HAS DONE. '
+      !print *, ts_rn_c(1:50), ' <------------------------ts_rn_c'
+      return
       end subroutine sib2                                           
 !                                                                       
 !=======================================================================
@@ -145,7 +183,7 @@
 !   SUBROUTINES                                                         
 !                                                                       
 !=======================================================================
-      subroutine outer (itero) 
+      subroutine outer (itero, radtot) 
 !---------------------------------------------------------------------- 
 ! writes out selected variables (unformatted) select in data1 namelist  
 !---------------------------------------------------------------------- 
@@ -369,7 +407,13 @@
      & rvar(21), rvar(121),rvar(122),rvar(123),&        ! Td,W1,W2,W3    
      & rvar(39), rvar(46),rvar(2),rvar(4),rvar(44),&    ! gc,Evptran,Transp,Esoil,Einterc
      & rvar(57), rvar(7), rvar(8), rvar(9),&            ! precip,Qng,Croff,Runoff
-     & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif                                                                        
+     & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif
+
+      
+      !print *, radtot, ' <<<<<<<<<<<<<<<<< Rn_C', in, itero, nlayer
+         
+
+      
       write(itmp2,'(i8.8,50(1x,f9.3))') nymd,(www(i),i=1,nlayer) 
 !      write(*,'(i8.8,11(1x,f6.3))') nymd,(www(i),i=1,nlayer)           
       return 
@@ -568,7 +612,7 @@
 !                                                                        
  1000 write(icho, 90)iu, nymd 
    90 format(5x,'eof encountered for unit= ',i2,' eof date = ',i8) 
-      stop 
+      !stop ! Stop indesejado????? 
       END                                           
 !=======================================================================
 !                                                                       
