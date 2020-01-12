@@ -2318,8 +2318,13 @@
        !nas demais subrotinas (Evandro M Anselmo)
        save iter, a2, y1 
        data cons/1.0/ 
-       data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./ 
-!                                                                       
+       ! data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
+       cons = 1.0
+       iter = (/ 0,0,0 /)
+       ! print *, a2, ' a2'
+       ! print *, y1, ' y1'
+       ! print *, iter, ' iter'
+              
        ertol = 0.05 * finc 
        iwalk(l) = iwolk 
        nex(l)=nox 

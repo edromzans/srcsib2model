@@ -62,7 +62,20 @@
 
       ! ts_u_c = -999.0
 
+      ! itero = 0
+
+      ichi = 1
+      icho = 6
+      iu = 8
+      
+      itmp1 = 88
+      itmp2 = 78
+      itmp3 = 79
+      itmp4 = 80
+      itmp5 = 81
       itero = 0
+      ipbl = 0
+      isnow = 0
       
       !...  output files opening                                               
       open(98,file='sib2diag.dat',status='unknown') 
@@ -439,12 +452,16 @@
       character*30 cfinp 
       real         vchec(6), feno(12) 
       integer      diames(12) 
-      data diames/31,28,31,30,31,30,31,31,30,31,30,31/ 
-                                                                        
+      data diames/31,28,31,30,31,30,31,31,30,31,30,31/
+                                                                              
       e(x) = exp( 21.18123 - 5418. / x ) / .622 
 !-----------------------------------------------------------------------
 !...    open monthly input forcing met data / read green phenology      
 !-----------------------------------------------------------------------
+      vchec = (/ 0,0,0,0,0,0 /)
+      feno = (/ 0,0,0,0,0,0,0,0,0,0,0,0 /)
+      diames = (/ 31,28,31,30,31,30,31,31,30,31,30,31 /)
+            
       if (itero.eq.0) then 
          read(ichi,*) 
          read(ichi,*) (greex(mm),mm=1,12) 
