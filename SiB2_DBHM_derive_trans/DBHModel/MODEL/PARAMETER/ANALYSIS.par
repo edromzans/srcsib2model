@@ -1,0 +1,8 @@
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			PARAMETERS FOR NDVI DATA
+c	NDVI_ANA:	The path where NDVI analysis data is saved
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$NDVI_ANALYSIS	
+		NDVI_ANA='../../ATM_INPUT_DATA/ANALYSIS/',	
+	$END
+

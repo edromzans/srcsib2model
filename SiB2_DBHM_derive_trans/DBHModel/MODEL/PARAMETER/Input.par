@@ -1,0 +1,233 @@
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMATERS FOR MAIN PROGRAM
+c	levels:				Levels of the Pfafstetter coding system
+c	startyear:		The start year of simulation
+c	endyear:			The endy ear of simulation
+c	dx_max:				The reference distance to divide flow intervals
+c	code_file:		The file name of Pfafstetter CODE
+c	dis_file:			The file name of flow length to outlet ARCINFO flowlength...
+c dir_file:   	The file name of flow direction
+c	slope_file:		The file name of slope
+c dem_file:			The file name of dem data (which does NOT include dissipative area)
+c								e.g. inr = 50 , inc = 194 (GL50) is not included in the dem_file
+c								inr = 58 , inc = 194 (GL58) is included in the dem_file
+c	area_file:		The grid area corresponding to dem_file
+c frac_file:		The area fraction corresponding to area_file
+c	riverway_file:Save parameters for different level riverway
+c	Outstn:				station information of output discharge
+c Output_D: 		Directory where output files are put
+c Derive_D: 		Directory where Derived parameters are saved 
+c	dt:						Seconds in Time step (if time step is hour, then it is 3600)
+c	rivlen:				The actual river length (unit: meter) for yellow river: 5464000.0 meter
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Input_para
+		levels = 3,
+		startyear = 1960,
+		startmont = 1,
+		startday  = 1,
+		endyear = 2000,
+		endmont = 12,
+		endday  = 31,
+		dx_max = 15000.0,
+		code_file = '../GEO_INPUT_DATA/basin3.asc',
+		dis_file = '../GEO_INPUT_DATA/dis.asc',
+		dir_file = '../GEO_INPUT_DATA/dir.asc',
+		slope_file = '../GEO_INPUT_DATA/slope.asc',
+		dem_file= '../GEO_INPUT_DATA/wsdem.asc',
+		area_file= '../GEO_INPUT_DATA/gridarea.asc',
+		frac_file= '../GEO_INPUT_DATA/frac.asc',
+		riverway_file = '../PARAMETER/River.par',
+		Outstn='../GEO_INPUT_DATA/outstn.txt',
+		Output_D='../HYDRO_OUTPUT/',
+		Derive_D='../Derive_D/',
+		dt = 3600.0,		
+		rivlen = 5464000.0
+	$END
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c		INPUT PARAMETERS FOR ET
+c	ETID:			ETID=1, calculate Reference ET, otherwise, set meteorological factor for ET
+c	DEM_FD:		The file name of dem data which includes dissipative area
+c						e.g. inr = 50 , inc = 194 (GL50) is included in the DEM_FD
+c						inr = 58 , inc = 194 (GL58) is also included in the DEM_FD
+c FRAC_FD:	The area fraction corresponding to AREA_FD
+c	ETPATH:		The path where the ET results will be put in
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+	$Get_ET_para
+		ETID=1,
+		DEM_FD = '../GEO_INPUT_DATA/wsdemirr.asc',
+		FRAC_FD = '../GEO_INPUT_DATA/fracirr.asc',
+		ETPATH ='../../ATM_INPUT_DATA/ETPATH2/'
+	$END
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR GET GRID BASED ATMOSPHERIC FORCING DATA 
+c	INTPLT:		If =1,Inverse Distance; =2, ThinPlateSpline; =3, Thiessen Polygon 
+c	NDVIID:		NDVIID.eq.1, Month data; NDVIID.eq.3, Tendays data. NDVIID.eq.2, Daily data
+c	ATM_ITP:	The path where the interpolate results will be put
+c	GEO_hrd:	Geographic Information head file, save the coordinate information
+c	LambNDVI:	The path where NDVI under Lambert projection
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Get_Grid_ATM_para
+		INTPLT=1,
+		NDVIID=2,					
+		ATM_ITP='../../ATM_INPUT_DATA/Interpolate2/',
+		GEO_hrd='../GEO_INPUT_DATA/dem.hrd',
+		LambNDVI='../../ATM_INPUT_DATA/NDVI/LambNDVI/'
+	$END
+	
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			Lambert Azimuthal Equal-Area Projection Parameters
+c	r:		Radius of Sphere of Influence (Meters)
+c	lambda0:	the central longitude of Lambert Azimuthal Equal-Area Projection (DD)
+c	phi1:		the standard parallel of Lambert Azimuthal Equal-Area Projection (DD)
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Lambert_para
+		r=6370997.0, 
+		lambda0=100.0, 
+		phi1=45.0	
+	$END	
+		
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR READ ATMOSPHERIC FORCING DATA
+c	SHOWTIP:	INTEGER =1, Shows Time Tip when interpolating data; = .NOT.1, NOT SHOW
+c		NP:		ONLY For INTPLT=1, the NP nearest stations
+c		R0:		ONLY For INTPLT=1, the reference distance, 4.0 mean 4.0*cellsize of dem
+c		CM:		ONLY For INTPLT=1, Adjustive Coefficient
+c		NPPR:	ONLY For INTPLT=2, See help of LOTPS, for tenderfoot, recommend ten
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Read_foring_para
+		SHOWTIP=1,	
+		stn_info_file='../GEO_INPUT_DATA/allstn.txt', 
+		stn_data_dir='../../ATM_INPUT_DATA/gauge_15item/', 
+		
+			NP=8, 
+			R0=4.0, 
+			CM=4.0, 
+			NPPR=10 
+	$END	
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR READ ORIGINAL NDVI DATA (Daily)
+c	ONLY for NDVIID=2
+c	DAnciDir:		Ancillary directory where lat, lon information file is saved
+c	DLat/DLon:	Prefix of lat,lon files
+c	DSuffix:		Suffix of lat,lon files
+c	Col0,Col1:		Start/End Col number of daily NDVI files
+c	Row0,Row1:	Start/End Row number of daily NDVI files
+c	D_dir:		The ORIGINAL Daily NDVI files directory (IT IS NDVI under Goode Projection)
+c	DPre:			Prefix of ORIGINAL Daily NDVI files
+c	DN_div:		Resample NDVI data from Goode -> Lambert projection, larger -> more precisely
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Read_NDVI_para
+		DAnciDir='../../ATM_INPUT_DATA/NDVI/ancillary/',
+		DLat='avhrrpf.lat.1nnftl.',
+		DLon='avhrrpf.lon.1nnftl.',
+		DSuffix='.bin',
+		Col0=29,
+		Col1=31,
+		Row0=4,
+		Row1=5,
+		
+		D_dir='../../ATM_INPUT_DATA/NDVI/Daily/',
+		DPre='avhrrpf.ndvi.1ndftl.',
+		DN_div=10
+	$END	
+	
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR READ ORIGINAL NDVI DATA (Tendays/ Month)
+c	AnciDir:	Ancillary directory where lat, lon information file is saved
+c	Lat/Lon:	Name of lat,lon files
+c		D_nc,D_nr:		cols and rows of global or asia data (for Asia, it is 1390/950)
+c		S_c,S_r:		start col and row of the study zone (for Yellow River, it can be 700/400)
+c		S_nc,S_nr:		cols and rows of study area (for Yellow River, it can be 400/300)
+c		(ONLY for NDVIID=3)
+c		Ten_dir:		The ORIGINAL Tendays NDVI files directory (IT IS NDVI under Goode Projection)
+c		TenPre:		Prefix of ORIGINAL Tendays NDVI files
+c		(ONLY for NDVIID=1)
+c		M_dir:		The ORIGINAL Monthly NDVI files directory (IT IS NDVI under Goode Projection)
+c		MPre:		Prefix of ORIGINAL Monthly NDVI files
+c	N_div:	Resample NDVI data from Goode -> Lambert projection, larger -> more precisely
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Read_NDVI_para_TenDM
+		TMAnciDir='../../ATM_INPUT_DATA/NDVI/ancillary/',
+		TMLat='lat_asia_subset',
+		TMLon='lon_asia_subset',
+			D_nc=1390,
+			D_nr=950,
+			S_c=700,
+			S_r=400,
+			S_nc=400,
+			S_nr=300,
+		
+			Ten_dir='../../ATM_INPUT_DATA/NDVI/TenDays/',
+			TenPre='avhrrpf.ndvi.1ntfas.',
+			M_dir='../../ATM_INPUT_DATA/NDVI/Monthly/',
+			MPre='avhrrpf.ndvi.1nmfas.',
+			
+		TMN_div=10
+	$END		
+
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR READ FPAR data (Monthly)
+c	AnciDir:	Ancillary directory where lat, lon information file is saved
+c	Lat/Lon:	Name of lat,lon files
+c		D_nc,D_nr:		cols and rows of global or asia data (for Asia, it is 1390/950)
+c		S_c,S_r:		start col and row of the study zone (for Yellow River, it can be 700/400)
+c		S_nc,S_nr:		cols and rows of study area (for Yellow River, it can be 400/300)
+c		(ONLY for NDVIID=3)
+c		Ten_dir:		The ORIGINAL Tendays NDVI files directory (IT IS NDVI under Goode Projection)
+c		TenPre:		Prefix of ORIGINAL Tendays NDVI files
+c		(ONLY for NDVIID=1)
+c		M_dir:		The ORIGINAL Monthly NDVI files directory (IT IS NDVI under Goode Projection)
+c		MPre:		Prefix of ORIGINAL Monthly NDVI files
+c	N_div:	Resample NDVI data from Goode -> Lambert projection, larger -> more precisely
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Read_FPAR_para
+		FPAR_AnciDir='../../ATM_INPUT_DATA/AVHRR/LAT_LON_FILES/',
+		FPAR_Lat='16KM.lat',
+		FPAR_Lon='16KM.lon',
+			FPAR_D_nc=2502,
+			FPAR_D_nr=1084,
+			FPAR_S_c=1500,
+			FPAR_S_r=50,
+			FPAR_S_nc=1000,
+			FPAR_S_nr=400,
+		
+			FPAR_dir='../../ATM_INPUT_DATA/AVHRR/FPAR/',
+			FPAR_Pre='FPAR_PATHFINDER_16KM.',
+			
+		FPAR_N_div=10
+	$END	
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			INPUT PARAMETERS FOR READ LAI data (Monthly)
+c	AnciDir:	Ancillary directory where lat, lon information file is saved
+c	Lat/Lon:	Name of lat,lon files
+c		D_nc,D_nr:		cols and rows of global or asia data (for Asia, it is 1390/950)
+c		S_c,S_r:		start col and row of the study zone (for Yellow River, it can be 700/400)
+c		S_nc,S_nr:		cols and rows of study area (for Yellow River, it can be 400/300)
+c		(ONLY for NDVIID=3)
+c		Ten_dir:		The ORIGINAL Tendays NDVI files directory (IT IS NDVI under Goode Projection)
+c		TenPre:		Prefix of ORIGINAL Tendays NDVI files
+c		(ONLY for NDVIID=1)
+c		M_dir:		The ORIGINAL Monthly NDVI files directory (IT IS NDVI under Goode Projection)
+c		MPre:		Prefix of ORIGINAL Monthly NDVI files
+c	N_div:	Resample NDVI data from Goode -> Lambert projection, larger -> more precisely
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Read_LAI_para    
+		LAI_AnciDir='../../ATM_INPUT_DATA/AVHRR/LAT_LON_FILES/',
+		LAI_Lat='16KM.lat',
+		LAI_Lon='16KM.lon',
+			LAI_D_nc=2502,
+			LAI_D_nr=1084,
+			LAI_S_c=1500,
+			LAI_S_r=50,
+			LAI_S_nc=1000,
+			LAI_S_nr=400,		
+			LAI_dir='../../ATM_INPUT_DATA/AVHRR/LAI/',
+			LAI_Pre='LAI_PATHFINDER_16KM.',			
+		LAI_N_div=10
+	$END 
+	

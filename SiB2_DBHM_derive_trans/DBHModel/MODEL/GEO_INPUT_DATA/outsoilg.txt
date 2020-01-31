@@ -1,0 +1,8 @@
+     ID         NAME    LAT(N> LONG(E)
+      17    YONGNING    38.25  106.23
+      18      GUYUAN    36.00  106.27
+      19    HUANXIAN    36.58  107.30
+      20     TONGWEI    35.22  105.23
+      21    XIFENGZH    35.73  107.63
+      31    TIANSHUI    34.58  105.75
+      32       LUSHI    34.00  111.02

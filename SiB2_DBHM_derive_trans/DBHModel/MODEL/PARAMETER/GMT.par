@@ -1,0 +1,32 @@
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			PARAMETERS FOR GMT OUTPUT
+c Get the Shell script to draw figure table by GMT
+c GMT_NNC: columns of figures
+c GMT_WID: width of figure (point); GMT_HGH: heigh of figure (point = 1/72 inch) (I)
+c GMT_DDX: interval between 2 figure; GMT_DDY: interval between 2 figure (inch) (I)
+c GMT_IDX,GMT_IDY: margin of the paper 
+c GMT_r1,GMT_r2: xmin, xmax
+c GMT_r3,GMT_r4: ymin, ymax
+c GMT_cx,GMT_cxx: location of legend % x axis, location of legend text dx
+c GMT_cy,GMT_cyy: location of legend % y axis, location of legend text dy
+c GMT_tyy: location of title text dy (over the y max or below y min)
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$GMT_SET_SIB	                                                                                                                                                                                                                                                                                                                      		vege_file='../GEO_INPUT_DATA/sib2y.asc',	
+		GMT_NNC=2,
+		GMT_WID=230,
+		GMT_HGH=90,
+		GMT_DDX=270,
+		GMT_DDY=130,				
+		GMT_IDX=30,				
+		GMT_IDY=30,				
+		GMT_r1=1.0,				
+		GMT_r2=84.0,				
+		GMT_r3=0.0,				
+		GMT_r4=140.,				
+		GMT_cx=0.85,				
+		GMT_cxx=2.0,				
+		GMT_cy=0.9,				
+		GMT_cyy=10.0,				
+		GMT_tyy=25.0,				
+	$END
+	

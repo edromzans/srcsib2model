@@ -1,0 +1,28 @@
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			PARAMETERS FOR SIB2 Land Surface Model
+c	vege_file:	The file where Sib2 land use data is saved
+c   soil_file:	The file where soil data is saved
+c		soil_para:	Soil parameters
+c		slpsib_f:			slope (for sib2 use)
+c		sibpp:	precpitation parameters
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$SIB2_LSM
+		vege_file='../GEO_INPUT_DATA/sib2y.asc',	
+		soil_file='../GEO_INPUT_DATA/soily.asc',
+		soil_para='../GEO_INPUT_DATA/Texture.DAT',
+		slpsib_f='../GEO_INPUT_DATA/slpsib.asc',
+		sibpp='../GEO_INPUT_DATA/sibpp.txt',
+	$END
+	
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c			PARAMETERS FOR SIB_Dissipative LSM
+c	 irriratio_file:	FAO irrigation area ratio map
+c	 irrcode_file :		irrcode shows the irrigation id 
+c	 irrpro_file  :		irrigation area properties file (assign water withdraw sources)
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc	
+	$Water_withdraw	
+		irriratio_file='../GEO_INPUT_DATA/irriratio.asc',	
+		irrcode_file='../GEO_INPUT_DATA/irrcode.asc',
+		irrpro_file ='../GEO_INPUT_DATA/irrpro.asc',
+	$END	
+

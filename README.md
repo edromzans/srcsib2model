@@ -48,6 +48,37 @@ A tabela abaixo indica qual a equação rsoil tem sido utilizada para cada local
 | Pastagem Rondônia | 2|
 | Pastagem SP | 2 |
 
+
+# Tradução do SiB2 Fortran 77 para Fortran 95
+
+Identificou-se que o modelo SiB2 que vinha sendo utilizado no LCB, escrito em Fortran 77, apresentava erros de compilação e de execução quando compilado a partir do gfortran no linux debian buster e versões anteriores mesmo usando o g77 que integrava o gcc até a sua versão 3.4.6. O SiB2 no LCB geralmente era utilizado a partir de compiladores de Fortran 77 em windows antigos que já não estão mais disponíveis no LCB, portanto, foi estudada as possibilidades de continuar fazendo altereções no SiB2 usando compiladores de Fortran mais portáveis e nas versões mais atuais e neste sentido o gfortran que integra o gcc 8.3.0 foi considerado o mais indicado.
+
+Fazendo modificações no código do SiB2 em Fortran 77, combinadas com flags de compilação disponíveis no gfortran, os erros de compilação e execução do SiB2 do LCB no gfortran do gcc 8.3.0 foram solucionados e os resultados das saídas do modelo compilado no gfortran e nos compiladores de windows antigos ficaram iguais, apresentando pequenas diferenças associadas com arredondamento numérico das variáveis do tipo real, o que era de se esperar.
+
+Considerando os avanços da linguagem Fortran 77 para 95 e as necessiades de constantes adaptações no SiB2 do LCB, o código do SiB2 do LCB foi traduzido integralmente para Fortran 95.
+
+# SiB2 em Fortran 95: comsibc.h e pardif.h como um módulo de variaveis
+
+Com a tradução do SiB2 de Fortran 77 para 95, foi desenvovida uma versão do código que elimina as declarações de variáveis do tipo "commom" criando módulos de variáveis de Fortran. Nesta versão deve-se compilar o código conforme os seguintes comandos:
+
+```shell
+gfortran comsibc.f95 pardif.f95 sib2x.f95 Sib2xa.f95 Sib2xb.f95 -o sib2run
+```
+ou com os flags de compilação:
+```shell
+gfortran -fno-automatic -finit-local-zero comsibc.f95 pardif.f95 sib2x.f95 Sib2xa.f95 Sib2xb.f95 -o sib2run
+```
+
+# SiB2pymod
+
+O SiB2pymod é o modelo SiB2 em Fortran 95, compilado como um módulo de python 
+3 com o uso do f2py do integra o numpy. Para isso, uma pequena mudança
+no código do SiB2 é feita. O programa sib2 é descrito como
+uma subrotina. Desta forma o sib2 é usado como uma função python.
+```shell
+f2py3.7 --fcompiler=gnu95 --f90flags='-fno-automatic -finit-local-zero' -c *.f95 -m sib2pymod
+```
+
 # Tradução do SiB2 para linguagem C com f2c 
 
 Pode ser conveniente traduzir o SiB2 do Fortan 77 para linguagem C e para isto pode-se utilizar o f2c (http://www.netlib.org/f2c/). Este processo tem se mostrado eficiente, evitando incompatibilidades de compiladores mais antigos de fortran para os mais atuais. Desta forma obtém-se o código em C e compila-se com o um compilador C, gerando um binário executável independente de um compilador de Fortan.
@@ -68,14 +99,4 @@ gcc -c -o Sib2xb.o Sib2xb.c
 gcc -o SiB2runF2C sib2x.o Sib2xa.o Sib2xb.o -lf2c -lm
 ```
 
-Este mesmo resultado obtém utilizando o script fort77 em perl que pode ser obtido pelo pacote "fort77 - Invoke f2c like a real compiler" do debian.
-
-# SiB2pymod
-
-O SiB2pymod é o modelo SiB2 em Fortran 95, compilado como um módulo de python 
-3 com o uso do f2py do integra o numpy. Para isso, uma pequena mudança
-no código do SiB2 é feita. O programa sib2 é descrito como
-uma subrotina. Desta forma o sib2 é usado como uma função python.
-```shell
-f2py3.7 --fcompiler=gnu95 --f90flags='-fno-automatic -finit-local-zero' -c *.f95 -m sib2pymod
-```
+Este mesmo resultado se obtém utilizando o script fort77 em perl que pode ser obtido pelo pacote "fort77 - Invoke f2c like a real compiler" do debian.
