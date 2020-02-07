@@ -324,3 +324,125 @@ f2py3.7 --fcompiler=gnu95 --f90flags='-fno-automatic -finit-local-zero' -c *.f95
 
 
 
+
+#######################################################
+-Wuninitialized
+#######################################################
+
+$ gfortran -Wuninitialized comsibc.f95 pardif.f95 sib2x.f95 Sib2xa.f95 Sib2xb.f95 -o run
+sib2x.f95:597:0:
+
+       ptot = ptot + tprec
+ 
+Warning: ‘ptot’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+Sib2xa.f95:2820:0:
+
+        zinc(l)=-zinc(l)/4.0
+ 
+Warning: ‘zinc[_185]’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+Sib2xa.f95:2827:0:
+
+        a1=a1+zinc(l)
+ 
+Warning: ‘zinc[_216]’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+Sib2xb.f95:823:0:
+
+       &             qstar = amax1(cs * qstar, 1.e+20) ! infiltração
+ 
+Warning: ‘cs’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+Sib2xb.f95:197:0:
+
+       th  = th + dth
+ 
+Warning: ‘th’ is used uninitialized in this function [-Wuninitialized]
+Sib2xb.f95:198:0:
+
+       qm  = qm + dqm
+ 
+Warning: ‘qm’ is used uninitialized in this function [-Wuninitialized]
+
+
+
+#############################################################################################################33
+gfortran -Wall
+evandro@calor:modvars$ gfortran -Wall comsibc.f95 pardif.f95 sib2x.f95 Sib2xa.f95 Sib2xb.f95 -o run
+
+sib2x.f95:67:53:
+
+       open(itmp1,file='sib2dt.dat',status='unknown')
+                                                     1
+Warning: Nonconforming tab character at (1) [-Wtabs]
+sib2x.f95:559:31:
+
+          if (idddd.gt.15) then
+                               1
+Warning: Nonconforming tab character at (1) [-Wtabs]
+sib2x.f95:877:5:
+
+    50    format(/,6(1x,e12.6),/)
+     1
+Warning: Label 50 at (1) defined but not used [-Wunused-label]
+sib2x.f95:929:5:
+
+    50    format(/,6(1x,e12.6,/))
+     1
+Warning: Label 50 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1025:5:
+
+    50    format(6(1x,e12.6))
+     1
+Warning: Label 50 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1090:5:
+
+    50    format(/,6(1x,e12.6),/)
+     1
+Warning: Label 50 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1136:5:
+
+   900 format(18a4)
+     1
+Warning: Label 900 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1154:5:
+
+    50    format(                                                        &
+     1
+Warning: Label 50 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1148:5:
+
+    49 format(/,a24,1x,i2,1x,a5,/)
+     1
+Warning: Label 49 at (1) defined but not used [-Wunused-label]
+sib2x.f95:1147:5:
+
+    48 format(a24,1x,i2,1x,a5)
+     1
+Warning: Label 48 at (1) defined but not used [-Wunused-label]
+sib2x.f95:480:5:
+
+   851 CONTINUE
+     1
+Warning: Label 851 at (1) defined but not used [-Wunused-label]
+sib2x.f95:570:5:
+
+   361 continue
+     1
+Warning: Label 361 at (1) defined but not used [-Wunused-label]
+sib2x.f95:493:5:
+
+   100 continue
+     1
+Warning: Label 100 at (1) defined but not used [-Wunused-label]
+sib2x.f95:295:5:
+
+   700 continue
+     1
+Warning: Label 700 at (1) defined but not used [-Wunused-label]
+Sib2xa.f95:24:17:
+
+       kappa    = 0.286
+                 1
+Warning: Change of value in conversion from ‘REAL(4)’ to ‘INTEGER(4)’ at (1) [-Wconversion]
+e
+
+
+

@@ -1,8 +1,11 @@
 !=======================================================================
-!                                                                       
-      subroutine sib2(trans_viva_nir, ref_viva_nir, ref_solo_par, ref_solo_nir,& 
-           nlinha, ts_rn_c)
+!     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
+      subroutine sib2(trans_viva_nir, ref_viva_nir, &
+           ref_solo_par, ref_solo_nir, nlinha, & 
+           vout)
+
+!                                                                       
 !=======================================================================
 !                                                                       
 !...  SiB driver offline version, forced by meteorological data         
@@ -20,7 +23,7 @@
 !                                                                       
 !                                                                       
 !     last update:      04 fev 97   Humberto Rocha                      
-!	soil multi-layer model                                                
+!	soil multi-layer model                                               
 !	                                                                      
 !=======================================================================
 !                                                                       
@@ -43,43 +46,48 @@
 !     isnow= 0 : conventional run using amazon forcings.                
 !     isnow= 1 : snow shock test, warming to normal over 5 days.        
 !-----------------------------------------------------------------------
-!...  variables only important to the optimization module                
-      integer itero, maxit 
-      !variaveis para sib2pymod: entradas e saidas
-      real, intent(in) :: trans_viva_nir   !trans_viva 
-      real, intent(in) :: ref_viva_nir     !trans_seca
-      real, intent(in) :: ref_solo_nir     !ref_viva
-      real, intent(in) :: ref_solo_par     !ref_seca
-      real, intent(out) :: ts_rn_c(nlinha) !  ts_rn_c(79000)
 !...                                                                    
-      include 'pardif.h' 
-      include 'comsibc.h' 
-      data ichi, icho, iu /1,6,8/ 
-      data itmp1/88/,itmp2/78/,itmp3/79/,itmp4/80/,itmp5/81/,           &
-     &     itero/0/, ipbl/0/, isnow/0/                                  
-
-      ichi = 1
-      icho = 6
-      iu = 8
-      itmp1 = 88
-      itmp2 = 78
-      itmp3 = 79
-      itmp4 = 80
-      itmp5 = 81
-      itero = 0
-      ipbl = 0
-      isnow = 0
-      !variavel de saida para sib2pymod: sib2 calcula
-      ts_rn_c = -999.0 
-
+      use pardif 
+      use comsibc
+      implicit none
+!...  variables only important to the optimization module                
+      integer :: itero=0
+      integer :: ipbl=0
+      integer :: isnow=0
+      integer :: maxit
+      ! data ichi, icho, iu /1,6,8/ 
+      integer :: ichi=1
+      integer :: icho=6
+      integer :: iu=8
+      !  data itmp1/88/,itmp2/78/,itmp3/79/,itmp4/80/,itmp5/81/,           &
+      ! &     itero/0/, ipbl/0/, isnow/0/
+      integer :: nyfirst
+      integer :: nylast
+      real (kind=8) :: totwb
+      !Variaveis para SiB2pymod:---------------------------------------------
+      ! entrada via python      
+      integer, intent(in) :: nlinha
+      real (kind=8), intent(in) :: trans_viva_nir   ! trans_viva 
+      real (kind=8), intent(in) :: ref_viva_nir     ! trans_seca
+      real (kind=8), intent(in) :: ref_solo_nir     ! ref_viva
+      real (kind=8), intent(in) :: ref_solo_par     ! ref_seca
+      ! saida
+      real (kind=8), intent(out) :: vout(nlinha)    ! vout(nlinha)
+      real (kind=8) :: radtot 
+      !----------------------------------------------------------------------
+      itmp1=88
+      itmp2=78
+      itmp3=79
+      itmp4=80
+      itmp5=81
+      !
+      vout = -99999.
+      itero = 0    ! Deve zerar a cada execucao do modulo SiB2pymod
+      !
 !...  output files opening                                               
       !open(98,file='sib2diag.dat',status='unknown') 
       !open(itmp1,file='sib2dt.dat',status='unknown')	 
       !open(itmp2,file='sib2dt_SM.dat',status='unknown') !umidade do solo
-!...      
-!H      open(itmp3,file='sib2dt_Qu.dat',status='unknown') ! vazão Q upward     
-!H      open(itmp4,file='sib2dt_Qd.dat',status='unknown') ! vazão Q downward 
-!H      open(itmp5,file='sib2dt_Qh.dat',status='unknown') ! vazão Q Hortoniana
 !...
 !     parameters file  
       open(ichi, file='data1', status='old') 
@@ -88,24 +96,25 @@
 !     & 'xs','P','D','Pinf','Dc','Dd','Ri','R','Pi','q0'                
 !
       call veginc(ichi)
-
-      !recebe os parametros do processo de otimizacao
+      !
+      !recebe os parametros do processo de otimizacao---------------------
       tran(2,1) =  trans_viva_nir   ! ref_viva
       ref(2,1) =  ref_viva_nir     ! ref_seca
       soref(1) = ref_solo_par
       soref(2) = ref_solo_nir
-
+!-------------------------------------------------------------------
+      !      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 
 !... simulation start: at nyfirst (data1)                               
 !... simulation end  : at maxit or nylast (most limiting out of two)    
       do 1000 iter = 1, maxit 
-!      write( *,'(a20,2i10)')'iter nymd:',iter,nymd                     
+         !write( *,'(a20,2i10)')'iter nymd:',iter,nymd                     
          call const2 
-!       write(98,'(A20)')'  to call driver'                             
+         !write(98,'(A20)')'  to call driver'                             
          call driver (iu, icho, isnow, ichi, itero, nyfirst)
          ! if (mod(iter,int(86400./dtt)).eq.0) then ! display screen cada dia	 
-         !    write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
-         !    write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
+         !    ! write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
+         !    ! write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
          ! endif
          
          !if (mod(iter,365*int(86400./dtt)).eq.0) then  !display screen cada ano
@@ -145,17 +154,19 @@
          call balan( 2, totwb ) 
          !write(98,'(A20)')'   passed balan'                              
          !write(98,'(A20)')'  to call outer'                              
-
-         !recebe os valores calculados para saida no sib2pymod
-         call outer(itero, radtot) ! adiciona saida para Rn_C 
-         ts_rn_c(itero) = radtot
+         call outer(radtot) ! saida de radtot da outer
+         
+         !--------------------------------------
+         !Saida do SiB2pymod
+         vout(itero) = radtot
+         !--------------------------------------
          
          !write(98,'(A20)')'   passed outer'                              
          if (nymd.eq.nylast) goto 1001 
  1000 continue 
 !---------------------------------------------------------------------- 
  1001 continue 
-!                                                                        
+                                                                        
       close(ichi) 
       close(iu) 
       !close(itmp1) 
@@ -165,7 +176,7 @@
 !H     close(itmp5)                                                    
       !close(98) 
 !                                                                       
-      !stop ' SiB2 HAS DONE. ' 
+      !stop ' SiB2 HAS DONE. ' ! SiB2pymod nao pode parar
       END                                           
 !                                                                       
 !=======================================================================
@@ -173,12 +184,32 @@
 !   SUBROUTINES                                                         
 !                                                                       
 !=======================================================================
-      subroutine outer (itero, radtot) 
+      subroutine outer (radtot) 
 !---------------------------------------------------------------------- 
 ! writes out selected variables (unformatted) select in data1 namelist  
 !---------------------------------------------------------------------- 
-      include    'comsibc.h' 
-      dimension  rvar(170) 
+      use comsibc
+      implicit none
+      !dimension  rvar(170)
+      real (kind=8) :: rvar(170)
+      !
+      !integer :: itero
+      real (kind=8) :: calbe
+      real (kind=8) :: canil
+      real (kind=8) :: cgsto
+      real (kind=8) :: elat
+      real (kind=8) :: evapg
+      real (kind=8) :: fco2
+      real (kind=8) :: gcstor
+      !integer :: i
+      integer :: in
+      real (kind=8) :: radswa
+      real (kind=8) :: radswd
+      real (kind=8) :: radtot
+      real (kind=8) :: tc4
+      real (kind=8) :: tg4
+      real (kind=8) :: trant
+      real (kind=8) :: zlwf    
 !...                                                                    
       trant  = ect/hlat 
       canil  = eci/hlat 
@@ -293,7 +324,7 @@
 !------------------------------------------------------------------     
 !	variables atribution                                                  
 !------------------------------------------------------------------     
-  700 continue 
+!  700 continue 
 !                                                                        
       rvar(1) = elat 
       rvar(2) = ect / hlat            !mm
@@ -386,11 +417,10 @@
       !    'PARidir','PARidif','albPARdir','albPARdif'                      
       !    write(itmp2,'(a8,9(7x,a2,i1),90(7x,a1,i2))')                     &
       !    'NYMD',('W_',i,i=1,9),('W',i,i=10,nlayer)                        
-      ! endif
-      
+      ! endif 
                                                                         
                                                                         
-      ! write(itmp1,'(i8.8,50(1x,f9.3))') nymd,&
+     !  write(itmp1,'(i8.8,50(1x,f9.3))') nymd,&
      ! & rvar(54), rvar(53), rvar(55),&                   ! tm,em,um       
      ! & rvar(51), rvar(52), rvar(19),rvar(28),rvar(18),& ! Ki,Rn,alb,Ldwn,Lupw
      ! & rvar(17), rvar(10), rvar(01),rvar(15),rvar(45),& ! Rn,H,LE,G,J     
@@ -398,7 +428,7 @@
      ! & rvar(21), rvar(121),rvar(122),rvar(123),&        ! Td,W1,W2,W3    
      ! & rvar(39), rvar(46),rvar(2),rvar(4),rvar(44),&    ! gc,Evptran,Transp,Esoil,Einterc
      ! & rvar(57), rvar(7), rvar(8), rvar(9),&            ! precip,Qng,Croff,Runoff
-     ! & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif
+     ! & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif                 
       
      ! write(itmp2,'(i8.8,50(1x,f9.3))') nymd,(www(i),i=1,nlayer) 
 !      write(*,'(i8.8,11(1x,f6.3))') nymd,(www(i),i=1,nlayer)           
@@ -423,13 +453,46 @@
 !                                                                       
 !     subroutines called : radc2                                        
 !                                                                       
-      include 'comsibc.h' 
-      character*30 cfinp 
-      real         vchec(6), feno(12) 
-      integer      diames(12) 
-      data diames/31,28,31,30,31,30,31,31,30,31,30,31/ 
-                                                                        
-      e(x) = exp( 21.18123 - 5418. / x ) / .622 
+      use comsibc
+      implicit none
+      character (len=30) :: cfinp 
+      real (kind=8) :: vchec(6)
+      real (kind=8) :: feno(12) 
+      integer :: diames(12) = (/31,28,31,30,31,30,31,31,30,31,30,31/)
+      real (kind=8) :: x
+      !
+      integer :: iu
+      integer :: icho
+      integer :: isnow
+      integer :: ichi
+      integer :: itero
+      integer :: nyfirst
+      real (kind=8) :: co2amp
+      real (kind=8) :: cold
+      real (kind=8) :: difrat
+      real (kind=8) :: fenot
+      real (kind=8) :: gfrac
+      real (kind=8) :: gpost
+      real (kind=8) :: gpres
+      real (kind=8) :: gprev
+      integer :: idddd
+      integer :: ihour
+      integer :: imont
+      integer :: iqc
+      integer :: jj
+      integer :: k
+      integer :: kk
+      integer :: mm
+      real (kind=8) :: ptot = 0d0
+      real (kind=8) :: rhair
+      real (kind=8) :: tprec
+      real (kind=8) :: vnrat
+      real (kind=8) :: xco2m
+      real (kind=8) :: zlwd
+      real (kind=8) :: e   
+      
+      e(x) = exp( 21.18123d0 - 5418.0d0 / x ) / 0.622d0
+
 !-----------------------------------------------------------------------
 !...    open monthly input forcing met data / read green phenology      
 !-----------------------------------------------------------------------
@@ -438,17 +501,20 @@
          read(ichi,*) (greex(mm),mm=1,12) 
          read(ichi,*) (zltex(mm),mm=1,12) 
          read(ichi,*) ( vmex(mm),mm=1,12) 
-         ! write(98,*) 'Greex' ,(greex(mm),mm=1,12) 
-         ! write(98,*) 'Zltes' ,(zltex(mm),mm=1,12) 
+         !write(98,*) 'Greex' ,(greex(mm),mm=1,12) 
+         !write(98,*) 'Zltes' ,(zltex(mm),mm=1,12) 
          !write(*,*) 'passei..' ,(zltex(mm),mm=1,12)                       
          read(ichi,*) 
          read(ichi,*) cfinp 
-         !write( *,'(a25,a40)')' # opening file counting ',cfinp 
-         ! write(98,'(a25,a40)')' # opening file counting ',cfinp 
+         write( *,'(a25,a40)')' # opening file counting ',cfinp 
+         !write(98,'(a25,a40)')' # opening file counting ',cfinp 
          open(iu, file= cfinp, status='old') 
-         read(iu,*) 
+         read(iu,*)
+         !Evandro M Anselmo---------
+         ptot = 0d0
+         !--------------------------
       endif 
-  851 CONTINUE 
+!  851 CONTINUE 
 !---------------------------------------------------------------------  
 !       read in meteorological forcing data                             
 !---------------------------------------------------------------------  
@@ -461,7 +527,7 @@
       xmustar = -9999. 
       xalbedo = -9999. 
       zlwd    = -9999. 
-  100 continue 
+!  100 continue 
 !---------------------------------------------------------------------##
 !     Defining a default format to read data2                           
 !     and check iwl flag to read                                        
@@ -496,7 +562,7 @@
    55    if (vchec(k).eq.-9999.) iqc = 0 
       if (iqc.eq.0) then 
          write(* ,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
-         ! write(98,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
+         !write(98,*) ' Forcante com erro -9999: iqc = 0 at', nymd 
          stop 
       endif 
 !... vegetation phenology	and co2 concentration diurnal cycle           
@@ -527,7 +593,7 @@
          if (imont.eq.01) gprev = feno(12) 
          if (imont.eq.12) gpost = feno(01) 
 !                                                                        
-         if (idddd.gt.15) then	 
+         if (idddd.gt.15) then
             gfrac = 0.5* (real(idddd-15)/real(diames(imont) - idddd + 15)) 
             fenot = (1.-gfrac) * gpres + gfrac * gpost 
          else 
@@ -538,7 +604,7 @@
          if (kk.eq.1) green = fenot 
          if (kk.eq.2) zlt   = fenot 
   360    if (kk.eq.3) vmax0 = fenot 
-  361 continue 
+!  361 continue 
 ! --------------------------------------------------------------------- 
 !                                                                       
 !     isnow = 0 : conventional run with received met data.              
@@ -609,8 +675,22 @@
 !     energy and water balance check.                                   
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-!                                                                       
+      use comsibc 
+      implicit none
+      !
+      integer :: iplace
+      real (kind=8) :: totwb
+      real (kind=8) :: cbal
+      real (kind=8) :: emeter
+      real (kind=8) :: endwb
+      real (kind=8) :: errore
+      real (kind=8) :: errorw
+      real (kind=8) :: gbal
+      integer :: i
+      real (kind=8) :: pmeter
+      real (kind=8) :: zlhs
+      real (kind=8) :: zrhs
+      !
       if( iplace .eq. 2 ) go to 100 
 !                                                                       
       etmass = 0. 
@@ -649,8 +729,8 @@
       if (abs(errorw) .gt. 0.0001) then 
          write( *,'(a40)') ' ---> warning: water balance violation' 
          write(*,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
-         ! write(98,'(a40)') ' ---> warning: water balance violation' 
-         ! write(98,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
+         !write(98,'(a40)') ' ---> warning: water balance violation' 
+         !write(98,*) 'nymd , abs(errorw)= ',nymd ,abs(errorw) 
          !	do 35 i=1,nlayer                                                      
          ! 35	write(98,'(1x,a3,1x,i3,1x,f20.10)') '  w',i,www(i)                 
          !      write(98,'(1x,a10,5a13,/,1x,f12.5,2(1x,f12.10),3(1x,f12.5))')    
@@ -670,17 +750,17 @@
 !                                                                       
       if(abs(errore) .gt. 1.) then 
          write(*,'(a40)') ' ---> warning: energy balance violation' 
-         !write(98,910) nymd, zlhs, zrhs, radt(1), radt(2), chf, shf,    &
-         !hflux, ect/dtt, eci/dtt, egi/dtt, egs/dtt, hc/dtt, hg/dtt,     &
-         !heaten/dtt, cbal, gbal                                     
+         ! write(98,910) nymd, zlhs, zrhs, radt(1), radt(2), chf, shf,    &
+         ! hflux, ect/dtt, eci/dtt, egi/dtt, egs/dtt, hc/dtt, hg/dtt,     &
+         ! heaten/dtt, cbal, gbal         
       endif 
-  910 format(//,10x,'---> warning: energy balance violation **',//,     &
-     & /,1x,'date ', i8,                                                &
-     & /,1x,'rhs, lhs              ', 2g12.5,                           &
-     & /,1x,'rn1, rn2, chf, shf, h ', 5g12.5,                           &
-     & /,1x,'ect, eci, egi, egs    ', 4g12.5,                           &
-     & /,1x,'hc        hg          ',  g12.5, 12x, g12.5,               &
-     & /,1x,'heaten, c-bal, g-bal  ', 3g12.5 )                          
+  ! 910 format(//,10x,'---> warning: energy balance violation **',//,     &
+  !    & /,1x,'date ', i8,                                                &
+  !    & /,1x,'rhs, lhs              ', 2g12.5,                           &
+  !    & /,1x,'rn1, rn2, chf, shf, h ', 5g12.5,                           &
+  !    & /,1x,'ect, eci, egi, egs    ', 4g12.5,                           &
+  !    & /,1x,'hc        hg          ',  g12.5, 12x, g12.5,               &
+  !    & /,1x,'heaten, c-bal, g-bal  ', 3g12.5 )                          
 !                                                                       
   200 continue 
       return 
@@ -811,9 +891,12 @@
 !        the above are generated from sibx + momopt output              
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-      logical pfirst 
-      data pfirst/.true./ 
+      use comsibc
+      implicit none  
+      logical :: pfirst = .true.  
+      !data pfirst/.true./
+      integer :: ichi
+      integer :: iwave      
 !                                                                       
       read(ichi, *) 
       read(ichi, *) 
@@ -828,7 +911,7 @@
                                                                         
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6),/) 
+!   50    format(/,6(1x,e12.6),/) 
          ! write(98,'(a72)')' ivtype' 
          ! write(98,*) ivtype 
          ! write(98,'(a72)') ' istype, sodep,  (soref(iwave),iwave=1,2)' 
@@ -853,9 +936,12 @@
 !     reading/setting of vegetation-type dependent static parameters.   
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-      logical pfirst 
-      data pfirst/.true./ 
+      use comsibc
+      implicit none
+      logical :: pfirst = .true. 
+      !data pfirst/.true./
+      integer :: ichi
+      integer :: iw
 !                                                                       
       read(ichi,*) 
       read(ichi,*) 
@@ -877,7 +963,7 @@
 !                                                                       
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6,/)) 
+!   50    format(/,6(1x,e12.6,/)) 
          ! write(98,'(a72)') ' z2, z1, vcover, chil' 
          ! write(98,*) z2, z1, vcover, chil 
          ! write(98,'(a72)') ' rootd, phc ' 
@@ -891,7 +977,7 @@
          ! write(98,'(a72)') ' trda, trdm, trop, slti, hlti, shti, hhti' 
          ! write(98,*) trda, trdm, trop, slti, hlti, shti, hhti 
          ! write(98,'(a72)') ' acoef, bcoef, ccoef' 
-         ! write(98,*) acoef, bcoef, ccoef         
+         ! write(98,*) acoef, bcoef, ccoef 
       endif 
       return 
       END                                           
@@ -905,10 +991,16 @@
 !     reading/setting of soil-type dependent static parameters.         
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-      logical pfirst 
-      data pfirst/.true./ 
-!                                                                       
+      use comsibc
+      implicit none
+      logical :: pfirst = .true. 
+      !data pfirst/.true./
+      !
+      integer :: ichi
+      real (kind=8) :: extmax
+      integer :: i
+      integer :: il
+      !                                                                       
       read(ichi, *) 
       read(ichi, *) 
       read(ichi, *) iinf, slope, xcs, jqng, xkb,                        &
@@ -927,17 +1019,15 @@
          ! write(98,'(a72)') ' iinf  slope ' 
          ! write(98,*)          iinf, slope 
          ! write(98,'(a60)')                                              &
-         ! 'zdepth(i) extfrac(i) bee(i) phsat(i) satco(i) poros(i) www(i)'         
+         ! 'zdepth(i) extfrac(i) bee(i) phsat(i) satco(i) poros(i) www(i)'   
    !       do 19 i=1,nlayer 
-   ! 19    print *, 'sib2pymod nao escreve 98'
-         ! write(98, '(3(1x,f6.4),2(1x,e10.3),3(1x,f6.4),/)')             &
-         ! zdepth(i),extfrac(i),bee(i),phsat(i),satco(i),poros(i),www(i)     
-         ! write(98,*) ' extmax(%): ',extmax*100.
-         
+   ! 19    write(98, '(3(1x,f6.4),2(1x,e10.3),3(1x,f6.4),/)')             &
+   !       zdepth(i),extfrac(i),bee(i),phsat(i),satco(i),poros(i),www(i)     
+   !       write(98,*) ' extmax(%): ',extmax*100. 
                                                                         
          if (extmax.gt.1.00001.or.extfrac(1).lt.1.) then 
             write(*,29) '!!! warning: extfrac violation ', extmax*100.,' %' 
-            write(29)'!!! warning: extfrac violation ', extmax*100.,' %' 
+            !write(98,29)'!!! warning: extfrac violation ', extmax*100.,' %' 
    29       format(a32,f20.10,a3) 
             stop 
          endif
@@ -955,10 +1045,13 @@
 !     reading of phenological vegetation parameters.                    
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-      logical pfirst 
-      data pfirst/.true./ 
-!                                                                       
+      use comsibc
+      implicit none  
+      logical :: pfirst = .true. 
+      !data pfirst/.true./ 
+      !
+      integer :: ichi
+      !
       read(ichi, *) 
       read(ichi, *) 
       read(ichi, *) fparc 
@@ -966,7 +1059,7 @@
          pfirst=.false. 
          ! write(98,'(a72)') ' fparc' 
          ! write(98,*) fparc         
-   50    format(6(1x,e12.6)) 
+!   50    format(6(1x,e12.6)) 
       endif 
 !                                                                       
       return 
@@ -980,10 +1073,17 @@
 !     calculation of secondary parameters from input data               
 !                                                                       
 !-----------------------------------------------------------------------
-      include 'comsibc.h' 
-      logical pfirst 
-      data pfirst /.true./ 
-!                                                                       
+      use comsibc
+      implicit none  
+      logical :: pfirst = .true. 
+      !data pfirst /.true./ 
+      !
+      integer :: ichi
+      integer :: i
+      real (kind=8) :: park
+      real (kind=8) :: scatp
+      real (kind=8) :: sodep1      
+      !                                                                       
       read(ichi,*) 
       read(ichi,*) 
       read(ichi,*) vmax0, gmudmu, green, zlt 
@@ -1024,7 +1124,7 @@
 !      write(*,*) zlt                                                   
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6),/) 
+!   50    format(/,6(1x,e12.6),/) 
          ! write(98,'(a72)') ' vmax0, gmudmu, green, zlt' 
          ! write(98,*) vmax0, gmudmu, green, zlt 
          ! write(98,'(a72)') ' z0d, dd, cc1, cc2' 
@@ -1038,7 +1138,7 @@
          ! write(98,'(a72)') ' park ' 
          ! write(98,*) park 
          ! write(98,'(a72)') ' zlt' 
-         ! write(98,*) zlt 
+         ! write(98,*) zlt         
       endif 
                                                                         
       return 
@@ -1053,14 +1153,24 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      include 'comsibc.h' 
-      real ydep(nlayer), eacum(nlayer) 
-      logical  pfirst 
-      data pfirst/.true./ 
-!                                                                       
+      use comsibc 
+      implicit none
+      real (kind=8) :: ydep(nlayer)
+      real (kind=8) :: eacum(nlayer) 
+      logical :: pfirst = .true. 
+      !data pfirst/.true./ 
+      !
+      integer :: ichi
+      integer :: icho
+      integer :: maxit
+      integer :: nylast
+      integer :: nyfirst
+      integer :: i
+      real (kind=8) :: qa
+      !
 !       write(98,*)'  entrando cntrol'                                  
 !       write(*,*)'  entrando cntrol'                                   
-  900 format(18a4) 
+!  900 format(18a4) 
       read(ichi,*) 
       read(ichi,*) 
       read(ichi, * )dtt, itrunk, ilw, ico2m,facco2, irespg 
@@ -1071,16 +1181,16 @@
       read(ichi,*) 
       read(ichi, * )tc, tg, td, ta, tm, ht, qa 
                                                                         
-   48 format(a24,1x,i2,1x,a5) 
-   49 format(/,a24,1x,i2,1x,a5,/) 
+!   48 format(a24,1x,i2,1x,a5) 
+!   49 format(/,a24,1x,i2,1x,a5,/) 
                                                                         
       if (pfirst) then 
          pfirst=.false. 
          ! write(98,*)                                                    &
-         ! zlat, zlong,time,month,day,year,maxit,nyfirst,nylast         
-   50    format(                                                        &
-         'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,      &
-     &   3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
+         ! zlat, zlong,time,month,day,year,maxit,nyfirst,nylast             
+!   50    format(                                                        &
+!         'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,      &
+!     &   3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
          write(icho,800) zlat, zlong,nyfirst,nylast,maxit 
   800    format(10x,32('*')/10x,'*       SiB2 off-line run      *'/10x, &
      &   32('*')/5x,'latitude : ',f6.2,5x,' longitude : ',f7.2/,        &
@@ -1134,7 +1244,7 @@
      &   'Layer Depth_cm  Root % Root_acum %  Winicial',                &
      &   (i, 100.*ydep(i), extfrac(i)*100.,eacum(i),www(i),i=1,nlayer)    
       endif
-      ! write(98,*)'  saindo cntrol' 
+!      write(98,*)'  saindo cntrol' 
 !     write(*,*)'  saindo cntrol'                                     
       return 
       END

@@ -44,9 +44,9 @@
       real (kind=8) :: facl
       integer :: il
       integer :: iveg
-      real (kind=8) :: qm
+      real (kind=8) :: qm = 0d0
       real (kind=8) :: rsnow
-      real (kind=8) :: th
+      real (kind=8) :: th = 0d0
                                                                         
 !       write(98,*)' updat2: begin'                                     
 !       write(98,*)' updat2: to call snow1'                             
@@ -315,18 +315,16 @@
       if(totalp.lt.1.e-8) go to 100 
       ap = ppc/totalp * pcoefs(1,1) + ppl/totalp * pcoefs(2,1) 
       cp = ppc/totalp * pcoefs(1,2) + ppl/totalp * pcoefs(2,2) 
-  100 continue 
-!                                                                       
-!sml...                                                                 
-                  ! surface runoff                                      
-      croff  = 0.	 
-                  ! incoming thrufall to soil surface                   
-      cthru  = 0.	 
-!sml...                                                                 
-      roff = 0. 
-      thru = 0. 
-      fpi  = 0. 
-!                                                                       
+  100 continue
+!
+!sml...
+      croff = 0. ! surface runoff
+      cthru = 0. ! incoming thrufall to soil surface
+!sml...
+      roff = 0.
+      thru = 0.
+      fpi = 0.
+!
 !---------------------------------------------------------------------- 
 !     heat capacity of the soil, as used in force-restore heat flux     
 !     description. dependence of csoil on porosity and wetness is       
@@ -480,7 +478,7 @@
          if (iinf.eq.1) then 
             q0 = amax1 (0., (1.0 - www(1))*zdepth(1)*poros(1) )                     
             q0 = ( amin1 (q0, thru-roffo) ) / dtt                 ! m/s
-            roff = roff + amax1 ( 0., thru - q0*dtt)	 
+            roff = roff + amax1 ( 0., thru - q0*dtt)
          endif
          
          if (iinf.eq.2.or.iinf.eq.6) then 
@@ -670,10 +668,10 @@
                                                                         
    40 continue 
                                                                         
-      rstfac(2)=rstfac2p	 
-      rstfac(2) = amax1( 0.0001, rstfac(2) ) 
-      rstfac(2) = amin1( 1.,     rstfac(2) ) 
-                                                                        
+      rstfac(2)=rstfac2p
+      rstfac(2) = amax1( 0.0001, rstfac(2) )
+      rstfac(2) = amin1( 1.,     rstfac(2) )
+
 !        write(98,'22f8.7') (www(i),i= 1, nlayer)                       
                                                                         
 !	if (nymd.eq.40101512.or.nymd.eq.40041512)                             
@@ -753,7 +751,7 @@
       !---------------------------------------------------------------
       real (kind=8) :: avdif
       real (kind=8) :: avk
-      real (kind=8) :: cs
+      real (kind=8) :: cs = 0d0
       real (kind=8) :: d10
       real (kind=8) :: deficit
       real (kind=8) :: dpdw
@@ -791,9 +789,9 @@
 !-----------------------------------------------------------------------
 !	iinf  > 1                                                             
 !-----------------------------------------------------------------------
-      if (iinf.gt.1) then	 
-         q0now = q0 
-         wavend = .false. 
+      if (iinf.gt.1) then
+         q0now = q0
+         wavend = .false.
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          if (q0now.gt.0.) then ! throughfall event                     
 !.......................................................................
@@ -812,7 +810,7 @@
                zpond = amax1(0., (1.-www(i)) * zdepth(i)*poros(i)) 
                call retec ( dpdw, 1, i)! dpsi/dw at saturation
                                        ! threshold p/ capac infiltracao 
-               xni = dpdw / zdepth(i)	 
+               xni = dpdw / zdepth(i)
                qstar = satco(i)*( xni*www(i) + 1. - xni) ! infiltração
                                                          !      Horton 
                qstar = amin1 (qstar, 0.) ! only negative flux is
@@ -831,9 +829,9 @@
                if (q0now.eq.0.) then ! há oferta (mas não infiltra em
                                      ! alguns casos iinf)
                   if (iinf.eq.4.or.iinf.eq.5.or.iinf.eq.6) wavend =  &
-     &                 .true.				                                       
+     &                 .true.
                endif
-                             
+
                www(i) = www(i) + q0now*dtt/(zdepth(i)*poros(i)) !
                                     !absorvido (ou não, se infiltrado=0)
                wover = amax1( 0., (www(i)-1.)) ! check arredon/to
@@ -857,7 +855,7 @@
          endif           ! throughfall event
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          croff = croff + q0now*dtt !...excess to surface runoff
-         roff  =  roff + q0now*dtt	 
+         roff  =  roff + q0now*dtt
 !-----------------------------------------------------------------------
       endif              !  option iinf > 1
 !---------------------------------------------------------------------- 
@@ -882,7 +880,7 @@
       do 49 i= 1, nlayer 
          temw(i)= amax1( 0.03, www(i) )        ! W 
          temwp(i)= temw(i) ** (-bee(i))        ! Psi
-         temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.)	 
+         temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.)
    49 continue 
 !-------------------------------------------------------------------    
 !	 Flow between soil layers, diffusion equation in multi-layer scheme   
@@ -933,7 +931,7 @@
             dpsidz = phsat(i) * temwp(i) 
             dpsidz = dpsidz - phsat(i+1) * temwp(i+1) 
             dpsidz = 2.* dpsidz / (zdepth(i) + zdepth(i+1)) 
-            qqq(i) = -avk * (dpsidz + 1.)	 
+            qqq(i) = -avk * (dpsidz + 1.)
          endif
          jqini = -999. 
 !... 	matriz multi-camada: esquema backward                             
@@ -942,8 +940,8 @@
      &        zdepth(i+1)))                                             
             b(i) =  2.*dtt*avdif / (zdepth(i) * zdepth(i+1)) + 1. 
             c(i) = -2.*dtt*avdif / (zdepth(i+1) * (zdepth(i) +          &
-     &        zdepth(i+1)))	                                            
-            d(i) = qqq(i) 
+     &        zdepth(i+1)))
+            d(i) = qqq(i)
             if (i.eq.1) a(i) = 0. 
             if (i.eq.nlayer-1) c(i) = 0. 
 !        if (i.eq.1) write(itmp5,'(a8,a3,1x, a5, 5(4x,a9),5(4x,a8))')   
@@ -955,11 +953,11 @@
 !     &    log(avdif* 3.6e5)                                            
          endif
 !...     matriz multi-camada: esquema Crank-Nicolson                    
-         if (jesq.eq.2) then	 
+         if (jesq.eq.2) then
             a(i) = -dtt*avdif / (zdepth(i) * (zdepth(i) + zdepth(i+1))) 
             b(i) =  1. + dtt*avdif / (zdepth(i) * zdepth(i+1)) 
             c(i) = -dtt*avdif / (zdepth(i+1) * (zdepth(i) +             &
-     &        zdepth(i+1)))	                                            
+     &        zdepth(i+1)))
             if (i.eq.1) a(i) = 0. 
             if (i.eq.nlayer-1) c(i) = 0. 
             da(i) = -a(i) 
@@ -1005,18 +1003,18 @@
       do 3000 i= 1, nlayer-1 
                                                                         
          qqq(i)= d(i) 
-         if (jesq.eq.3) qqq(i) = 0.	 
-                                                                        
-         if (qqq(i).lt.0.) qdowrd(i+1) = qdowrd(i+1) + abs(qqq(i)) 
-         if (qqq(i).gt.0.) qupwrd(i+1) = qupwrd(i+1) + qqq(i)	 
-                                                                        
-         qmin=  -www(i)   * (poros(i)  *zdepth(i)  /dtt)	 
-         qmax=   www(i+1) * (poros(i+1)*zdepth(i+1)/dtt) 
-         qqq(i)= amin1( qqq(i), qmax ) 
-         qqq(i)= amax1( qqq(i), qmin ) 
-         www(i)  = www(i)   + qqq(i)/(poros(i)  *zdepth(i)  /dtt) 
-         www(i+1)= www(i+1) - qqq(i)/(poros(i+1)*zdepth(i+1)/dtt) 
-                                                                        
+         if (jesq.eq.3) qqq(i) = 0.
+
+         if (qqq(i).lt.0.) qdowrd(i+1) = qdowrd(i+1) + abs(qqq(i))
+         if (qqq(i).gt.0.) qupwrd(i+1) = qupwrd(i+1) + qqq(i)
+
+         qmin = -www(i)*(poros(i)*zdepth(i)/dtt)
+         qmax = www(i+1)*(poros(i+1)*zdepth(i+1)/dtt)
+         qqq(i) = amin1(qqq(i), qmax )
+         qqq(i) = amax1(qqq(i), qmin )
+         www(i) = www(i)+qqq(i)/(poros(i)*zdepth(i)/dtt)
+         www(i+1) = www(i+1)-qqq(i)/(poros(i+1)*zdepth(i+1)/dtt) 
+
 !...  qqq(i): fluxo base camada i (+downward) =                         
 !     qdowrd,qupwrd(i+1): fluxo topo camada i+1 	                       
 !     if (qqq(i).gt.0.) qdowrd(i+1) = qdowrd(i+1) + qqq(i)              
@@ -1108,9 +1106,9 @@
       real (kind=8) :: w1
       real (kind=8) :: w2
       real (kind=8) :: wmax
-      real (kind=8) :: wmin     
+      real (kind=8) :: wmin = 0d0     
 !...                                                                    
-      j = i + 1	 
+      j = i + 1
 !                                                                       
       if (i.gt.1) then 
          w0 = amin1(www(i-1),1.) 
@@ -1147,7 +1145,7 @@
             wmin= amin1(w0,w1,w2,wmin) 
             wmin= amax1(wmin,1.0e-02) 
          endif 
-         if (wmin.eq.wmax) then 
+         if (wmin.eq.wmax) then
             wmin= (pmax-1./(phsat(i)*(zdepth(i-1)+2.*zdepth(i)+         &
      &        zdepth(i+1))))                                            
             wmin= amax1(wmin,1.0e-03) 
@@ -1163,20 +1161,20 @@
       if (jdpsi.eq.2) then ! media ponderada espessura	                 	 
          dpdw = ( dpdw1  * zdepth(i) +  dpdw2  * zdepth(i+1) ) /        &
      &   ( zdepth(i+1) + zdepth(i) )                                    
-      endif	 
+      endif
 !...	                                                                   
       if (jdpsi.eq.3) then ! media geometrica	                          	 
          dpdw = sqrt( dpdw1 * dpdw2 ) 
-      endif	 
+      endif
 !...                                                                    
       if (jdpsi.eq.4) then ! media aritmetica	                          	 
          dpdw = ( dpdw1 + dpdw2 )/2. 
-      endif	 
+      endif
       return 
       END                                           
                                                                         
 !====================================================================   
-      subroutine hydcon (avk, i)	 
+      subroutine hydcon (avk, i)
 !====================================================================   
 !                                                                       
 !     avk (condutividade hidraulica segmento camadas i,i+1)             
@@ -1202,23 +1200,20 @@
       real (kind=8) :: w1
       real (kind=8) :: w2
       
-      
-
-      
-      j = i + 1	 
+      j = i + 1
       w1 = amin1(www(i),1.) 
       w1 = amax1(www(i),0.05) 
       w2 = amin1(www(j),1.) 
       w2 = amax1(www(j),0.05) 
-                                                                        
-      psi1 = phsat(i)* (w1**(-bee(i))) 
-      psi2 = phsat(j)* (w2**(-bee(j))) 
-      avk1 = satco(i)* (w1**(2.*bee(i)+3.))      	 
-      avk2 = satco(j)* (w2**(2.*bee(j)+3.)) 
-!...                                                                    
+
+      psi1 = phsat(i)*(w1**(-bee(i)))
+      psi2 = phsat(j)*(w2**(-bee(j)))
+      avk1 = satco(i)*(w1**(2.*bee(i)+3.))
+      avk2 = satco(j)*(w2**(2.*bee(j)+3.))
+!...
       if (jkcon.eq.1) then ! metodo ME-82                               	 
          rsame= 0. 
-         avb = (bee(i) + bee(j)) / 2.            	 
+         avb = (bee(i) + bee(j)) / 2.
          div= psi2 - psi1 
       if ( abs(div) .lt. 1.e-6 ) rsame=1. 
       avk = (psi1*avk1 - psi2*avk2) /                                   &
@@ -1233,11 +1228,11 @@
       if (jkcon.eq.2) then ! media ponderada espessura	                 	 
          avk = ( avk1  * zdepth(i) +  avk2  * zdepth(i+1) ) /           &
      &   ( zdepth(i+1) + zdepth(i) )                                    
-      endif	 
+      endif
 !...	                                                                   
       if (jkcon.eq.3) then ! media geometrica	                          	 
          avk = sqrt( avk1 * avk2 ) 
-      endif	 
+      endif
 !...                                                                       
       if (jkcon.eq.4) then ! media aritmetica	                          	 
          avk = ( avk1 + avk2 )/2. 
@@ -1392,7 +1387,7 @@
       do while (.not.conv) 
                                 ! recupera passo anterior               
          do 50 i= 1, n 
-            x(i,1) = x(i,2)	 
+            x(i,1) = x(i,2)
    50       x(i,2) = 0. 
 !---------------------------------------------------------------------- 
          do 56 i= 1, n 
@@ -1421,7 +1416,7 @@
             aconv(2) = ' eps<0 ' 
          endif 
 !...                                                                    
-         it = it + 1		 
+         it = it + 1
          if (it.eq.itmax) then 
             conv = .true. 
             aconv(3) = ' it=itmax ' 

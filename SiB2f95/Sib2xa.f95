@@ -604,22 +604,22 @@
 !---------------------------------------------------------------------- 
 !                                                                       
   102 esky = 0.53 + 0.06*sqrt(em) !brunts(1932) com correcao de Jacobs(1978)(SiB&_original) 
-      radn(3,2)  =  esky*(1.+0.2*(cloud*cloud))*stefan*tm**4 
-      go to 200 
+      radn(3,2)  =  esky*(1.+0.2*(cloud*cloud))*stefan*tm**4
+      go to 200
   104 esky = 1.24*((em/tm)**0.1428) !Brutsaert(1975)com correcao de Jacobs(1978)	
-      radn(3,2)  =  esky*stefan*tm**4*(1.+0.2*(cloud*cloud)) 
+      radn(3,2)  =  esky*stefan*tm**4*(1.+0.2*(cloud*cloud))
       go to 200 
   105 esky =(0.26*exp(-0.00077*((273-tm)**2))) !Idso&Jackson(1969)c/correcaoJacobs (1978)
-      radn(3,2)  = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud)) 
+      radn(3,2)  = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud))
       go to 200 
   106 esky = 0.000009 !Swinbank (1963) com correcao de Jacobs (1978)	 
-      radn(3,2)  =  esky*stefan*tm**6*(1.+0.2*(cloud*cloud)) 
+      radn(3,2)  =  esky*stefan*tm**6*(1.+0.2*(cloud*cloud))
       go to 200 
   107 esky = 0.625*(((em*100)/tm)**0.131) !Duarte (2006)com correcao de Duarte (2006)
-      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4 
+      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4
       go to 200 
   108 esky = 0.576*(((em*100)/tm)**0.202) !Kruk(2008) com correcao de Kruk(2008)
-      radn(3,2)  =  esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4  		 
+      radn(3,2) = esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4
       go to 200 
 !                                                                       
   103 continue 

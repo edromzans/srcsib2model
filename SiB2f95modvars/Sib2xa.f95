@@ -702,22 +702,22 @@
 !---------------------------------------------------------------------- 
 !                                                                       
   102 esky = 0.53 + 0.06*sqrt(em) !brunts(1932) com correcao de Jacobs(1978)(SiB&_original) 
-      radn(3,2)  =  esky*(1.+0.2*(cloud*cloud))*stefan*tm**4 
-      go to 200 
+      radn(3,2) = esky*(1.+0.2*(cloud*cloud))*stefan*tm**4
+      go to 200
   104 esky = 1.24*((em/tm)**0.1428) !Brutsaert(1975)com correcao de Jacobs(1978)	
-      radn(3,2)  =  esky*stefan*tm**4*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = esky*stefan*tm**4*(1.+0.2*(cloud*cloud))
+      go to 200
   105 esky =(0.26*exp(-0.00077*((273-tm)**2))) !Idso&Jackson(1969)c/correcaoJacobs (1978)
-      radn(3,2)  = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud))
+      go to 200
   106 esky = 0.000009 !Swinbank (1963) com correcao de Jacobs (1978)	 
-      radn(3,2)  =  esky*stefan*tm**6*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = esky*stefan*tm**6*(1.+0.2*(cloud*cloud))
+      go to 200
   107 esky = 0.625*(((em*100)/tm)**0.131) !Duarte (2006)com correcao de Duarte (2006)
-      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4 
-      go to 200 
+      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4
+      go to 200
   108 esky = 0.576*(((em*100)/tm)**0.202) !Kruk(2008) com correcao de Kruk(2008)
-      radn(3,2)  =  esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4  		 
+      radn(3,2) = esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4
       go to 200 
 !                                                                       
   103 continue 
@@ -2373,7 +2373,7 @@
       real (kind=8) :: rbbest
       real (kind=8) :: top
       real (kind=8) :: uest
-      real (kind=8) :: us1
+      real (kind=8) :: us1 = 0d0
       real (kind=8) :: us2
       real (kind=8) :: uss
       real (kind=8) :: y
@@ -2748,12 +2748,12 @@
 
        implicit none
        integer, save :: iter(3) = (/0,0,0/)
-       real (kind=8), save :: a2(3) = (/0.,0.,0./)
-       real (kind=8), save :: y1(3) = (/0.,0.,0./)
+       real (kind=8), save :: a2(3) = (/0d0,0d0,0d0/)
+       real (kind=8), save :: y1(3) = (/0d0,0d0,0d0/)
        real (kind=8) :: cons = 1.0 
        integer :: iwalk(3)
        integer :: nex(3) 
-       real (kind=8) :: zinc(3)
+       real (kind=8) :: zinc(3) = (/0d0,0d0,0d0/)
        !
        real (kind=8) :: a1
        real (kind=8) :: y
@@ -2874,13 +2874,18 @@
 !-----------------------------------------------------------------------
 !                                                                       
       use comsibc 
-      !use auxvars
-      !implicit none
+      implicit none
       !dimension a(4,5),work(4,5),x(4)
       real (kind=8) :: a(4,5)
       real (kind=8) :: work(4,5)
       real (kind=8) :: x(4)
-
+      integer :: n
+      integer :: np1
+      integer :: i
+      integer :: j
+      integer :: k
+      integer :: l
+      real (kind=8) :: r
 !                                                                       
       do 1000 i=1,n 
          do 1000 j=1,np1 

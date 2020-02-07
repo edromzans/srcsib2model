@@ -14,8 +14,8 @@
     ! (vtype,lai,rhoair, &
     ! ha, z0d, dd,g2, g3, cc1, cc2, corb1, corb2)
 
-    SUBROUTINE derive_trans(g1, z2, z1, chil, vcover, &
-         cpair, zlt, ztz0, rhoair, &
+    SUBROUTINE derive_trans(g1, z2, z1, chil, vcover, zlt, ztz0, &
+         vkc, gx, cpair, rhoair, &
          ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)
 
 !#######################################################################
@@ -114,7 +114,7 @@
 !#######################################################################
 
     real (kind=8) ::    zs        ! Ground roughness length  (m)
-    real (kind=8) ::    g4        ! Transition height factor for mom. transfer
+    ! real (kind=8) ::    g4        ! Transition height factor for mom. transfer
     ! real ::    g1        ! km(actual) : km(log-linear) at z2
     ! real ::    z2        ! Canopy-top height  (m)
     ! real ::    z1        ! Canopy-base height (m)
@@ -147,8 +147,8 @@
     !                      ! = sigma*u in SiB2
     !                      ! = ku*G1(z-dlocal) in new scheme
     real (kind=8) ::    rat       ! Mom. resistance in transitional layer (z2-zt)
-    real (kind=8), parameter :: kar = 0.4       ! Karman constant
-    real (kind=8), parameter :: g = 9.81
+    !real (kind=8), parameter :: kar = 0.4      ! Karman constant
+    !real (kind=8), parameter :: g = 9.81
     !real (kind=8), parameter :: cpair = 1010
     !parameter (kar = 0.4, g=9.81, cpair = 1010 )
 !#######################################################################
@@ -208,9 +208,9 @@
     real (kind=8) :: finc
     real (kind=8) :: err
 
-    !Evandro M Anselmo
-    !Entrada e saida, variaveis do comsib trabalhando como
-    !variaveis locais
+    ! Evandro M Anselmo
+    ! Entrada e saida, variaveis do SiB2 (locais, comsibc e data1),
+    ! trabalhando com a derive_trans
     !
     !entradas
     real (kind=8) :: g1
@@ -218,15 +218,15 @@
     real (kind=8) :: z1
     real (kind=8) :: chil
     real (kind=8) :: vcover
-    ! real (kind=8) :: raderivetrans
-    ! real (kind=8) :: rbderivetrans
-    ! real (kind=8) :: rdderivetrans
-    ! real (kind=8) :: u2derivetrans
+    real (kind=8) :: kar ! (no SiB2 = vkc)
+    real (kind=8) :: vkc
+    real (kind=8) :: g   ! (no SiB2 = gx )
+    real (kind=8) :: gx  
     real (kind=8) :: cpair
+    real (kind=8) :: g4  ! (no SiB2 = ztz0)
     real (kind=8) :: ztz0
     real (kind=8) :: zlt
     real (kind=8) :: rhoair
-    !
     !saidas
     real (kind=8) :: ha
     real (kind=8) :: z0d
@@ -292,19 +292,25 @@
     ! leafw = leafw_v(vtype)! Leaf width (m)
     ! leafl = leafl_v(vtype)! Leaf width (m)
     ! vcover= vcover_v(vtype)
-
-    zs    = 0.05         !	Ground roughness length  (m)
-    g4    = ztz0           ! Transition height factor for mom. transfer
-    !g1    = g1_cst        ! km(actual) : km(log-linear) at z2
-    !z2    = z2_v (vtype)  ! Canopy-top height  (m)
-    !z1    = z1_v (vtype)  ! Canopy-base height  (m)
-    zc    = 28.0           ! Inflection height for leaf-area density(m)
-    !chil  = chil_v(vtype)  ! Leaf area distribution factor
-    leafw = 0.05 ! Leaf width (m) - zlw
-    leafl = 0.1  ! Leaf width (m) - zlen
-    !vcover= vcover_v(vtype)
-    lai = zlt
-
+    
+    !------------------------------------------------------------------
+    ! Evandro M Anselmo
+    ! Ajustes para inicio dos calculos:
+    ! Observe que aqui define-se os valores de zs, zc, leafw (zlw) e
+    ! leafl (zlen), variaveis adicionais as variaveis que participam
+    ! do SiB2. Também aqui algumas variaveis do SiB2 podem assumir
+    ! nomes ou valores diverentes para os calculos da derive_trans
+    ! como: lai = zlt, g4 = ztz0, kar = vkc, g = gx. 
+    zs = 0.05         !Ground roughness length  (m)
+    zc = 28.0         ! Inflection height for leaf-area density(m)
+    leafw = 0.05      ! Leaf width (m) - zlw
+    leafl = 0.1       ! Leaf width (m) - zlen
+    g4 = ztz0         ! Transition height factor for mom. transfer
+    lai = zlt         ! leaf area index
+    g = gx
+    kar = vkc ! 0.4   ! von karmans constant: SiB2 = 0.41 / derive
+                      ! _trans = 0.4
+    !------------------------------------------------------------------
     
 !#######################################################################
 

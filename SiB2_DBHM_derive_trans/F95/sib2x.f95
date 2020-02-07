@@ -629,9 +629,11 @@
       !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '   <<<<-------------------ANTES' ! output
       
       !call derive_trans
-      call derive_trans(g1, z2, z1, chil, vcover, &     !variaveis de entrada
-           cpair, zlt, ztz0, rhoair, &                  !
-           ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2) !variaveis de saida
+      !...
+      call derive_trans(g1, z2, z1, chil, vcover, zlt, ztz0, & ! variaveis de entrada
+           vkc, gx, cpair, rhoair, &                           !
+           ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)        ! variaveis de saida
+      !...
       !(ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)
       !print *, g1, z2, z1, chil, vcover, ra, rb, rd, u2, cpair, ztz0, '   <<<<-------------------DEPOIS'
       !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '   <<<<-------------------DEPOIS'

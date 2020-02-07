@@ -57,14 +57,19 @@
       integer :: iu=8
      !  data itmp1/88/,itmp2/78/,itmp3/79/,itmp4/80/,itmp5/81/,           &
      ! &     itero/0/, ipbl/0/, isnow/0/
-!
       integer :: nyfirst
       integer :: nylast
       real (kind=8) :: totwb
-!      
+      !
+      itmp1=88
+      itmp2=78
+      itmp3=79
+      itmp4=80
+      itmp5=81
+      !      
 !...  output files opening                                               
-      open(98,file='sib2diag.dat',status='unknown') 
-      open(itmp1,file='sib2dt.dat',status='unknown')	 
+      open(98,file='sib2diag.dat',status='unknown')
+      open(itmp1,file='sib2dt.dat',status='unknown')
       open(itmp2,file='sib2dt_SM.dat',status='unknown') !umidade do solo
 !...      
 !H      open(itmp3,file='sib2dt_Qu.dat',status='unknown') ! vazão Q upward     
@@ -169,7 +174,7 @@
       real (kind=8) :: evapg
       real (kind=8) :: fco2
       real (kind=8) :: gcstor
-      integer :: i
+      !integer :: i
       integer :: in
       real (kind=8) :: radswa
       real (kind=8) :: radswd
@@ -292,7 +297,7 @@
 !------------------------------------------------------------------     
 !	variables atribution                                                  
 !------------------------------------------------------------------     
-  700 continue 
+!  700 continue 
 !                                                                        
       rvar(1) = elat 
       rvar(2) = ect / hlat            !mm
@@ -450,7 +455,7 @@
       integer :: k
       integer :: kk
       integer :: mm
-      real (kind=8) :: ptot
+      real (kind=8) :: ptot = 0d0
       real (kind=8) :: rhair
       real (kind=8) :: tprec
       real (kind=8) :: vnrat
@@ -475,9 +480,12 @@
          write( *,'(a25,a40)')' # opening file counting ',cfinp 
          write(98,'(a25,a40)')' # opening file counting ',cfinp 
          open(iu, file= cfinp, status='old') 
-         read(iu,*) 
+         read(iu,*)
+         !Evandro M Anselmo---------
+         ptot = 0d0
+         !--------------------------
       endif 
-  851 CONTINUE 
+!  851 CONTINUE 
 !---------------------------------------------------------------------  
 !       read in meteorological forcing data                             
 !---------------------------------------------------------------------  
@@ -490,7 +498,7 @@
       xmustar = -9999. 
       xalbedo = -9999. 
       zlwd    = -9999. 
-  100 continue 
+!  100 continue 
 !---------------------------------------------------------------------##
 !     Defining a default format to read data2                           
 !     and check iwl flag to read                                        
@@ -556,7 +564,7 @@
          if (imont.eq.01) gprev = feno(12) 
          if (imont.eq.12) gpost = feno(01) 
 !                                                                        
-         if (idddd.gt.15) then	 
+         if (idddd.gt.15) then
             gfrac = 0.5* (real(idddd-15)/real(diames(imont) - idddd + 15)) 
             fenot = (1.-gfrac) * gpres + gfrac * gpost 
          else 
@@ -567,7 +575,7 @@
          if (kk.eq.1) green = fenot 
          if (kk.eq.2) zlt   = fenot 
   360    if (kk.eq.3) vmax0 = fenot 
-  361 continue 
+!  361 continue 
 ! --------------------------------------------------------------------- 
 !                                                                       
 !     isnow = 0 : conventional run with received met data.              
@@ -874,7 +882,7 @@
                                                                         
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6),/) 
+!   50    format(/,6(1x,e12.6),/) 
          write(98,'(a72)')' ivtype' 
          write(98,*) ivtype 
          write(98,'(a72)') ' istype, sodep,  (soref(iwave),iwave=1,2)' 
@@ -926,7 +934,7 @@
 !                                                                       
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6,/)) 
+!   50    format(/,6(1x,e12.6,/)) 
          write(98,'(a72)') ' z2, z1, vcover, chil' 
          write(98,*) z2, z1, vcover, chil 
          write(98,'(a72)') ' rootd, phc ' 
@@ -1022,7 +1030,7 @@
          pfirst=.false. 
          write(98,'(a72)') ' fparc' 
          write(98,*) fparc 
-   50    format(6(1x,e12.6)) 
+!   50    format(6(1x,e12.6)) 
       endif 
 !                                                                       
       return 
@@ -1087,7 +1095,7 @@
 !      write(*,*) zlt                                                   
       if (pfirst) then 
          pfirst=.false. 
-   50    format(/,6(1x,e12.6),/) 
+!   50    format(/,6(1x,e12.6),/) 
          write(98,'(a72)') ' vmax0, gmudmu, green, zlt' 
          write(98,*) vmax0, gmudmu, green, zlt 
          write(98,'(a72)') ' z0d, dd, cc1, cc2' 
@@ -1133,7 +1141,7 @@
       !
 !       write(98,*)'  entrando cntrol'                                  
 !       write(*,*)'  entrando cntrol'                                   
-  900 format(18a4) 
+!  900 format(18a4) 
       read(ichi,*) 
       read(ichi,*) 
       read(ichi, * )dtt, itrunk, ilw, ico2m,facco2, irespg 
@@ -1144,16 +1152,16 @@
       read(ichi,*) 
       read(ichi, * )tc, tg, td, ta, tm, ht, qa 
                                                                         
-   48 format(a24,1x,i2,1x,a5) 
-   49 format(/,a24,1x,i2,1x,a5,/) 
+!   48 format(a24,1x,i2,1x,a5) 
+!   49 format(/,a24,1x,i2,1x,a5,/) 
                                                                         
       if (pfirst) then 
          pfirst=.false. 
          write(98,*)                                                    &
          zlat, zlong,time,month,day,year,maxit,nyfirst,nylast             
-   50    format(                                                        &
-         'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,      &
-     &   3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
+   ! 50    format(                                                        &
+   !       'zlat, zlong,time,month,day,year,maxit,nyfirst,nylast',/,      &
+   !   &   3f8.2,i3,1x,2f5.0,i3,4(1x,i8) )                                  
          write(icho,800) zlat, zlong,nyfirst,nylast,maxit 
   800    format(10x,32('*')/10x,'*       SiB2 off-line run      *'/10x, &
      &   32('*')/5x,'latitude : ',f6.2,5x,' longitude : ',f7.2/,        &
