@@ -12,11 +12,15 @@ trans_viva_nir = 0.2
 ref_viva_nir = 0.5
 ref_solo_par = 0.11
 ref_solo_nir = 0.225
-nlinha = 78890
+# nlinha = 78890
+nlinha = 744
 
 # primeira rodada
 Rn_C = sib2pymod.sib2(trans_viva_nir, ref_viva_nir,
                       ref_solo_par, ref_solo_nir, nlinha)
+
+rn = Rn_C
+print(rn)
 
 # Seleciona os valores validos
 posval = np.asarray(Rn_C > -99999.).nonzero()
