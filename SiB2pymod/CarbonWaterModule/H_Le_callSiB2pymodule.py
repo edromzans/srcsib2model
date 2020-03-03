@@ -8,11 +8,51 @@ import matplotlib.pyplot as plt
 # from importlib import reload
 import sib2pymod
 
-z0d_param = 1.571
-dd_param = 26.606
-cc1_param = 8.12
-cc2_param = 727.80
+gradm_param = 16.0
+gmudmu_param = 1.0
+greeness_param = 0.99
+vmax_param = 105.0
 nlinha = 8784
 
 # primeira rodada
-[hc, lec] = sib2pymod.sib2(z0d_param, dd_param, cc1_param, cc2_param, nlinha)
+
+# [hc, le] = sib2pymod.sib2(gradm_param, gmudmu_param,
+#                            greeness_param, vmax_param,
+#                            nlinha)
+
+[run1_hc, run1_lec] = sib2pymod.sib2(gradm_param, gmudmu_param,
+                                     greeness_param, vmax_param,
+                                     nlinha)
+
+print('Hc----------------')
+print(run1_hc[0:20])
+
+print('LEc---------------')
+print(run1_lec[0:20])
+
+
+# segunda rodada
+
+[run2_hc, run2_lec] = sib2pymod.sib2(gradm_param, gmudmu_param,
+                                     greeness_param, vmax_param,
+                                     nlinha)
+
+
+# diferencas entre a rodade 1 e 2
+plt.subplot(221)
+plt.scatter(run1_hc, run2_hc, c='black', marker='+', linewidth=0.5)
+plt.ylabel('1 (Hc)')
+plt.xlabel('2')
+plt.subplot(222)
+plt.plot((run1_hc-run2_hc), c='black', linewidth=0.5)
+plt.ylabel('(Hc) run1 - run2')
+
+plt.subplot(223)
+plt.scatter(run1_lec, run2_lec, c='black', marker='+', linewidth=0.5)
+plt.ylabel('1 (LEc)')
+plt.xlabel('2')
+plt.subplot(224)
+plt.plot((run1_lec - run2_lec), c='black', linewidth=0.5)
+plt.ylabel('(LEc) run1 - run2')
+
+plt.show()

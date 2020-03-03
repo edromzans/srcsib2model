@@ -1,7 +1,7 @@
 !=======================================================================
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
-      subroutine sib2(z0d_param, dd_param, cc1_param, cc2_param, &
+      subroutine sib2(gradm_param, gmudmu_param, greeness_param, vmax_param, &
            nlinha, h_out, le_out)
 
 !                                                                       
@@ -66,10 +66,10 @@
       !Variaveis para SiB2pymod:---------------------------------------------
       ! entrada via python      
       integer, intent(in) :: nlinha
-      real (kind=8), intent(in) :: z0d_param
-      real (kind=8), intent(in) :: dd_param
-      real (kind=8), intent(in) :: cc1_param
-      real (kind=8), intent(in) :: cc2_param
+      real (kind=8), intent(in) :: gradm_param
+      real (kind=8), intent(in) :: gmudmu_param
+      real (kind=8), intent(in) :: greeness_param
+      real (kind=8), intent(in) :: vmax_param
       ! saida
       real (kind=8), intent(out) :: h_out(nlinha)    ! vout(nlinha)
       real (kind=8), intent(out) :: le_out(nlinha)    ! vout(nlinha)
@@ -100,10 +100,8 @@
       call veginc(ichi)
       !
       !recebe os parametros do processo de otimizacao---------------------
-      z0d = z0d_param
-      dd = dd_param
-      cc1 = cc1_param
-      cc2 = cc2_param
+      gradm = gradm_param
+      gmudmu = gmudmu_param
       !-------------------------------------------------------------------
       !      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 
@@ -113,7 +111,8 @@
          !write( *,'(a20,2i10)')'iter nymd:',iter,nymd                     
          call const2 
          !write(98,'(A20)')'  to call driver'                             
-         call driver (iu, icho, isnow, ichi, itero, nyfirst)
+         call driver (iu, icho, isnow, ichi, itero, nyfirst, &
+              greeness_param, vmax_param)
          ! if (mod(iter,int(86400./dtt)).eq.0) then ! display screen cada dia	 
          !    ! write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
          !    ! write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
@@ -156,7 +155,7 @@
          call balan( 2, totwb ) 
          !write(98,'(A20)')'   passed balan'                              
          !write(98,'(A20)')'  to call outer'                              
-         call outer(elat) ! modificada para modulo de momentum
+         call outer(elat) ! modificada para modulos de carbono e agua
          
          !--------------------------------------
          !Saida do SiB2pymod
@@ -441,7 +440,8 @@
 !                                                                        
 !=======================================================================
 !                                                                       
-      subroutine driver (iu, icho, isnow, ichi, itero, nyfirst) 
+      subroutine driver (iu, icho, isnow, ichi, itero, nyfirst, &
+           greeness_param, vmax_param) 
 !                                                                       
 !=======================================================================
 !                                                                       
@@ -493,7 +493,10 @@
       real (kind=8) :: vnrat
       real (kind=8) :: xco2m
       real (kind=8) :: zlwd
-      real (kind=8) :: e   
+      real (kind=8) :: e
+      !para modulo de calibracao: carbono e agua (Evandro)
+      real (kind=8) :: greeness_param
+      real (kind=8) :: vmax_param
       
       e(x) = exp( 21.18123d0 - 5418.0d0 / x ) / 0.622d0
 
@@ -504,7 +507,10 @@
          read(ichi,*) 
          read(ichi,*) (greex(mm),mm=1,12) 
          read(ichi,*) (zltex(mm),mm=1,12) 
-         read(ichi,*) ( vmex(mm),mm=1,12) 
+         read(ichi,*) ( vmex(mm),mm=1,12)
+         ! print *, 'ANTES-----------------------------------'
+         ! print '(12F5.2)', greex
+         ! print '(12F6.1)', vmex
          !write(98,*) 'Greex' ,(greex(mm),mm=1,12) 
          !write(98,*) 'Zltes' ,(zltex(mm),mm=1,12) 
          !write(*,*) 'passei..' ,(zltex(mm),mm=1,12)                       
@@ -516,6 +522,12 @@
          read(iu,*)
          !Evandro M Anselmo---------
          ptot = 0d0
+         !para uso do modulo de calibracao carbono agua
+         greex(1:12) = greeness_param
+         vmex(1:12) = vmax_param
+         ! print *, 'DEPOIS-----------------------------------'
+         ! print '(12F5.2)', greex
+         ! print '(12F6.1)', vmex
          !--------------------------
       endif 
 !  851 CONTINUE 

@@ -11,7 +11,8 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      include 'comsibc.h' 
+      use comsibc
+      implicit none
 !                                                                       
       asnow    = 13.2 
       bps      = 1. 
@@ -59,7 +60,24 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
+      real (kind=8) :: ts
+      real (kind=8) :: spechc
+      real (kind=8) :: capacp
+      real (kind=8) :: snowwp
+      integer :: iveg
+      real (kind=8) :: cca
+      real (kind=8) :: ccb
+      real (kind=8) :: ccc
+      real (kind=8) :: ccp
+      real (kind=8) :: cct
+      real (kind=8) :: diff
+      real (kind=8) :: freeze
+      real (kind=8) :: tsd
+      real (kind=8) :: tta
+      real (kind=8) :: ttb
+      real (kind=8) :: xs            
 !                                                                       
       freeze = 0. 
       diff = ( capac(iveg)+snoww(iveg) - capacp-snowwp )*cw 
@@ -86,7 +104,7 @@
       tsd = ( tta * cca + ttb * ccb + ccc ) / cct 
 !                                                                       
       freeze = ( tf * cct - ( tta * cca + ttb * ccb ) ) 
-      freeze = (amin1 ( ccc, freeze )) / snomel 
+      freeze = (min ( ccc, freeze )) / snomel 
       if(tsd .gt. tf)tsd = tf - 0.01 
 !                                                                       
       go to 200 
@@ -103,13 +121,13 @@
       tsd = ( tta * cca + ttb * ccb + ccc ) / cct 
 !                                                                       
       freeze = ( tf * cct - ( tta * cca + ttb * ccb ) ) 
-      freeze = (amax1( ccc, freeze )) / snomel 
+      freeze = (max( ccc, freeze )) / snomel 
       if(tsd .le. tf)tsd = tf - 0.01 
 !                                                                       
   200 snoww(iveg) = snoww(iveg) + freeze 
       capac(iveg) = capac(iveg) - freeze 
 !                                                                       
-      xs = amax1( 0., ( capac(iveg) - satcap(iveg) ) ) 
+      xs = max( 0., ( capac(iveg) - satcap(iveg) ) ) 
       if( snoww(iveg) .ge. 0.0000001 ) xs = capac(iveg) 
       www(1) = www(1) + xs / ( poros(1) * zdepth(1) ) 
       capac(iveg) = capac(iveg) - xs 
@@ -135,12 +153,24 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
 !                                                                       
+      real (kind=8) :: p0
+      real (kind=8) :: dareas
+      real (kind=8) :: dcap
+      real (kind=8) :: ex
+      real (kind=8) :: pinf
+      real (kind=8) :: rhs
+      real (kind=8) :: snowhc
+      real (kind=8) :: thru
+      real (kind=8) :: tsd
+      real (kind=8) :: zmelt
+!
       pinf = p0 
       thru = 0. 
-      snowhc = amin1( 0.05, snoww(2) ) * cw 
-      areas = amin1( 1.,(asnow*snoww(2)) ) 
+      snowhc = min( 0.05, snoww(2) ) * cw 
+      areas = min( 1.,(asnow*snoww(2)) ) 
       if( tm .gt. tf ) go to 400 
 !                                                                       
 !---------------------------------------------------------------------- 
@@ -149,7 +179,7 @@
 !                                                                       
       rhs = tm*pinf*cw + tf*(snowhc + csoil*areas)                      &
      &    + tg*csoil*(1.-areas)                                         
-      dareas = amin1( asnow*pinf, ( 1.-areas ) ) 
+      dareas = min( asnow*pinf, ( 1.-areas ) ) 
       ex = rhs - tf*pinf*cw - tf*(snowhc + csoil*(areas + dareas))      &
      &   - tg*csoil*(1.-areas-dareas)                                   
       if( (areas+dareas) .ge. 0.999 ) tg = tf - 0.01 
@@ -256,16 +286,17 @@
 !      satcap(2)   (s-g)   : 0.002, surface interception store          
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
 !                                                                       
       canex  = 1.-( snoww(2)*5.-z1)/(z2-z1) 
-      canex  = amax1( 0.1, canex ) 
-      canex  = amin1( 1.0, canex ) 
+      canex  = max( 0.1, canex ) 
+      canex  = min( 1.0, canex ) 
       xdx    = z2 - ( z2-dd ) * canex 
       z0     = z0d/( z2-dd ) * ( z2-xdx ) 
       rbc    = cc1/canex 
       rdc    = cc2*canex 
-      areas    = amin1(1., asnow*snoww(2)) 
+      areas    = min(1., asnow*snoww(2)) 
       satcap(1) = zlt*0.0001 * canex 
       satcap(2) = 0.002 
       return 
@@ -301,10 +332,69 @@
 !                                                                       
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
 !                                                                       
-      dimension tranc1(2), tranc2(2), tranc3(2) 
-!                                                                       
+      !dimension tranc1(2), tranc2(2), tranc3(2)
+      real (kind=8) :: tranc1(2)
+      real (kind=8) :: tranc2(2)
+      real (kind=8) :: tranc3(2) 
+      !
+      real (kind=8) :: aa
+      real (kind=8) :: acss
+      real (kind=8) :: bb
+      real (kind=8) :: be
+      real (kind=8) :: betao
+      real (kind=8) :: bot
+      real (kind=8) :: ce
+      real (kind=8) :: chiv
+      real (kind=8) :: closs
+      real (kind=8) :: de
+      real (kind=8) :: den
+      real (kind=8) :: ek
+      real (kind=8) :: epsi
+      real (kind=8) :: extkb
+      real (kind=8) :: f1
+      real (kind=8) :: fac2
+      real (kind=8) :: facs
+      real (kind=8) :: fe
+      real (kind=8) :: fmelt
+      real (kind=8) :: ge
+      real (kind=8) :: gloss
+      real (kind=8) :: hh1
+      real (kind=8) :: hh10
+      real (kind=8) :: hh2
+      real (kind=8) :: hh3
+      real (kind=8) :: hh4
+      real (kind=8) :: hh5
+      real (kind=8) :: hh6
+      real (kind=8) :: hh7
+      real (kind=8) :: hh8
+      real (kind=8) :: hh9
+      integer :: irad
+      integer :: iveg
+      integer :: iwave
+      real (kind=8) :: power1
+      real (kind=8) :: power2
+      real (kind=8) :: proj
+      real (kind=8) :: psi
+      real (kind=8) :: reff1
+      real (kind=8) :: reff2
+      real (kind=8) :: scat
+      real (kind=8) :: scov
+      real (kind=8) :: tg4
+      real (kind=8) :: tran1
+      real (kind=8) :: tran2
+      real (kind=8) :: upscat
+      real (kind=8) :: xfx
+      real (kind=8) :: zat
+      real (kind=8) :: zkat
+      real (kind=8) :: zmew
+      real (kind=8) :: zmk
+      real (kind=8) :: zp
+      real (kind=8) :: fac1
+      real (kind=8) :: tc4
+!
       xfx = sunang 
 !                                                                       
 !---------------------------------------------------------------------- 
@@ -320,13 +410,13 @@
       call snow1 
 !                                                                       
       facs  = ( tg-tf ) * 0.04 
-      facs  = amax1( 0. , facs) 
-      facs  = amin1( 0.4, facs) 
+      facs  = max( 0. , facs) 
+      facs  = min( 0.4, facs) 
       fmelt = 1. - facs 
 !                                                                       
       do 1000 iwave = 1, 2 
 !                                                                       
-      scov =  amin1( 0.5, snoww(1)/satcap(1) ) 
+      scov =  min( 0.5, snoww(1)/satcap(1) ) 
       reff1 = ( 1. - scov ) * ref(iwave,1) + scov * ( 1.2 -             &
      &        iwave * 0.4 ) * fmelt                                     
       reff2 = ( 1. - scov ) * ref(iwave,2) + scov * ( 1.2 -             &
@@ -365,10 +455,10 @@
 !                                                                       
       proj = aa + bb * xfx 
       extkb = ( aa + bb * xfx ) / xfx 
-      zmew = 1. / bb * ( 1. - aa / bb * alog ( ( aa + bb ) / aa ) ) 
+      zmew = 1. / bb * ( 1. - aa / bb * log ( ( aa + bb ) / aa ) ) 
       acss = scat / 2. * proj / ( proj + xfx * bb ) 
       acss = acss * ( 1. - xfx * aa / ( proj + xfx * bb ) *             &
-     &     alog ( ( proj + xfx * bb + xfx * aa ) / ( xfx * aa ) ) )     
+     &     log ( ( proj + xfx * bb + xfx * aa ) / ( xfx * aa ) ) )     
 !                                                                       
       upscat = green * tran1 + ( 1. - green ) * tran2 
       upscat = 0.5 * ( scat + ( scat - 2. * upscat ) *                  &
@@ -417,8 +507,8 @@
 !                                                                       
       zat = zlt/vcover*canex 
 !                                                                       
-      power1 = amin1( psi*zat, 50. ) 
-      power2 = amin1( extkb*zat, 50. ) 
+      power1 = min( psi*zat, 50. ) 
+      power2 = min( extkb*zat, 50. ) 
       epsi = exp( - power1 ) 
       ek = exp ( - power2 ) 
 !                                                                       
@@ -528,13 +618,13 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-      tgs = amin1(tf,tg)*areas + tg*(1.-areas) 
+      tgs = min(tf,tg)*areas + tg*(1.-areas) 
       tc4 = tc  * tc  * tc  * tc 
       tg4 = tgs * tgs * tgs * tgs 
 !                                                                       
       zkat = 1./zmew * zlt / vcover 
-      zkat = amin1( 50. , zkat ) 
-      zkat = amax1( 1.e-5, zkat ) 
+      zkat = min( 50. , zkat ) 
+      zkat = max( 1.e-5, zkat ) 
       thermk = exp(-zkat) 
 !                                                                       
       fac1 =  vcover * ( 1.-thermk ) 
@@ -579,10 +669,18 @@
 !     downward longwave is provided by gcm-radiation code as radn(3,2). 
 !                                                                       
 !-----------------------------------------------------------------------
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
 !                                                                       
-      dimension tranc1(2), tranc2(2), tranc3(2) 
+      ! dimension tranc1(2), tranc2(2), tranc3(2)
+      real (kind=8) :: tranc1(2)
+      real (kind=8) :: tranc2(2)
+      real (kind=8) :: tranc3(2)
 !                                                                       
+      real (kind=8) :: esky
+      integer :: iwave
+      real (kind=8) :: swab
+      real (kind=8) :: swup
 !                                                                       
       if(ilw .eq. 1)go to 101 
       if(ilw .eq. 2)go to 102  ! Brunts
@@ -604,22 +702,22 @@
 !---------------------------------------------------------------------- 
 !                                                                       
   102 esky = 0.53 + 0.06*sqrt(em) !brunts(1932) com correcao de Jacobs(1978)(SiB&_original) 
-      radn(3,2)  =  esky*(1.+0.2*(cloud*cloud))*stefan*tm**4 
-      go to 200 
+      radn(3,2) = esky*(1.+0.2*(cloud*cloud))*stefan*tm**4
+      go to 200
   104 esky = 1.24*((em/tm)**0.1428) !Brutsaert(1975)com correcao de Jacobs(1978)	
-      radn(3,2)  =  esky*stefan*tm**4*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = esky*stefan*tm**4*(1.+0.2*(cloud*cloud))
+      go to 200
   105 esky =(0.26*exp(-0.00077*((273-tm)**2))) !Idso&Jackson(1969)c/correcaoJacobs (1978)
-      radn(3,2)  = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = stefan*tm**4*(1-esky)*(1.+0.2*(cloud*cloud))
+      go to 200
   106 esky = 0.000009 !Swinbank (1963) com correcao de Jacobs (1978)	 
-      radn(3,2)  =  esky*stefan*tm**6*(1.+0.2*(cloud*cloud)) 
-      go to 200 
+      radn(3,2) = esky*stefan*tm**6*(1.+0.2*(cloud*cloud))
+      go to 200
   107 esky = 0.625*(((em*100)/tm)**0.131) !Duarte (2006)com correcao de Duarte (2006)
-      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4 
-      go to 200 
+      radn(3,2)  =  esky*(1.+0.242*((cloud)**0.583))*stefan*tm**4
+      go to 200
   108 esky = 0.576*(((em*100)/tm)**0.202) !Kruk(2008) com correcao de Kruk(2008)
-      radn(3,2)  =  esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4  		 
+      radn(3,2) = esky*(1.+0.1007*((cloud)**0.9061))*stefan*tm**4
       go to 200 
 !                                                                       
   103 continue 
@@ -727,9 +825,45 @@
 !       tsnow          snow temperature (k)                             
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-       include 'comsibc.h' 
-       include 'pardif.h' 
+      use comsibc 
+      use pardif
+      implicit none
 !                                                                       
+      integer :: ipbl
+      real (kind=8) :: arean
+      real (kind=8) :: aven
+      real (kind=8) :: coct
+      real (kind=8) :: cogs1
+      real (kind=8) :: cogs2
+      real (kind=8) :: d1
+      real (kind=8) :: darea
+      real (kind=8) :: dewc
+      real (kind=8) :: dewg
+      real (kind=8) :: ecf
+      real (kind=8) :: ecidif
+      real (kind=8) :: ecpot
+      real (kind=8) :: egf
+      real (kind=8) :: egidif
+      real (kind=8) :: egit
+      real (kind=8) :: egpot
+      real (kind=8) :: egsmax
+      real (kind=8) :: finc
+      real (kind=8) :: hrr
+      integer :: i
+      integer :: icount
+      integer :: ifirst
+      integer :: iwalk
+      integer :: lx
+      integer :: nonpos
+      integer :: nox
+      real (kind=8) :: rsnow
+      real (kind=8) :: t1
+      real (kind=8) :: t2
+      real (kind=8) :: taen
+      real (kind=8) :: tsnow
+      real (kind=8) :: y
+      real (kind=8) :: hend
+!            
 !hrr  introduzido p/ evitar warning compilacao (variable used and not defined)
       rsnow = 0. 
       tsnow = tg 
@@ -813,15 +947,15 @@
 !                                                                       
       ecpot = ( (etc-ea) + (  getc-deadtc)*dtc-deadtg*dtg-deadqm*dqm ) 
       eci = ecpot * wc /(2.*rb) * rcp/psy * dtt 
-      ecidif=amax1(0.0,(eci-(snoww(1)+capac(1))*1.e3*hlat)) 
-      eci   =amin1(eci,(    (snoww(1)+capac(1))*1.e3*hlat)) 
+      ecidif=max(0.0,(eci-(snoww(1)+capac(1))*1.e3*hlat)) 
+      eci   =min(eci,(    (snoww(1)+capac(1))*1.e3*hlat)) 
 !                                                                       
       egpot = ( (etgs-ea) + (getgs-deadtg)*dtg-deadtc*dtc-deadqm*dqm ) 
       egi = egpot/rd*rcp/psy*dtt * ( wg*(1.-areas) + areas ) 
       egidif=                                                           &
-     &  amax1(0.0, egi-(snoww(2)+capac(2))*1.e3*hlat )*(1.-rsnow)       
+     &  max(0.0, egi-(snoww(2)+capac(2))*1.e3*hlat )*(1.-rsnow)       
       egit  =                                                           &
-     &  amin1(egi,     (snoww(2)+capac(2))*1.e3*hlat )*(1.-rsnow)       
+     &  min(egi,     (snoww(2)+capac(2))*1.e3*hlat )*(1.-rsnow)       
 !                                                                       
 !---------------------------------------------------------------------- 
 !     calculation of interception loss from ground-snow. if snow patch  
@@ -829,14 +963,14 @@
 !---------------------------------------------------------------------- 
 !                                                                       
       t1 = snoww(2) - 1./asnow 
-      t2 = amax1( 0., t1 ) 
+      t2 = max( 0., t1 ) 
       aven = egi - t2*hlat*1.e3/snofac 
       if ( (t1-t2)*egi .gt. 0. ) aven = egi 
       darea = aven/( (tsnow-tg)*csoil - 1./asnow*hlat*1.e3/snofac) 
       arean = areas + darea 
-      egidif = egidif - amin1( 0., arean )*asnow*hlat*1.e3/snofac*rsnow 
-      darea = amax1( darea, -areas ) 
-      darea = amin1( 1.-areas, darea ) 
+      egidif = egidif - min( 0., arean )*asnow*hlat*1.e3/snofac*rsnow 
+      darea = max( darea, -areas ) 
+      darea = min( 1.-areas, darea ) 
       heaten = (tsnow-tg)*csoil*darea*rsnow 
       egit = egit + ( egi - heaten - egidif )*rsnow 
       egi = egit 
@@ -879,8 +1013,8 @@
      &      - ( ea + deadtg*dtg + deadtc*dtc + deadqm*dqm ) * cogs2     
       egs = egs * rcp/psy * dtt 
       egsmax = www(1) / 2. * zdepth(1) * poros(1) * hlat * 1000. 
-      egidif = egidif + amax1( 0., egs - egsmax ) 
-      egs = amin1 ( egs, egsmax ) 
+      egidif = egidif + max( 0., egs - egsmax ) 
+      egs = min ( egs, egsmax ) 
 !                                                                       
 !---------------------------------------------------------------------- 
 !     sensible heat flux calculated with latent heat flux correction    
@@ -907,10 +1041,10 @@
 !      eg          (eg)    : equation (65) , SE-86                      
 !---------------------------------------------------------------------- 
 !                                                                       
-      ecf = sign( 1., ecpot ) 
-      egf = sign( 1., egpot ) 
-      dewc = fc * 2. - 1. 
-      dewg = fg * 2. - 1. 
+      ecf = sign( 1d0, ecpot ) 
+      egf = sign( 1d0, egpot ) 
+      dewc = fc * 2d0 - 1d0 
+      dewg = fg * 2d0 - 1d0
 !                                                                       
       if(dewc*ecf.gt.0.0) go to 300 
       hc = hc + eci + ect 
@@ -978,13 +1112,21 @@
 !                      cas : canopy air space                           
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
+      !
+      real (kind=8) :: cogr
+      real (kind=8) :: cogs
+      real (kind=8) :: d1
+      real (kind=8) :: fac
+      real (kind=8) :: fih
+      real (kind=8) :: temdif
 !                                                                       
 !-----------------------------------------------------------------------
 !     rb : equation (a9), SE-86                                         
 !-----------------------------------------------------------------------
 !                                                                       
-      temdif = amax1( 0.1,  tc-tm ) 
+      temdif = max( 0.1,  tc-tm ) 
       fac = zlt/890.* sqrt( sqrt(temdif/0.05)) 
       rb  = 1.0/(sqrt(u2)/rbc+fac) 
 !                                                                       
@@ -992,7 +1134,7 @@
 !     rd : equation (a15), se-86                                        
 !-----------------------------------------------------------------------
 !                                                                       
-      temdif = amax1( 0.1, tgs-tm ) 
+      temdif = max( 0.1, tgs-tm ) 
       fih = sqrt( 1. + 9. * gx * temdif * z2 / tgs / ( u2*u2) ) 
       rd  = rdc / u2 / fih 
 !                                                                       
@@ -1073,9 +1215,48 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
+      use comsibc 
+      implicit none
 !                                                                       
-      dimension pco2y(6), eyy(6) 
+      !dimension pco2y(6), eyy(6)
+      real (kind=8) :: pco2y(6)
+      real (kind=8) :: eyy(6)
+!
+      real (kind=8) :: bintc
+      real (kind=8) :: c3
+      real (kind=8) :: c4
+      real (kind=8) :: fparkk
+      real (kind=8) :: gah2o
+      real (kind=8) :: gammas
+      real (kind=8) :: gbh2o
+      real (kind=8) :: gog2
+      real (kind=8) :: h2oi
+      real (kind=8) :: h2om
+      real (kind=8) :: h2os
+      real (kind=8) :: h2osl
+      integer :: ic
+      integer :: ic2
+      real (kind=8) :: omss
+      real (kind=8) :: par
+      real (kind=8) :: park
+      real (kind=8) :: pfd
+      real (kind=8) :: qt
+      real (kind=8) :: range
+      real (kind=8) :: respn
+      real (kind=8) :: rrkk
+      real (kind=8) :: scatg
+      real (kind=8) :: scatp
+      real (kind=8) :: spfy
+      real (kind=8) :: temph
+      real (kind=8) :: templ
+      real (kind=8) :: tprcor
+      real (kind=8) :: vm
+      real (kind=8) :: xdry
+      real (kind=8) :: xwet
+      real (kind=8) :: zko
+      real (kind=8) :: gog1
+      real (kind=8) :: h2oa
+      real (kind=8) :: zkc
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
@@ -1092,7 +1273,7 @@
       if (irespg.eq.3) then 
       xwet = 1. 
       if (www(1).lt.0.95) xwet = www(1) 
-      if (www(2).lt.0.9) xwet = (amin1(www(1),0.8)**3.) 
+      if (www(2).lt.0.9) xwet = (min(www(1),0.8)**3.) 
       xdry = 1. - xwet 
                                                                         
       respg = 1.e-06 *                                                  &
@@ -1181,7 +1362,7 @@
 !                                                                       
       rrkk   = zkc*( 1. + po2m/zko ) * c3 + vmax0/5.* ( 1.8**qt) * c4 
       par    = pfd*effcon*( 1.-scatg ) 
-      bintc  = binter*zlt*green*amax1(0.1,rstfac(2)) 
+      bintc  = binter*zlt*green*max(0.1,rstfac(2)) 
 !                                                                       
       omss  = ( vmax0/2.0 ) * ( 1.8**qt )/templ * rstfac(2) * c3        &
      &                                   + rrkk * rstfac(2) * c4        
@@ -1220,7 +1401,7 @@
 !                                                                       
       rstfac(1) = h2os/h2oi 
       rstfac(4) = rstfac(1)*rstfac(2)* rstfac(3) 
-      rst   = amin1( 1.e6, 1./( gsh2o*tc/( 44.6*tprcor) ) ) 
+      rst   = min( 1.e6, 1./( gsh2o*tc/( 44.6*tprcor) ) ) 
       ea    = h2oa*psur 
 !                                                                       
       return 
@@ -1260,12 +1441,63 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
+      implicit none
+      real (kind=8) :: fparkk
+      real (kind=8) :: vm
+      real (kind=8) :: gradm
+      real (kind=8) :: bintc
+      real (kind=8) :: atheta
+      real (kind=8) :: btheta
+      real (kind=8) :: gah2o
+      real (kind=8) :: gbh2o
+      real (kind=8) :: gog1
+      real (kind=8) :: gog2
+      real (kind=8) :: wc
+      real (kind=8) :: h2oi
+      real (kind=8) :: h2om
+      real (kind=8) :: h2osl
+      real (kind=8) :: par
+      real (kind=8) :: pco2m
+      real (kind=8) :: psur
+      real (kind=8) :: gammas
+      real (kind=8) :: respc
+      real (kind=8) :: respg
+      real (kind=8) :: rrkk
+      real (kind=8) :: omss
+      real (kind=8) :: c3
+      real (kind=8) :: c4
+      real (kind=8) :: pco2i
+      real (kind=8) :: eyy
+      real (kind=8) :: gsh2o
+      real (kind=8) :: assimn
+      real (kind=8) :: h2os
+      real (kind=8) :: h2oa
+      real (kind=8) :: alpha
+      real (kind=8) :: aquad
+      real (kind=8) :: assim
+      real (kind=8) :: assmt
+      real (kind=8) :: beta
+      real (kind=8) :: bquad
+      real (kind=8) :: co2s
+      real (kind=8) :: co2st
+      real (kind=8) :: cquad
+      real (kind=8) :: div2
+      real (kind=8) :: div3
+      real (kind=8) :: hcdma
+      real (kind=8) :: omc
+      real (kind=8) :: ome
+      real (kind=8) :: omp
+      real (kind=8) :: oms
+      real (kind=8) :: pco2a
+      real (kind=8) :: pco2in
+      real (kind=8) :: sqrtin
+!        
       omc = vm  * ( pco2i-gammas )/( pco2i + rrkk ) * c3 + vm * c4 
       ome = par * ( pco2i-gammas )/( pco2i+2.*gammas ) * c3 + par * c4 
-      sqrtin= amax1( 0., ( (ome+omc)**2 - 4.*atheta*ome*omc ) ) 
+      sqrtin= max( 0., ( (ome+omc)**2 - 4.*atheta*ome*omc ) ) 
       omp   = ( ( ome+omc ) - sqrt( sqrtin ) ) / ( 2.*atheta ) 
       oms   = omss * c3 + omss*pco2i * c4 
-      sqrtin= amax1( 0., ( (omp+oms)**2 - 4.*btheta*omp*oms ) ) 
+      sqrtin= max( 0., ( (omp+oms)**2 - 4.*btheta*omp*oms ) ) 
       assim = ( ( oms+omp ) - sqrt( sqrtin ) ) / ( 2.*btheta ) 
       assimn= ( assim - respc) * fparkk 
 !                                                                       
@@ -1273,14 +1505,14 @@
 !     gah2o bottom stopped to prevent negative values of pco2a          
 !-----------------------------------------------------------------------
 !                                                                       
-        pco2a = pco2m - (1.4/amax1(0.446,gah2o) *                       &
+        pco2a = pco2m - (1.4/max(0.446,gah2o) *                       &
      &             (assimn - respg)* psur*100.)                         
                                                                         
       co2s  = pco2a/(psur*100.) - 1.4*assimn/gbh2o 
 !                                                                       
-      assmt = amax1( 1.e-12, assimn ) 
-      co2st = amin1( co2s, pco2a/(psur*100.) ) 
-      co2st = amax1( co2st,1./(psur*100.) ) 
+      assmt = max( 1.e-12, assimn ) 
+      co2st = min( co2s, pco2a/(psur*100.) ) 
+      co2st = max( co2st,1./(psur*100.) ) 
 !                                                                       
       div2  = gah2o + gbh2o + gog2 
       hcdma = h2oi*co2st / ( gradm*assmt ) 
@@ -1291,11 +1523,11 @@
       bquad = gbh2o*( hcdma-alpha ) - h2oi - bintc*hcdma 
       cquad = -gbh2o*( hcdma*bintc + beta ) 
 !                                                                       
-      sqrtin= amax1( 0., ( bquad**2 - 4.*aquad*cquad ) ) 
+      sqrtin= max( 0., ( bquad**2 - 4.*aquad*cquad ) ) 
       gsh2o = ( -bquad + sqrt ( sqrtin ) ) / (2.*aquad) 
       h2os  = ( gsh2o-bintc ) * hcdma 
-      h2os  = amin1( h2os, h2oi ) 
-      h2os  = amax1( h2os, 1.e-7) 
+      h2os  = min( h2os, h2oi ) 
+      h2os  = max( h2os, 1.e-7) 
       gsh2o = h2os/hcdma + bintc 
       div3  = gbh2o*gsh2o/(gbh2o+gsh2o)*(1.-wc) + gbh2o*wc + gog2       &
      &        + gah2o                                                   
@@ -1329,16 +1561,48 @@
 !-----------------------------------------------------------------------
 !                                                                       
 !                                                                       
-      dimension eyy(6), pco2y(6) 
-!                                                                       
+      implicit none
+      !dimension eyy(6), pco2y(6) 
+      real (kind=8) :: eyy(6)
+      real (kind=8) :: pco2y(6)
+      !
+      real (kind=8) :: range
+      real (kind=8) :: gammas
+      integer :: ic
+      real (kind=8) :: a
+      real (kind=8) :: ac1
+      real (kind=8) :: ac2
+      real (kind=8) :: aterm
+      real (kind=8) :: b
+      real (kind=8) :: bc1
+      real (kind=8) :: bc2
+      real (kind=8) :: bterm
+      real (kind=8) :: emin
+      integer :: i
+      integer :: i1
+      integer :: i2
+      integer :: i3
+      integer :: is
+      integer :: isp
+      integer :: j
+      integer :: n
+      real (kind=8) :: pco2b
+      real (kind=8) :: pco2yl
+      real (kind=8) :: pco2yq
+      real (kind=8) :: pmin
+      real (kind=8) :: cc1
+      real (kind=8) :: cc2
+      real (kind=8) :: cterm
+      integer :: ix
+      !                                                                       
       if( ic .ge. 4 ) go to 500 
       pco2y(1) = gammas + 0.5*range 
-      pco2y(2) = gammas + range*( 0.5 - 0.3*sign(1.0,eyy(1)) ) 
+      pco2y(2) = gammas + range*( 0.5 - 0.3*sign(1d0,eyy(1)) ) 
       pco2y(3) = pco2y(1)                                               &
      &          - (pco2y(1)-pco2y(2))/(eyy(1)-eyy(2)+1.e-10)*eyy(1)     
 !                                                                       
-      pmin = amin1( pco2y(1), pco2y(2) ) 
-      emin = amin1(   eyy(1),   eyy(2) ) 
+      pmin = min( pco2y(1), pco2y(2) ) 
+      emin = min(   eyy(1),   eyy(2) ) 
       if ( emin .gt. 0. .and. pco2y(3) .gt. pmin ) pco2y(3) = gammas 
       go to 200 
   500 continue 
@@ -1389,12 +1653,12 @@
       aterm = (cc1-bc1*bterm)/ac1 
       cterm = pco2y(i2) - aterm*eyy(i2)*eyy(i2) - bterm*eyy(i2) 
       pco2yq= cterm 
-      pco2yq= amax1( pco2yq, pco2b ) 
+      pco2yq= max( pco2yq, pco2b ) 
       pco2y(ic) = ( pco2yl+pco2yq)/2. 
 !                                                                       
   200 continue 
 !                                                                       
-      pco2y(ic) = amax1 ( pco2y(ic), 0.01 ) 
+      pco2y(ic) = max ( pco2y(ic), 0.01 ) 
 !                                                                       
       return 
       END                                           
@@ -1409,9 +1673,15 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
-       include 'pardif.h' 
+      use comsibc 
+      use pardif
+      implicit none
 !                                                                       
+      real (kind=8) :: fac1
+      real (kind=8) :: fac2
+      real (kind=8) :: tc3
+      real (kind=8) :: tg3
+!
       tc3 = tc * tc * tc 
       tg3 = tgs * tgs * tgs 
       fac1 = ( 1.-thermk ) * vcover 
@@ -1459,8 +1729,13 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
-       include 'pardif.h' 
+      use comsibc 
+      use pardif
+      implicit none
+!
+      real (kind=8) :: d1
+      real (kind=8) :: hcdqm
+      real (kind=8) :: hgdqm
 !                                                                       
       d1 = 1./ra + 1./rb + 1./rd 
       ta = ( tgs/rd + tc/rb + tm/ra ) / d1 
@@ -1529,13 +1804,24 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-       include 'comsibc.h' 
-       include 'pardif.h' 
+      use comsibc 
+      use pardif
+      implicit none
 !                                                                       
 !---------------------------------------------------------------------- 
 !     modification for soil dryness : hr = rel. humidity in top layer   
 !---------------------------------------------------------------------- 
-!                                                                       
+      !
+      real (kind=8) :: coc
+      real (kind=8) :: cogr
+      real (kind=8) :: cogs
+      real (kind=8) :: d2
+      real (kind=8) :: deadem
+      real (kind=8) :: hrr
+      real (kind=8) :: rcc
+      real (kind=8) :: top
+      real (kind=8) :: sh
+      !      
       hrr = hr 
       if ( fg .lt. .5 ) hrr = 1. 
 !                                                                       
@@ -1618,11 +1904,27 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-       include 'comsibc.h' 
-       include 'pardif.h' 
-!                                                                       
-!                                                                       
-      dimension pblsib(4,4),cvec(4),solvec(4),chin(4,5),work(4,5) 
+      use comsibc 
+      use pardif 
+      implicit none
+      !dimension pblsib(4,4),cvec(4),solvec(4),chin(4,5),work(4,5)
+      
+      real (kind=8) :: pblsib(4,4)
+      real (kind=8) :: cvec(4)
+      real (kind=8) :: solvec(4)
+      real (kind=8) :: chin(4,5)
+      real (kind=8) :: work(4,5)
+!
+      real (kind=8) :: dthb
+      real (kind=8) :: dwb
+      real (kind=8) :: etem
+      real (kind=8) :: fths
+      real (kind=8) :: fws
+      real (kind=8) :: grav2
+      real (kind=8) :: gv
+      real (kind=8) :: psb
+      integer :: i
+      integer :: j
 !                                                                       
       grav2 = 0.01*gx 
       gv    = grav2*rhoair/ra 
@@ -1699,9 +2001,18 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       include 'comsibc.h' 
-       include 'pardif.h' 
-!                                                                       
+      use comsibc 
+      use pardif
+      implicit none
+      !
+      real (kind=8) :: ccodtc
+      real (kind=8) :: ccodtg
+      real (kind=8) :: ccorhs
+      real (kind=8) :: denom
+      real (kind=8) :: gcodtc
+      real (kind=8) :: gcodtg
+      real (kind=8) :: gcorhs
+      !                                                                       
       ccodtc = ccx / dtt - rncdtc + hcdtc + ecdtc 
       ccodtg = - rncdtg + hcdtg + ecdtg 
       ccorhs = radt(1) - ( hc + ec ) / dtt 
@@ -1734,8 +2045,37 @@
 !          ts > tf, tsnow = tf                                          
 !                                                                       
 !-----------------------------------------------------------------------
-       include 'comsibc.h' 
-!                                                                       
+      use comsibc
+      implicit none  
+      !
+      real (kind=8) :: avex
+      real (kind=8) :: avheat
+      real (kind=8) :: avmelt
+      real (kind=8) :: cct
+      real (kind=8) :: cctt
+      real (kind=8) :: cool
+      real (kind=8) :: dts
+      real (kind=8) :: dtsg
+      real (kind=8) :: dtsg3
+      real (kind=8) :: exheat
+      real (kind=8) :: exmelt
+      real (kind=8) :: flux
+      real (kind=8) :: fluxef
+      real (kind=8) :: freeze
+      real (kind=8) :: heat
+      integer :: iveg
+      real (kind=8) :: realc
+      real (kind=8) :: realg
+      real (kind=8) :: safe
+      real (kind=8) :: snowhc
+      real (kind=8) :: tbulk
+      real (kind=8) :: tn
+      real (kind=8) :: ts
+      real (kind=8) :: tsnow
+      real (kind=8) :: zmelt
+      real (kind=8) :: zmelt2
+      real (kind=8) :: dtsg2
+      !
       do 1000 iveg = 1, 2 
 !                                                                       
       realc = (2 - iveg)*1. 
@@ -1747,8 +2087,8 @@
       dts  = realc*dtc  +  realg*dtg 
       flux = realc*chf  +  realg*dtg/dtt*cg 
 !                                                                       
-      tsnow = amin1 ( tf-0.01, ts ) 
-      snowhc = amin1( 0.05, snoww(iveg) ) * cw * realg 
+      tsnow = min ( tf-0.01, ts ) 
+      snowhc = min( 0.05, snoww(iveg) ) * cw * realg 
       zmelt = 0. 
 !                                                                       
       if ( snoww(iveg) .gt. 0. ) go to 100 
@@ -1760,8 +2100,8 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-      freeze = amin1 ( 0., (flux*dtt - ( tf-0.01 - ts )*cctt ) ) 
-      snoww(iveg) = amin1( capac(iveg), - freeze/snomel ) 
+      freeze = min ( 0., (flux*dtt - ( tf-0.01 - ts )*cctt ) ) 
+      snoww(iveg) = min( capac(iveg), - freeze/snomel ) 
       zmelt = capac(iveg) - snoww(iveg) 
       capac(iveg) = 0. 
       dts = dts + snoww(iveg)*snomel/cctt 
@@ -1786,11 +2126,11 @@
 !                                                                       
       avex = flux - ( tf-0.01 - ts ) * cctt/dtt 
       avmelt = ( avex/snomel * (areas*realg + realc ) )*dtt 
-      zmelt = amin1( avmelt, snoww(iveg) ) 
+      zmelt = min( avmelt, snoww(iveg) ) 
       snoww(iveg) = snoww(iveg) - zmelt 
       avheat = avex*( 1.-areas )*realg + ( avmelt-zmelt )*snomel/dtt 
 !                                                                       
-      safe = amax1( ( 1.-areas*realg ), 1.e-8 ) 
+      safe = max( ( 1.-areas*realg ), 1.e-8 ) 
       dts = tf-0.01 - ts + avheat / ( cctt*safe )*dtt 
       go to 500 
 !                                                                       
@@ -1804,7 +2144,7 @@
 !                                                                       
       tbulk = tsnow*areas + ts*( 1. - areas ) 
       tn = tbulk + dts 
-      exheat = cct*( 1.001-amax1(0.1,areas)) * dts 
+      exheat = cct*( 1.001-max(0.1,areas)) * dts 
       exmelt = flux*dtt - exheat 
       heat = exheat 
       dtsg = exheat / ( cct*(1.001-areas )) 
@@ -1817,19 +2157,19 @@
       if( exmelt .lt. 0. ) go to 400 
       zmelt = exmelt/snomel 
       if( asnow*(snoww(iveg)-zmelt) .lt. 1. )                           &
-     &           zmelt = amax1( 0., snoww(iveg) - 1./asnow )            
+     &           zmelt = max( 0., snoww(iveg) - 1./asnow )            
       snoww(iveg) = snoww(iveg) - zmelt 
       exmelt = exmelt - zmelt*snomel 
       zmelt2 = exmelt/ ( cct*( ts-tf )*asnow + snomel ) 
-      zmelt2 = amin1( zmelt2, snoww(iveg) ) 
+      zmelt2 = min( zmelt2, snoww(iveg) ) 
       zmelt = zmelt + zmelt2 
       snoww(iveg) = snoww(iveg) - zmelt2 
       exmelt = exmelt - zmelt2*( cct*( ts-tf )*asnow + snomel ) 
       dts  = dtsg + exmelt/cct 
       go to 500 
 !                                                                       
-  400 cool = amin1( 0., tf-0.01 - (ts+dtsg) ) * cct*(1.-areas) 
-      dtsg2 = amax1 ( cool, exmelt ) / ( cct*( 1.001-areas ) ) 
+  400 cool = min( 0., tf-0.01 - (ts+dtsg) ) * cct*(1.-areas) 
+      dtsg2 = max ( cool, exmelt ) / ( cct*( 1.001-areas ) ) 
       exmelt = exmelt - dtsg2*cct*(1.-areas) 
       dtsg3 =exmelt/cctt 
       dts = dtsg + dtsg2 + dtsg3 
@@ -1858,10 +2198,27 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-       include 'comsibc.h' 
-!                                                                       
+      use comsibc 
+      implicit none
+      !
+      real (kind=8) :: cosd
+      real (kind=8) :: coshr
+      real (kind=8) :: dawn
+      real (kind=8) :: dayspy
+      real (kind=8) :: dec
+      real (kind=8) :: decmax
+      real (kind=8) :: dusk
+      real (kind=8) :: h
+      real (kind=8) :: hac
+      real (kind=8) :: rfd
+      real (kind=8) :: season
+      real (kind=8) :: sind
+      real (kind=8) :: sols
+      real (kind=8) :: sr
+      real (kind=8) :: ss
+      !
       dayspy = 365. 
-      if ( amod( year, 4. ) .eq. 0. ) dayspy = 366. 
+      if ( mod( year, 4. ) .eq. 0. ) dayspy = 366. 
 !                                                                       
 !-----------------------------------------------------------------------
 !    julian day and time update; skip on 1st time step (initialized)    
@@ -1881,7 +2238,7 @@
 !-----------------------------------------------------------------------
 !                                                                       
       decmax = pie * ( 23.5 / 180.) 
-      sols   = ( 4141./24. ) + amod( year+3., 4. ) * 0.25 
+      sols   = ( 4141./24. ) + mod( year+3., 4. ) * 0.25 
 !                                                                       
       season = ( day - sols ) / 365.2 
       dec    = decmax * cos ( 2. * pie * season ) 
@@ -1890,8 +2247,8 @@
       sind = sin( dec ) 
       cosd = cos( dec ) 
       hac  = -tan( zlat * rfd )*tan( dec ) 
-      hac  = amin1(hac,1.0) 
-      hac  = amax1(hac,-1.0) 
+      hac  = min(hac,1.0) 
+      hac  = max(hac,-1.0) 
 !                                                                       
 !-----------------------------------------------------------------------
 !     h is the half-day length (in radians)                             
@@ -1904,7 +2261,7 @@
       ss  = 12.+(h/(15.*rfd)) 
       coshr = cos( - pie + (time + 0.5*dtt/3600.) / 24. * 2. * pie ) 
       sunang = sin( zlat*rfd ) * sind + cos ( zlat*rfd ) * cosd * coshr 
-      sunang = amax1( 0.01, sunang ) 
+      sunang = max( 0.01, sunang ) 
 !                                                                       
       return 
       END                                           
@@ -1990,11 +2347,43 @@
 !                                                                       
 !         SE-89                                                         
 !-----------------------------------------------------------------------
-       include 'comsibc.h' 
-!                                                                       
+      use comsibc
+      implicit none
+      !
+      real (kind=8) :: arg1
+      real (kind=8) :: bot
+      real (kind=8) :: coef3
+      real (kind=8) :: finc
+      real (kind=8) :: gfac
+      real (kind=8) :: hm1
+      real (kind=8) :: hm2
+      real (kind=8) :: hrb
+      real (kind=8) :: hress
+      real (kind=8) :: hss
+      integer :: iwalk
+      integer :: lx
+      integer :: nonpos
+      integer :: nox
+      real (kind=8) :: ps1
+      real (kind=8) :: ps2
+      real (kind=8) :: raf
+      real (kind=8) :: raf1
+      real (kind=8) :: rafmax
+      real (kind=8) :: ram
+      real (kind=8) :: rbbest
+      real (kind=8) :: top
+      real (kind=8) :: uest
+      real (kind=8) :: us1 = 0d0
+      real (kind=8) :: us2
+      real (kind=8) :: uss
+      real (kind=8) :: y
+      real (kind=8) :: zl
+      real (kind=8) :: zx1
+      real (kind=8) :: zx2
+      !
       hress = ht 
       zl    = z2 + ztz0 * z0 
-      uest  = vkc*um / alog((zwind-xdx)/z0) 
+      uest  = vkc*um / log((zwind-xdx)/z0) 
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
@@ -2009,10 +2398,10 @@
       go to 200 
   100 zx1 = zwind - xdx 
       zx2 = zl - xdx 
-      top = alog( zx1 / zx2 ) 
+      top = log( zx1 / zx2 ) 
       zx1 = zl - xdx 
       zx2 = z2 - xdx 
-  200 bot = alog( zx1 / zx2 ) 
+  200 bot = log( zx1 / zx2 ) 
       ram = 1. / ( vkc * uest ) * ( top + g2 * bot ) 
       u2 = um - ram * uest**2 
 !                                                                       
@@ -2024,7 +2413,7 @@
 !                                                                       
        zx1 = zwind - xdx 
        zx2 = 0. 
-       arg1 = alog ( zx1 / z0 ) 
+       arg1 = log ( zx1 / z0 ) 
 !                                                                       
 !-----------------------------------------------------------------------
 !         initialize newton-raphson iterative routine                   
@@ -2078,13 +2467,13 @@
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
-       gfac = alog((zwind - xdx)/z0) 
+       gfac = log((zwind - xdx)/z0) 
        hm1  = -0.95*tm*rhoair*cpair/(2.0*4.7*gx*(zwind-xdx))*           &
      &          (2.0*um/3.0)**3*(vkc/gfac)**2                           
        hm2  = 5.0*hm1 
        us2  = vkc*um/(gfac+4.7) 
        if( ht .lt. hm2 ) go to 310 
-       ht = amax1 ( hm1 , ht ) 
+       ht = max ( hm1 , ht ) 
 !                                                                       
 !---------------------------------------------------------------------- 
 !                                                                       
@@ -2133,8 +2522,8 @@
        call rafcal ( zl, us2, hm2, rafmax ) 
 !                                                                       
        if ( ht .lt. hm2 ) go to 410 
-       hss = amax1 ( hm1, ht ) 
-       uss = amax1 ( us1, uest ) 
+       hss = max ( hm1, ht ) 
+       uss = max ( us1, uest ) 
 !                                                                       
        call rafcal ( zl, uss, hss, raf ) 
 !                                                                       
@@ -2142,7 +2531,7 @@
        raf1 = raf 
        raf  = ( ht-hm2 ) / ( hm1-hm2 ) * ( raf1 - rafmax ) + rafmax 
 !                                                                       
-  410  raf = amin1 ( raf , rafmax ) 
+  410  raf = min ( raf , rafmax ) 
 !                                                                       
 !-----------------------------------------------------------------------
 !     above canopy variables calculated.                                
@@ -2193,26 +2582,39 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-       include 'comsibc.h' 
-!                                                                       
-       dimension x(2) 
-!                                                                       
+       use comsibc 
+       implicit none
+       ! dimension x(2)
+       real (kind=8) :: x(2)
+       !
+       real (kind=8) :: uest
+       real (kind=8) :: a
+       real (kind=8) :: b
+       real (kind=8) :: argz
+       real (kind=8) :: heat
+       real (kind=8) :: psione
+       real (kind=8) :: psitwo
+       real (kind=8) :: fac
+       integer :: i
+       real (kind=8) :: zin
+       real (kind=8) :: zml
+       !
        zin = a 
 !                                                                       
        do 1000 i=1,2 
-       zml = -uest**3 * rhoair * cpair * tm 
-       zml = zml / ( vkc*gx*heat ) 
-       fac = 16.0 * zin/zml 
-       x(i) = ( 1. - fac )**0.25 
-       zin = b 
+          zml = -uest**3 * rhoair * cpair * tm 
+          zml = zml / ( vkc*gx*heat ) 
+          fac = 16.0 * zin/zml 
+          x(i) = ( 1. - fac )**0.25 
+          zin = b 
  1000  continue 
 !                                                                       
-       psione = 2.*alog((1.+x(1))/(1.+x(2)))+alog((1.+x(1)**2)/         &
+       psione = 2.*log((1.+x(1))/(1.+x(2)))+log((1.+x(1)**2)/         &
      &         (1.+x(2)**2))-2.*atan(x(1))+2.*atan(x(2))                
-       psione = amin1 ( argz * 0.75, psione ) 
+       psione = min ( argz * 0.75, psione ) 
 !                                                                       
-       psitwo = 2.*alog((1.+x(1)**2)/(1.+x(2)**2)) 
-       psitwo = amin1 ( argz * 0.75, psitwo ) 
+       psitwo = 2.*log((1.+x(1)**2)/(1.+x(2)**2)) 
+       psitwo = min ( argz * 0.75, psitwo ) 
 !                                                                       
        return 
       END                                           
@@ -2227,8 +2629,17 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-       include 'comsibc.h' 
-!                                                                       
+       use comsibc
+       implicit none
+       !
+       real (kind=8) :: uest
+       real (kind=8) :: a
+       real (kind=8) :: b
+       real (kind=8) :: heat
+       real (kind=8) :: psione
+       real (kind=8) :: psitwo
+       real (kind=8) :: zml
+       !
        psione = 0. 
        psitwo = 0. 
        if ( abs(heat) .le. 1.e-4 ) go to 100 
@@ -2237,7 +2648,7 @@
        zml = zml / ( vkc*gx*heat ) 
 !                                                                       
        psione = -4.7 * ( a-b ) / zml 
-       psione = amax1( -4.7, psione ) 
+       psione = max( -4.7, psione ) 
 !                                                                       
        psitwo = psione 
 !                                                                       
@@ -2256,8 +2667,21 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-       include 'comsibc.h' 
-!                                                                       
+       use comsibc 
+       implicit none
+       !
+       real (kind=8) :: zl
+       real (kind=8) :: uest
+       real (kind=8) :: heat
+       real (kind=8) :: raf
+       real (kind=8) :: arg
+       real (kind=8) :: bot
+       real (kind=8) :: ps1
+       real (kind=8) :: ps2
+       real (kind=8) :: top
+       real (kind=8) :: zx1
+       real (kind=8) :: zx2
+       !
        if ( zmet .gt. zl ) go to 100 
 !                                                                       
        top = 0. 
@@ -2267,7 +2691,7 @@
 !                                                                       
    100 zx1 = zmet - xdx 
        zx2 = zl - xdx 
-       arg = alog( zx1 / zx2 ) 
+       arg = log( zx1 / zx2 ) 
        if ( heat .gt. 0. )                                               &
            call unstab ( uest, zx1, zx2, arg, heat, ps1, ps2)          
        if ( heat .le. 0. )                                               &
@@ -2277,7 +2701,7 @@
        zx1 = zl - xdx 
        zx2 = z2 - xdx 
 !                                                                       
-   200 arg = alog ( zx1 / zx2 ) 
+   200 arg = log ( zx1 / zx2 ) 
        if ( heat .gt. 0. )                                               &
            call unstab ( uest, zx1, zx2, arg, heat, ps1, ps2)          
        if ( heat .le. 0. )                                               &
@@ -2308,23 +2732,49 @@
 !      control values: finc,ertol,nox,nonpos,l:must be set by user      
 !-----------------------------------------------------------------------
 !                                                                       
-       dimension iter(3), iwalk(3), nex(3) 
-       dimension zinc(3), a2(3), y1(3) 
+       ! dimension iter(3), iwalk(3), nex(3) 
+       ! dimension zinc(3), a2(3), y1(3) 
+!
        !importate salvar "save" as variaveis locais (iter, a2 e y2)
        !das subrotinas, fora do common, bem como
        !determinar os valores iniciais para evitar valores aleatorios
        !alocados na memoria. As opcoes de compilacao:
        !gfortran -fno-automatic -finit-local-zero tem resolvido isto
        !nas demais subrotinas (Evandro M Anselmo)
-       save iter, a2, y1 
-       data cons/1.0/ 
+!
+       ! save iter, a2, y1 
+       ! data cons/1.0/ 
        ! data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
-       cons = 1.0
-       iter = (/ 0,0,0 /)
-       ! print *, a2, ' a2'
-       ! print *, y1, ' y1'
-       ! print *, iter, ' iter'
-              
+
+       implicit none
+       integer, save :: iter(3) = (/0,0,0/)
+       real (kind=8), save :: a2(3) = (/0d0,0d0,0d0/)
+       real (kind=8), save :: y1(3) = (/0d0,0d0,0d0/)
+       real (kind=8) :: cons = 1.0 
+       integer :: iwalk(3)
+       integer :: nex(3) 
+       real (kind=8) :: zinc(3) = (/0d0,0d0,0d0/)
+       !
+       real (kind=8) :: a1
+       real (kind=8) :: y
+       real (kind=8) :: finc
+       integer :: nox
+       integer :: nonpos
+       integer :: iwolk
+       integer :: l
+       real (kind=8) :: a
+       real (kind=8) :: ertol
+       real (kind=8) :: step
+       !
+       ! data cons/1.0/ 
+       ! data iter /0,0,0/, a2 /0.,0.,0./, y1 /0.,0.,0./
+       
+       iter = (/0,0,0/)
+       !a2 = (/0.,0.,0./)
+       !y1 = (/0.,0.,0./)
+       ! cons = 1.0
+       ! print *, iter
+       !                                                                       
        ertol = 0.05 * finc 
        iwalk(l) = iwolk 
        nex(l)=nox 
@@ -2337,7 +2787,7 @@
        if(abs(y1(l)).gt.ertol) go to 1 
        a2(l)=a1 
 !**    a1=a1-y                                                          
-       step = amin1( abs(y), abs(10.*finc) ) * sign(cons,y) 
+       step = min( abs(y), abs(10.*finc) ) * sign(cons,y) 
        a1=a1-step 
        nex(l)=0 
        y1(l)=y 
@@ -2412,7 +2862,7 @@
 !                                                                       
 !=======================================================================
 !                                                                       
-      subroutine gauss ( a, n, np1, x, work ) 
+      subroutine gauss ( a, n, np1, x, work)
 !                                                                       
 !=======================================================================
 !                                                                       
@@ -2423,32 +2873,41 @@
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
-       include 'comsibc.h' 
-!                                                                       
-      dimension a(4,5),work(4,5),x(4) 
+      use comsibc 
+      implicit none
+      !dimension a(4,5),work(4,5),x(4)
+      real (kind=8) :: a(4,5)
+      real (kind=8) :: work(4,5)
+      real (kind=8) :: x(4)
+      integer :: n
+      integer :: np1
+      integer :: i
+      integer :: j
+      integer :: k
+      integer :: l
+      real (kind=8) :: r
 !                                                                       
       do 1000 i=1,n 
-      do 1000 j=1,np1 
- 1000 work(i,j)=a(i,j) 
+         do 1000 j=1,np1 
+ 1000       work(i,j)=a(i,j) 
 !                                                                       
       do 20 i=2,n 
-      do 20 j=i,n 
-!                                                                       
-      r=work(j,i-1)/work(i-1,i-1) 
+         do 20 j=i,n 
+            r=work(j,i-1)/work(i-1,i-1) 
 !                                                                       
       do 20 k=1,np1 
-   20 work(j,k)=work(j,k)-r*work(i-1,k) 
+   20    work(j,k)=work(j,k)-r*work(i-1,k) 
 !                                                                       
       do 30 i=2,n 
-      k=n-i+2 
-      r=work(k,np1)/work(k,k) 
+         k=n-i+2 
+         r=work(k,np1)/work(k,k) 
 !                                                                       
       do 30 j=i,n 
-      l=n-j+1 
-   30 work(l,np1)=work(l,np1)-r*work(l,k) 
+         l=n-j+1 
+   30    work(l,np1)=work(l,np1)-r*work(l,k) 
 !                                                                       
       do 40 i=1,n 
-   40 x(i)=work(i,np1)/work(i,i) 
+   40    x(i)=work(i,np1)/work(i,i) 
 !                                                                       
       return 
       END                                           

@@ -31,10 +31,23 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-      include 'comsibc.h' 
-                                                                        
-      real extra2p(nlayer) 
-                                                                        
+      use comsibc 
+      implicit none
+      real (kind=8) :: extra2p(nlayer)
+      !
+      real (kind=8) :: ectdif
+      real (kind=8) :: ectil
+      real (kind=8) :: ectnew
+      real (kind=8) :: egsdif
+      real (kind=8) :: extrak
+      real (kind=8) :: facks
+      real (kind=8) :: facl
+      integer :: il
+      integer :: iveg
+      real (kind=8) :: qm = 0d0
+      real (kind=8) :: rsnow
+      real (kind=8) :: th = 0d0
+
 !       write(98,*)' updat2: begin'                                     
 !       write(98,*)' updat2: to call snow1'                             
                                                                         
@@ -239,17 +252,49 @@
 !                                                                       
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
-      include 'comsibc.h' 
-!                                                                       
-      dimension  pcoefs(2,2) 
-      data pcoefs(1,1)/ 20. /, pcoefs(1,2)/ .206e-8 /,                  &
-     &     pcoefs(2,1)/ 0.0001 /, pcoefs(2,2)/ 0.9999 /, bp /20. /      
+      use comsibc 
+      implicit none
+      !                                                                       
+      ! dimension  pcoefs(2,2) 
+      ! data pcoefs(1,1)/ 20. /, pcoefs(1,2)/ .206e-8 /,                  &
+      !&     pcoefs(2,1)/ 0.0001 /, pcoefs(2,2)/ 0.9999 /, bp /20. /      
 
-      pcoefs(1,1) = 20.
+      real (kind=8) :: pcoefs(2,2)
+      real (kind=8) :: bp
+      real (kind=8) :: aa
+      real (kind=8) :: ap
+      real (kind=8) :: arg
+      real (kind=8) :: bb
+      real (kind=8) :: capacp
+      real (kind=8) :: chiv
+      real (kind=8) :: cp
+      real (kind=8) :: equdep
+      real (kind=8) :: fpi
+      integer :: iveg
+      real (kind=8) :: p0
+      real (kind=8) :: pinf
+      real (kind=8) :: realc
+      real (kind=8) :: realg
+      real (kind=8) :: roffo
+      real (kind=8) :: shcap
+      real (kind=8) :: slamda
+      real (kind=8) :: snowwp
+      real (kind=8) :: spechc
+      real (kind=8) :: tex
+      real (kind=8) :: thru
+      real (kind=8) :: totalp
+      real (kind=8) :: ts
+      real (kind=8) :: tti
+      real (kind=8) :: xs
+      real (kind=8) :: xsc
+      real (kind=8) :: xss
+      real (kind=8) :: zload
+      ! 
+      pcoefs(1,1) = 20.0
       pcoefs(1,2) = 0.206e-8
-      pcoefs(2,1) = 0.0001 
+      pcoefs(2,1) = 0.0001
       pcoefs(2,2) = 0.9999
-      bp = 20.
+      bp = 20.      
 !                                                                       
 !-----------------------------------------------------------------------
 !                                                                       
@@ -270,18 +315,16 @@
       if(totalp.lt.1.e-8) go to 100 
       ap = ppc/totalp * pcoefs(1,1) + ppl/totalp * pcoefs(2,1) 
       cp = ppc/totalp * pcoefs(1,2) + ppl/totalp * pcoefs(2,2) 
-  100 continue 
-!                                                                       
-!sml...                                                                 
-                  ! surface runoff                                      
-      croff  = 0.	 
-                  ! incoming thrufall to soil surface                   
-      cthru  = 0.	 
-!sml...                                                                 
-      roff = 0. 
-      thru = 0. 
-      fpi  = 0. 
-!                                                                       
+  100 continue
+!
+!sml...
+      croff = 0. ! surface runoff
+      cthru = 0. ! incoming thrufall to soil surface
+!sml...
+      roff = 0.
+      thru = 0.
+      fpi = 0.
+!
 !---------------------------------------------------------------------- 
 !     heat capacity of the soil, as used in force-restore heat flux     
 !     description. dependence of csoil on porosity and wetness is       
@@ -341,7 +384,7 @@
          if ( p0 .lt. 1.e-9 ) go to 200 
          arg =  ( satcap(iveg)-zload )/( p0*fpi*ap ) -cp/ap 
          if ( arg .lt. 1.e-9 ) go to 200 
-         xs = -1./bp * alog( arg ) 
+         xs = -1./bp * log( arg ) 
          xs = amin1( xs, 1. ) 
          xs = amax1( xs, 0. ) 
   200    tex = p0*fpi * ( ap/bp*( 1.- exp( -bp*xs )) + cp*xs ) -       &
@@ -399,7 +442,7 @@
          if ( thru .lt. 1.e-9 ) go to 400 
          arg = equdep / ( thru * ap ) -cp/ap 
          if ( arg .lt. 1.e-9 ) go to 400 
-         xs = -1./bp * alog( arg ) 
+         xs = -1./bp * log( arg ) 
          xs = amin1( xs, 1. ) 
          xs = amax1( xs, 0. ) 
   400    roffo = thru * ( ap/bp * ( 1.-exp( -bp*xs )) + cp*xs )        &
@@ -435,7 +478,7 @@
          if (iinf.eq.1) then 
             q0 = amax1 (0., (1.0 - www(1))*zdepth(1)*poros(1) )                     
             q0 = ( amin1 (q0, thru-roffo) ) / dtt                 ! m/s
-            roff = roff + amax1 ( 0., thru - q0*dtt)	 
+            roff = roff + amax1 ( 0., thru - q0*dtt)
          endif
          
          if (iinf.eq.2.or.iinf.eq.6) then 
@@ -489,7 +532,20 @@
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 !                                                                       
 !---------------------------------------------------------------------- 
-      include 'comsibc.h' 
+      use comsibc
+      implicit none  
+      real (kind=8) :: x
+      !
+      real (kind=8) :: argg
+      real (kind=8) :: fac
+      integer :: i
+      real (kind=8) :: phroot
+      real (kind=8) :: psit
+      real (kind=8) :: rsnow
+      real (kind=8) :: rstfac2p
+      real (kind=8) :: tsnow
+      real (kind=8) :: e
+      real (kind=8) :: ge
 !                                                                       
 !---------------------------------------------------------------------- 
 !     e(x) is vapour pressure in mbars as a function of temperature     
@@ -612,10 +668,10 @@
                                                                         
    40 continue 
                                                                         
-      rstfac(2)=rstfac2p	 
-      rstfac(2) = amax1( 0.0001, rstfac(2) ) 
-      rstfac(2) = amin1( 1.,     rstfac(2) ) 
-                                                                        
+      rstfac(2)=rstfac2p
+      rstfac(2) = amax1( 0.0001, rstfac(2) )
+      rstfac(2) = amin1( 1.,     rstfac(2) )
+
 !        write(98,'22f8.7') (www(i),i= 1, nlayer)                       
                                                                         
 !	if (nymd.eq.40101512.or.nymd.eq.40041512)                             
@@ -669,15 +725,48 @@
 ! ALL (see routine inter2 for q0 calculation)                           
 !....................................................................   
                                                                         
-      include 'comsibc.h' 
+      use comsibc
+      implicit none  
 !                                                                       
-      real temw(nlayer), temwp(nlayer), temwpp(nlayer),                 &
-     &  a(nlayer), b(nlayer), c(nlayer), d(nlayer),                     &
-     &  da(nlayer), db(nlayer), dc(nlayer)                              
-      logical wavend 
-!HR                                                                     
-      dimension qdowrd(nlayer), qupwrd(nlayer), qhorton(nlayer) 
-                                                                        
+     !  real temw(nlayer), temwp(nlayer), temwpp(nlayer),                 &
+     ! &  a(nlayer), b(nlayer), c(nlayer), d(nlayer),                     &
+     ! &  da(nlayer), db(nlayer), dc(nlayer)                              
+     !  logical wavend
+!
+      real (kind=8) :: temw(nlayer)
+      real (kind=8) :: temwp(nlayer)
+      real (kind=8) :: temwpp(nlayer)
+      real (kind=8) :: a(nlayer)
+      real (kind=8) :: b(nlayer)
+      real (kind=8) :: c(nlayer)
+      real (kind=8) :: d(nlayer)
+      real (kind=8) :: da(nlayer)
+      real (kind=8) :: db(nlayer)
+      real (kind=8) :: dc(nlayer)
+      logical :: wavend                                                       
+      !dimension qdowrd(nlayer), qupwrd(nlayer), qhorton(nlayer)------
+      real (kind=8) :: qdowrd(nlayer)
+      real (kind=8) :: qupwrd(nlayer)
+      real (kind=8) :: qhorton(nlayer)
+      !---------------------------------------------------------------
+      real (kind=8) :: avdif
+      real (kind=8) :: avk
+      real (kind=8) :: cs = 0d0
+      real (kind=8) :: d10
+      real (kind=8) :: deficit
+      real (kind=8) :: dpdw
+      real (kind=8) :: dpsidz
+      real (kind=8) :: excess
+      integer :: i
+      real (kind=8) :: pows
+      real (kind=8) :: q0now
+      real (kind=8) :: qmax
+      real (kind=8) :: qmin
+      real (kind=8) :: qstar
+      real (kind=8) :: wover
+      real (kind=8) :: xni
+      real (kind=8) :: zpond
+      !
       do 1000 i= 1, nlayer 
          temw(i)= amax1( 0.03, www(i) ) 
          temwp(i)= temw(i) ** (-bee(i)) 
@@ -700,9 +789,9 @@
 !-----------------------------------------------------------------------
 !	iinf  > 1                                                             
 !-----------------------------------------------------------------------
-      if (iinf.gt.1) then	 
-         q0now = q0 
-         wavend = .false. 
+      if (iinf.gt.1) then
+         q0now = q0
+         wavend = .false.
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          if (q0now.gt.0.) then ! throughfall event                     
 !.......................................................................
@@ -721,7 +810,7 @@
                zpond = amax1(0., (1.-www(i)) * zdepth(i)*poros(i)) 
                call retec ( dpdw, 1, i)! dpsi/dw at saturation
                                        ! threshold p/ capac infiltracao 
-               xni = dpdw / zdepth(i)	 
+               xni = dpdw / zdepth(i)
                qstar = satco(i)*( xni*www(i) + 1. - xni) ! infiltração
                                                          !      Horton 
                qstar = amin1 (qstar, 0.) ! only negative flux is
@@ -740,9 +829,9 @@
                if (q0now.eq.0.) then ! há oferta (mas não infiltra em
                                      ! alguns casos iinf)
                   if (iinf.eq.4.or.iinf.eq.5.or.iinf.eq.6) wavend =  &
-     &                 .true.				                                       
+     &                 .true.
                endif
-                             
+
                www(i) = www(i) + q0now*dtt/(zdepth(i)*poros(i)) !
                                     !absorvido (ou não, se infiltrado=0)
                wover = amax1( 0., (www(i)-1.)) ! check arredon/to
@@ -766,7 +855,7 @@
          endif           ! throughfall event
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          croff = croff + q0now*dtt !...excess to surface runoff
-         roff  =  roff + q0now*dtt	 
+         roff  =  roff + q0now*dtt
 !-----------------------------------------------------------------------
       endif              !  option iinf > 1
 !---------------------------------------------------------------------- 
@@ -791,7 +880,7 @@
       do 49 i= 1, nlayer 
          temw(i)= amax1( 0.03, www(i) )        ! W 
          temwp(i)= temw(i) ** (-bee(i))        ! Psi
-         temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.)	 
+         temwpp(i)= amin1( 1., temw(i) ) ** (2.*bee(i)+3.)
    49 continue 
 !-------------------------------------------------------------------    
 !	 Flow between soil layers, diffusion equation in multi-layer scheme   
@@ -842,17 +931,17 @@
             dpsidz = phsat(i) * temwp(i) 
             dpsidz = dpsidz - phsat(i+1) * temwp(i+1) 
             dpsidz = 2.* dpsidz / (zdepth(i) + zdepth(i+1)) 
-            qqq(i) = -avk * (dpsidz + 1.)	 
+            qqq(i) = -avk * (dpsidz + 1.)
          endif
-         jqini = -999. 
+         jqini = -999
 !... 	matriz multi-camada: esquema backward                             
          if (jesq.eq.1) then 
             a(i) = -2.*dtt*avdif / (zdepth(i) * (zdepth(i) +            &
      &        zdepth(i+1)))                                             
             b(i) =  2.*dtt*avdif / (zdepth(i) * zdepth(i+1)) + 1. 
             c(i) = -2.*dtt*avdif / (zdepth(i+1) * (zdepth(i) +          &
-     &        zdepth(i+1)))	                                            
-            d(i) = qqq(i) 
+     &        zdepth(i+1)))
+            d(i) = qqq(i)
             if (i.eq.1) a(i) = 0. 
             if (i.eq.nlayer-1) c(i) = 0. 
 !        if (i.eq.1) write(itmp5,'(a8,a3,1x, a5, 5(4x,a9),5(4x,a8))')   
@@ -864,11 +953,11 @@
 !     &    log(avdif* 3.6e5)                                            
          endif
 !...     matriz multi-camada: esquema Crank-Nicolson                    
-         if (jesq.eq.2) then	 
+         if (jesq.eq.2) then
             a(i) = -dtt*avdif / (zdepth(i) * (zdepth(i) + zdepth(i+1))) 
             b(i) =  1. + dtt*avdif / (zdepth(i) * zdepth(i+1)) 
             c(i) = -dtt*avdif / (zdepth(i+1) * (zdepth(i) +             &
-     &        zdepth(i+1)))	                                            
+     &        zdepth(i+1)))
             if (i.eq.1) a(i) = 0. 
             if (i.eq.nlayer-1) c(i) = 0. 
             da(i) = -a(i) 
@@ -914,18 +1003,18 @@
       do 3000 i= 1, nlayer-1 
                                                                         
          qqq(i)= d(i) 
-         if (jesq.eq.3) qqq(i) = 0.	 
-                                                                        
-         if (qqq(i).lt.0.) qdowrd(i+1) = qdowrd(i+1) + abs(qqq(i)) 
-         if (qqq(i).gt.0.) qupwrd(i+1) = qupwrd(i+1) + qqq(i)	 
-                                                                        
-         qmin=  -www(i)   * (poros(i)  *zdepth(i)  /dtt)	 
-         qmax=   www(i+1) * (poros(i+1)*zdepth(i+1)/dtt) 
-         qqq(i)= amin1( qqq(i), qmax ) 
-         qqq(i)= amax1( qqq(i), qmin ) 
-         www(i)  = www(i)   + qqq(i)/(poros(i)  *zdepth(i)  /dtt) 
-         www(i+1)= www(i+1) - qqq(i)/(poros(i+1)*zdepth(i+1)/dtt) 
-                                                                        
+         if (jesq.eq.3) qqq(i) = 0.
+
+         if (qqq(i).lt.0.) qdowrd(i+1) = qdowrd(i+1) + abs(qqq(i))
+         if (qqq(i).gt.0.) qupwrd(i+1) = qupwrd(i+1) + qqq(i)
+
+         qmin = -www(i)*(poros(i)*zdepth(i)/dtt)
+         qmax = www(i+1)*(poros(i+1)*zdepth(i+1)/dtt)
+         qqq(i) = amin1(qqq(i), qmax )
+         qqq(i) = amax1(qqq(i), qmin )
+         www(i) = www(i)+qqq(i)/(poros(i)*zdepth(i)/dtt)
+         www(i+1) = www(i+1)-qqq(i)/(poros(i+1)*zdepth(i+1)/dtt) 
+
 !...  qqq(i): fluxo base camada i (+downward) =                         
 !     qdowrd,qupwrd(i+1): fluxo topo camada i+1 	                       
 !     if (qqq(i).gt.0.) qdowrd(i+1) = qdowrd(i+1) + qqq(i)              
@@ -1001,9 +1090,25 @@
 !..	output: cdpdw (derivada curva retencao) dpsi / dw                   
 !                                                                       
 !---------------------------------------------------------------------- 
-      include 'comsibc.h' 
+      use comsibc 
+      implicit none
+      real (kind=8) :: dpdw
+      integer :: jhort
+      integer :: i
+      real (kind=8) :: dpdw1
+      real (kind=8) :: dpdw2
+      integer :: j
+      real (kind=8) :: pmax
+      real (kind=8) :: pmin
+      real (kind=8) :: psi1
+      real (kind=8) :: psi2
+      real (kind=8) :: w0
+      real (kind=8) :: w1
+      real (kind=8) :: w2
+      real (kind=8) :: wmax
+      real (kind=8) :: wmin = 0d0
 !...                                                                    
-      j = i + 1	 
+      j = i + 1
 !                                                                       
       if (i.gt.1) then 
          w0 = amin1(www(i-1),1.) 
@@ -1040,7 +1145,7 @@
             wmin= amin1(w0,w1,w2,wmin) 
             wmin= amax1(wmin,1.0e-02) 
          endif 
-         if (wmin.eq.wmax) then 
+         if (wmin.eq.wmax) then
             wmin= (pmax-1./(phsat(i)*(zdepth(i-1)+2.*zdepth(i)+         &
      &        zdepth(i+1))))                                            
             wmin= amax1(wmin,1.0e-03) 
@@ -1056,41 +1161,59 @@
       if (jdpsi.eq.2) then ! media ponderada espessura	                 	 
          dpdw = ( dpdw1  * zdepth(i) +  dpdw2  * zdepth(i+1) ) /        &
      &   ( zdepth(i+1) + zdepth(i) )                                    
-      endif	 
+      endif
 !...	                                                                   
       if (jdpsi.eq.3) then ! media geometrica	                          	 
          dpdw = sqrt( dpdw1 * dpdw2 ) 
-      endif	 
+      endif
 !...                                                                    
       if (jdpsi.eq.4) then ! media aritmetica	                          	 
          dpdw = ( dpdw1 + dpdw2 )/2. 
-      endif	 
+      endif
       return 
       END                                           
                                                                         
 !====================================================================   
-      subroutine hydcon (avk, i)	 
+      subroutine hydcon (avk, i)
 !====================================================================   
 !                                                                       
 !     avk (condutividade hidraulica segmento camadas i,i+1)             
 !                                                                       
 !--------------------------------------------------------------------   
-      include 'comsibc.h' 
-                                                                        
-      j = i + 1	 
+      use comsibc
+      implicit none
+      integer :: i
+      real (kind=8) :: avb
+      real (kind=8) :: avk
+      real (kind=8) :: avk1
+      real (kind=8) :: avk2
+      real (kind=8) :: avkmax
+      real (kind=8) :: avkmin
+      real (kind=8) :: div
+      integer :: j
+      real (kind=8) :: props
+      real (kind=8) :: psi1
+      real (kind=8) :: psi2
+      real (kind=8) :: rsame
+      real (kind=8) :: ts
+      real (kind=8) :: tsnow
+      real (kind=8) :: w1
+      real (kind=8) :: w2
+      
+      j = i + 1
       w1 = amin1(www(i),1.) 
       w1 = amax1(www(i),0.05) 
       w2 = amin1(www(j),1.) 
       w2 = amax1(www(j),0.05) 
-                                                                        
-      psi1 = phsat(i)* (w1**(-bee(i))) 
-      psi2 = phsat(j)* (w2**(-bee(j))) 
-      avk1 = satco(i)* (w1**(2.*bee(i)+3.))      	 
-      avk2 = satco(j)* (w2**(2.*bee(j)+3.)) 
-!...                                                                    
+
+      psi1 = phsat(i)*(w1**(-bee(i)))
+      psi2 = phsat(j)*(w2**(-bee(j)))
+      avk1 = satco(i)*(w1**(2.*bee(i)+3.))
+      avk2 = satco(j)*(w2**(2.*bee(j)+3.))
+!...
       if (jkcon.eq.1) then ! metodo ME-82                               	 
          rsame= 0. 
-         avb = (bee(i) + bee(j)) / 2.            	 
+         avb = (bee(i) + bee(j)) / 2.
          div= psi2 - psi1 
       if ( abs(div) .lt. 1.e-6 ) rsame=1. 
       avk = (psi1*avk1 - psi2*avk2) /                                   &
@@ -1105,11 +1228,11 @@
       if (jkcon.eq.2) then ! media ponderada espessura	                 	 
          avk = ( avk1  * zdepth(i) +  avk2  * zdepth(i+1) ) /           &
      &   ( zdepth(i+1) + zdepth(i) )                                    
-      endif	 
+      endif
 !...	                                                                   
       if (jkcon.eq.3) then ! media geometrica	                          	 
          avk = sqrt( avk1 * avk2 ) 
-      endif	 
+      endif
 !...                                                                       
       if (jkcon.eq.4) then ! media aritmetica	                          	 
          avk = ( avk1 + avk2 )/2. 
@@ -1141,11 +1264,25 @@
 !             b  : main diagonal coefs                                  
 !             c   :  suprior diagonal coefs                             
 !             a   : inferior diagonal coefs                             
-!--------------------------------------------------------------         
-      dimension c(n+1), a(n+1), b(n+1), d(n+1) 
+!--------------------------------------------------------------
+      implicit none
+      ! dimension c(n+1), a(n+1), b(n+1), d(n+1) 
+      ! c(1) = c(1)/b(1)
+      ! d(1) = d(1)/b(1)
+      integer :: n
+      real (kind=8) :: c(n+1)
+      real (kind=8) :: a(n+1)
+      real (kind=8) :: b(n+1)
+      real (kind=8) :: d(n+1)
+      !
+      integer :: i
+      integer :: ii
+      integer :: k
+      !
       c(1) = c(1)/b(1)
       d(1) = d(1)/b(1) 
-                                                                        
+
+      
       do 10 i = 2, (n-1), 1 
          ii = (i-1) 
          b(i) = b(i) - c(ii)*a(i) 
@@ -1173,13 +1310,39 @@
 !             sub   : inferior diagonal coefs                           
 !                                                                       
 !--------------------------------------------------------------         
-      parameter (nmax=30, mmax=30, kmax = 100) 
-      real d(n), sup(n), sub(n), diag(n) 
-      real a(mmax,nmax), b(mmax), x(nmax,2), dif(nmax) 
-      parameter (eps=1.e-06,itmax=50) ! critérios convergencia         
-      character aconv(3)*20 
-      logical conv 
-                                                                        
+      implicit none
+      !parameter (nmax=30, mmax=30, kmax = 100)
+      integer, parameter :: nmax=30
+      integer, parameter :: mmax=30
+      integer, parameter :: kmax = 100
+      !real d(n), sup(n), sub(n), diag(n)
+      integer :: n
+      real (kind=8) :: d(n)
+      real (kind=8) :: sup(n)
+      real (kind=8) :: sub(n)
+      real (kind=8) :: diag(n)
+      !real a(mmax,nmax), b(mmax), x(nmax,2), dif(nmax) 
+      real (kind=8) :: a(mmax,nmax)
+      real (kind=8) :: b(mmax)
+      real (kind=8) :: x(nmax,2)
+      real (kind=8) :: dif(nmax)
+      !parameter (eps=1.e-06,itmax=50) ! critérios convergencia         
+      real (kind=8), parameter :: eps = 1d-06
+      integer, parameter :: itmax = 50
+      !character aconv(3)*20
+      character (len=20) :: aconv(3) 
+      !logical conv
+      logical :: conv
+      !
+      integer :: ifi
+      integer :: inum
+      integer :: i
+      integer :: isum
+      integer :: it
+      integer :: j
+      integer :: k
+      integer :: m
+      !
       do 1 k= 1,3 
     1    aconv(k) = ' ' 
 
@@ -1224,7 +1387,7 @@
       do while (.not.conv) 
                                 ! recupera passo anterior               
          do 50 i= 1, n 
-            x(i,1) = x(i,2)	 
+            x(i,1) = x(i,2)
    50       x(i,2) = 0. 
 !---------------------------------------------------------------------- 
          do 56 i= 1, n 
@@ -1253,7 +1416,7 @@
             aconv(2) = ' eps<0 ' 
          endif 
 !...                                                                    
-         it = it + 1		 
+         it = it + 1
          if (it.eq.itmax) then 
             conv = .true. 
             aconv(3) = ' it=itmax ' 
