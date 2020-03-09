@@ -2,7 +2,7 @@
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
       subroutine sib2(z0d_param, dd_param, cc1_param, cc2_param, &
-           nlinha, vout_ustar, vout_zlt)
+           nlinha, vout)
 
 !                                                                       
 !=======================================================================
@@ -71,8 +71,7 @@
       real (kind=8), intent(in) :: cc1_param
       real (kind=8), intent(in) :: cc2_param
       ! saida
-      real (kind=8), intent(out) :: vout_ustar(nlinha)        
-      real (kind=8), intent(out) :: vout_zlt(nlinha)    
+      real (kind=8), intent(out) :: vout(nlinha)    ! vout(nlinha)
       !----------------------------------------------------------------------
       itmp1=88
       itmp2=78
@@ -80,14 +79,15 @@
       itmp4=80
       itmp5=81
       !
-      vout_ustar = -99999.
-      vout_zlt = -99999.
+      vout = -99999.
       itero = 0    ! Deve zerar a cada execucao do modulo SiB2pymod
       !
 !...  output files opening                                               
       !open(98,file='sib2diag.dat',status='unknown') 
       !open(itmp1,file='sib2dt.dat',status='unknown')	 
       !open(itmp2,file='sib2dt_SM.dat',status='unknown') !umidade do solo
+      open(82, file='zlt_aero_ts.dat', status='unknown')
+      
 !...
 !     parameters file  
       open(ichi, file='data1', status='old') 
@@ -112,9 +112,6 @@
          call const2 
          !write(98,'(A20)')'  to call driver'                             
          call driver (iu, icho, isnow, ichi, itero, nyfirst)
-         !print '(i8.8,F11.3,A15)', nymd, zlt , 'veja zlt'
-         vout_zlt(itero) = zlt
-         
          ! if (mod(iter,int(86400./dtt)).eq.0) then ! display screen cada dia	 
          !    ! write( *,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
          !    ! write(98,'(a17,1x,i8,2x,i8.8)') 'main: iter nymd=',iter,nymd 
@@ -162,7 +159,7 @@
          !--------------------------------------
          !Saida do SiB2pymod
          !use comsibc
-         vout_ustar(itero) = ustar
+         vout(itero) = ustar
          !--------------------------------------
          
          !write(98,'(A20)')'   passed outer'                              
@@ -173,6 +170,7 @@
                                                                         
       close(ichi) 
       close(iu) 
+      close(82)
       !close(itmp1) 
       !close(itmp2) 
 !H     close(itmp3)                                                    
@@ -663,20 +661,32 @@
 !                                                                        
       if (ilw.eq.1.and.zlwd.le.100.)                                    &
       stop 'warning: checar ilw: incompativel'                         
-!
-      !
+!...
+      
       !Implementa derive_trans
-      !
+      
       !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '  ANTES'
       !...      
-      ! call derive_trans(g1, z2, z1, chil, vcover, zlt, ztz0, & ! variaveis de entrada
-      !      vkc, gx, cpair, rhoair, &                           !
-      !      ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)        ! variaveis de saida
+      call derive_trans(g1, z2, z1, chil, vcover, zlt, ztz0, & ! variaveis de entrada
+           vkc, gx, cpair, rhoair, &                           !
+           ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)        ! variaveis de saida
       !...
       !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '  DEPOIS'
-      !
-      return 
-!                                                                        
+      !print '(10A11)', 'zlt', 'ha', 'z0d', 'dd', 'g2', 'g3', &
+      !      'cc1', 'cc2', 'corb1', 'corb2'
+      !print '(i8.8, 10F11.3)', nymd, zlt, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      !print *, nymd, zlt, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+
+      !faz serie de dados zlt e respectivo conjunto de parametros aerodinamicos
+      !para calibracao dos parametros--------------------
+      if (itero.eq.1) then
+         write (82, '(A8,10A11)') 'nymd', 'zlt', 'ha', 'z0d', 'dd', 'g2', 'g3', &
+              'cc1', 'cc2', 'corb1', 'corb2'
+      endif
+      write (82, '(i8.8,F11.1,9F11.3)') nymd, zlt, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      !--------------------------------------------------
+      return
+!...                                                                        
  1000 write(icho, 90)iu, nymd 
    90 format(5x,'eof encountered for unit= ',i2,' eof date = ',i8) 
       stop 
