@@ -8,12 +8,22 @@ import matplotlib.pyplot as plt
 # from importlib import reload
 import sib2pymod
 
+ha_param = 23.63
 z0d_param = 1.571
 dd_param = 26.606
+g2_param = 0.787
+g3_param = 0.787
 cc1_param = 8.12
 cc2_param = 727.80
+corb1_param = 7.89
+corb2_param = 387.49
+
 nlinha = 8784
 
-[ustar_c, zlt_ts] = sib2pymod.sib2(z0d_param, dd_param,
-                                   cc1_param, cc2_param, nlinha)
+# primeira rodada
+[ustar_c, zlt_ts] = sib2pymod.sib2(ha_param, z0d_param, dd_param, g2_param,
+                                   g3_param, cc1_param, cc2_param, corb1_param,
+                                   corb2_param,
+                                   nlinha)
+
 print(ustar_c, zlt_ts)

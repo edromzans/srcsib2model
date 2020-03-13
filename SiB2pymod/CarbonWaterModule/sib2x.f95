@@ -497,7 +497,12 @@
       !para modulo de calibracao: carbono e agua (Evandro)
       real (kind=8) :: greeness_param
       real (kind=8) :: vmax_param
-      
+      !para ler conjunto de parametros aerodinamicos calibrados
+      integer, parameter :: nlinha_zlt=21 !numero de linhas de zlt calibrado
+      integer, parameter :: digsig=10 ! inteiro para selecao dos digitos
+                                      ! significativos para comparacao dos
+                                      ! dos valores de zlt do sib2 com zlt do
+                                      ! arquivo de parametros calibrados
       e(x) = exp( 21.18123d0 - 5418.0d0 / x ) / 0.622d0
 
 !-----------------------------------------------------------------------
@@ -675,20 +680,30 @@
 !                                                                        
       if (ilw.eq.1.and.zlwd.le.100.)                                    &
       stop 'warning: checar ilw: incompativel'                         
-!
       !
-      !Implementa derive_trans
       !
-      !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '  ANTES'
-      !...      
-      ! call derive_trans(g1, z2, z1, chil, vcover, zlt, ztz0, & ! variaveis de entrada
-      !      vkc, gx, cpair, rhoair, &                           !
-      !      ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2)        ! variaveis de saida
-      !...
-      !print *, ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2, '  DEPOIS'
+      !Carrega os parametros aerodinamicos calibrados
+      print *,'-------ANTES-------'
+      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      !
+      ! Aqui e preciso informar:
+      ! nlinha_zlt : numero de linhas do arquivo de parametros
+      ! digsig : inteiro para selecionar o numero de digitos significativos
+      !          para comparacao de zlt do sib2 com o zlt referente ao arquivo
+      !          do conjunto de parametros aerodinamicos calibrados
+      ! zlt : zlt que vem do comsibc.f95
+      !
+      call load_aeropars(nlinha_zlt, digsig, zlt, &
+           ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2) ! saidas - reescreve os
+                                       ! parametros aerodinamicos
+                                       ! no passo de tempo considerendo a
+                                       ! a calibracao
+      !
+      print *,'-------DEPOIS-------'
+      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       return 
-!                                                                        
+      !                                                                        
  1000 write(icho, 90)iu, nymd 
    90 format(5x,'eof encountered for unit= ',i2,' eof date = ',i8) 
       stop 

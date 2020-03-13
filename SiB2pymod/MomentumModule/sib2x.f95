@@ -1,9 +1,9 @@
 !=======================================================================
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
-      subroutine sib2(z0d_param, dd_param, cc1_param, cc2_param, &
+      subroutine sib2(ha_param, z0d_param, dd_param, g2_param, &
+           g3_param, cc1_param, cc2_param, corb1_param, corb2_param,&
            nlinha, vout_ustar, vout_zlt)
-
 !                                                                       
 !=======================================================================
 !                                                                       
@@ -66,10 +66,15 @@
       !Variaveis para SiB2pymod:---------------------------------------------
       ! entrada via python      
       integer, intent(in) :: nlinha
+      real (kind=8), intent(in) :: ha_param
       real (kind=8), intent(in) :: z0d_param
       real (kind=8), intent(in) :: dd_param
+      real (kind=8), intent(in) :: g2_param
+      real (kind=8), intent(in) :: g3_param
       real (kind=8), intent(in) :: cc1_param
       real (kind=8), intent(in) :: cc2_param
+      real (kind=8), intent(in) :: corb1_param
+      real (kind=8), intent(in) :: corb2_param
       ! saida
       real (kind=8), intent(out) :: vout_ustar(nlinha)        
       real (kind=8), intent(out) :: vout_zlt(nlinha)    
@@ -98,10 +103,16 @@
       call veginc(ichi)
       !
       !recebe os parametros do processo de otimizacao---------------------
+      ! ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      ha = ha_param
       z0d = z0d_param
       dd = dd_param
+      g2 = g2_param
+      g3 = g3_param
       cc1 = cc1_param
       cc2 = cc2_param
+      corb1 = corb1_param
+      corb2 = corb2_param
       !-------------------------------------------------------------------
       !      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 

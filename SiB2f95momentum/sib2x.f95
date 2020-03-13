@@ -639,7 +639,7 @@
       !
       !Carrega os parametros aerodinamicos calibrados
       print *,'-------ANTES-------'
-      print '(4F11.3)', z0d, dd, cc1, cc2
+      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       ! Aqui e preciso informar:
       ! nlinha_zlt : numero de linhas do arquivo de parametros
@@ -649,12 +649,13 @@
       ! zlt : zlt que vem do comsibc.f95
       !
       call load_aeropars(nlinha_zlt, digsig, zlt, &
-           z0d, dd, cc1, cc2) ! saidas - reescreve os parametros aerodinamicos
+           ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2) ! saidas - reescreve os
+                                       ! parametros aerodinamicos
                                        ! no passo de tempo considerendo a
                                        ! a calibracao
       !
       print *,'-------DEPOIS-------'
-      print '(4F11.3)', z0d, dd, cc1, cc2
+      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       return 
       !                                                                        
