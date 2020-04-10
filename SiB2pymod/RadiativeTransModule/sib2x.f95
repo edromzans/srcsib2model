@@ -1,10 +1,9 @@
 !=======================================================================
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
-      subroutine sib2(trans_viva_nir, ref_viva_nir, &
-           ref_solo_par, ref_solo_nir, nlinha, & 
-           vout)
-
+      subroutine sib2(tran_1_1, tran_2_1, tran_1_2, tran_2_2, &
+           ref_1_1, ref_2_1, ref_1_2, ref_2_2, soref_1, soref_2, &
+           chil_param, nlinha, vout)
 !                                                                       
 !=======================================================================
 !                                                                       
@@ -67,10 +66,17 @@
       !Variaveis para SiB2pymod:---------------------------------------------
       ! entrada via python      
       integer, intent(in) :: nlinha
-      real (kind=8), intent(in) :: trans_viva_nir   ! trans_viva 
-      real (kind=8), intent(in) :: ref_viva_nir     ! trans_seca
-      real (kind=8), intent(in) :: ref_solo_nir     ! ref_viva
-      real (kind=8), intent(in) :: ref_solo_par     ! ref_seca
+      real (kind=8), intent(in) :: tran_1_1
+      real (kind=8), intent(in) :: tran_2_1
+      real (kind=8), intent(in) :: tran_1_2
+      real (kind=8), intent(in) :: tran_2_2
+      real (kind=8), intent(in) :: ref_1_1
+      real (kind=8), intent(in) :: ref_2_1
+      real (kind=8), intent(in) :: ref_1_2
+      real (kind=8), intent(in) :: ref_2_2
+      real (kind=8), intent(in) :: soref_1
+      real (kind=8), intent(in) :: soref_2
+      real (kind=8), intent(in) :: chil_param
       ! saida
       real (kind=8), intent(out) :: vout(nlinha)    ! vout(nlinha)
       real (kind=8) :: radtot 
@@ -98,11 +104,18 @@
       call veginc(ichi)
       !
       !recebe os parametros do processo de otimizacao---------------------
-      tran(2,1) =  trans_viva_nir   ! ref_viva
-      ref(2,1) =  ref_viva_nir     ! ref_seca
-      soref(1) = ref_solo_par
-      soref(2) = ref_solo_nir
-!-------------------------------------------------------------------
+      tran(1,1) = tran_1_1 !leaf transmittance (PAR – Photosynthetically Active Radiation – folha verde )
+      tran(2,1) = tran_2_1 !leaf transmittance (NIR – Near-Infrared – folha verde)
+      tran(1,2) = tran_1_2 !leaf transmittance (PAR - folha seca)
+      tran(2,2) = tran_2_2 !leaf transmittance (NIR - folha seca)
+      ref(1,1) = ref_1_1 !leaf reflectance (PAR - folha verde)
+      ref(2,1) = ref_2_1 !leaf reflectance (NIR - folha verde)
+      ref(1,2) = ref_1_2 !leaf reflectance (PAR - folha seca)
+      ref(2,2) = ref_2_2 !leaf reflectance (NIR - folha seca)
+      soref(1) = soref_1 !soil reflectance (PAR)
+      soref(2) = soref_2 !soil reflectance (NIR)
+      chil = chil_param !leaf angle distribution factor
+      !-------------------------------------------------------------------
       !      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 
 !... simulation start: at nyfirst (data1)                               

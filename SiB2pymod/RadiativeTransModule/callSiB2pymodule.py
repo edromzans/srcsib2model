@@ -8,16 +8,25 @@ import matplotlib.pyplot as plt
 #from importlib import reload
 import sib2pymod
 
-trans_viva_nir = 0.2
-ref_viva_nir = 0.5
-ref_solo_par = 0.11
-ref_solo_nir = 0.225
+tran_1_1 = 0.0170
+tran_2_1 = 0.2000
+tran_1_2 = 0.0010
+tran_2_2 = 0.0010
+ref_1_1 = 0.0700
+ref_2_1 = 0.5000
+ref_1_2 = 0.1600
+ref_2_2 = 0.3900
+soref_1 = 0.11
+soref_2 = 0.225
+chil_param = 0.1
+
 # nlinha = 78890
 nlinha = 744
 
 # primeira rodada
-Rn_C = sib2pymod.sib2(trans_viva_nir, ref_viva_nir,
-                      ref_solo_par, ref_solo_nir, nlinha)
+Rn_C = sib2pymod.sib2(tran_1_1, tran_2_1, tran_1_2, tran_2_2,
+                      ref_1_1, ref_2_1, ref_1_2, ref_2_2, soref_1, soref_2,
+                      chil_param, nlinha)
 
 rn = Rn_C
 print(rn)
@@ -33,8 +42,9 @@ rn1 = Rn_C
 
 # segunda rodada
 # sib2pymod = reload(sib2pymod)
-Rn_C = sib2pymod.sib2(trans_viva_nir, ref_viva_nir,
-                      ref_solo_par, ref_solo_nir, nlinha)
+Rn_C = sib2pymod.sib2(tran_1_1, tran_2_1, tran_1_2, tran_2_2,
+                      ref_1_1, ref_2_1, ref_1_2, ref_2_2, soref_1, soref_2,
+                      chil_param, nlinha)
 
 posval = np.asarray(Rn_C > -99999.).nonzero()
 posval = posval[0]
