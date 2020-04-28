@@ -44,12 +44,25 @@ run2 = www1
 rodada anterior'''
 
 # diferencas entre a rodade 1 e 2
-plt.subplot(211)
+plt.subplot(311)
+plt.plot(run1, c='black', linewidth=0.5, label='1')
+plt.plot(run2, c='red', linewidth=0.5, label='2')
+plt.ylabel('www')
+plt.legend()
+
+plt.subplot(312)
 plt.scatter(run1, run2, c='black', marker='+', linewidth=0.5)
 plt.ylabel('1')
 plt.xlabel('2')
-plt.subplot(212)
+
+plt.subplot(313)
 plt.plot((run1-run2), c='black', linewidth=0.5)
 plt.ylabel('run1 - run2')
-# plt.plot(np.abs(rn1-rn2))
+# plt.plot(np.abs(run1-run2))
+
+plt.tight_layout()
+plt.savefig('Heranca_umidadesolo.png', dpi=300, bbox_inches='tight')
+
 plt.show()
+
+

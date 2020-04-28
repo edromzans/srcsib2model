@@ -12,7 +12,7 @@ gradm_param = 16.0
 gmudmu_param = 1.0
 greeness_param = 0.99
 vmax_param = 105.0
-nlinha = 8784
+nlinha = 744
 
 # primeira rodada
 
@@ -37,22 +37,37 @@ print(run1_lec[0:20])
                                      greeness_param, vmax_param,
                                      nlinha)
 
-
 # diferencas entre a rodade 1 e 2
-plt.subplot(221)
+plt.subplot(321)
+plt.plot(run1_hc, c='black', linewidth=0.5, label='1')
+plt.plot(run2_hc, c='red', linewidth=0.5, label='2')
+plt.ylabel('H')
+plt.legend()
+
+plt.subplot(323)
 plt.scatter(run1_hc, run2_hc, c='black', marker='+', linewidth=0.5)
-plt.ylabel('1 (Hc)')
+plt.ylabel('1 H')
 plt.xlabel('2')
-plt.subplot(222)
+
+plt.subplot(325)
 plt.plot((run1_hc-run2_hc), c='black', linewidth=0.5)
 plt.ylabel('(Hc) run1 - run2')
 
-plt.subplot(223)
+plt.subplot(322)
+plt.plot(run1_lec, c='black', linewidth=0.5, label='1')
+plt.plot(run2_lec, c='red', linewidth=0.5, label='2')
+plt.ylabel('LE')
+plt.legend()
+
+plt.subplot(324)
 plt.scatter(run1_lec, run2_lec, c='black', marker='+', linewidth=0.5)
 plt.ylabel('1 (LEc)')
 plt.xlabel('2')
-plt.subplot(224)
+plt.subplot(326)
 plt.plot((run1_lec - run2_lec), c='black', linewidth=0.5)
 plt.ylabel('(LEc) run1 - run2')
+
+plt.tight_layout()
+plt.savefig('Heranca_carbonoagua.png', dpi=300, bbox_inches='tight')
 
 plt.show()

@@ -57,12 +57,23 @@ rn2 = Rn_C
 rodada anterior'''
 
 # diferencas entre a rodade 1 e 2
-plt.subplot(211)
+plt.subplot(311)
+plt.plot(rn1, c='black', linewidth=0.5, label='1')
+plt.plot(rn2, c='red', linewidth=0.5, label='2')
+plt.ylabel('Rn')
+plt.legend()
+
+plt.subplot(312)
 plt.scatter(rn1, rn2, c='black', marker='+', linewidth=0.5)
 plt.ylabel('Rn1')
 plt.xlabel('Rn2')
-plt.subplot(212)
+
+plt.subplot(313)
 plt.plot((rn1-rn2), c='black', linewidth=0.5)
 plt.ylabel('Rn1 - Rn2')
 # plt.plot(np.abs(rn1-rn2))
+
+plt.tight_layout()
+plt.savefig('Heranca_radiacao.png', dpi=300, bbox_inches='tight')
+
 plt.show()
