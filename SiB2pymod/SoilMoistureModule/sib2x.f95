@@ -2,7 +2,8 @@
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
       subroutine sib2(bee1_param, phsat1_param, satco1_param, poros1_param, &
-           nlinha, vout)
+           bee26_param, phsat26_param, satco26_param, poros26_param, &
+           nlinha, www1, www2, www3, www4, www5, www6, www7, www8, www9, www10)
 
 !                                                                       
 !=======================================================================
@@ -63,6 +64,7 @@
       integer :: nyfirst
       integer :: nylast
       real (kind=8) :: totwb
+      integer :: in
       !Variaveis para SiB2pymod:---------------------------------------------
       ! entrada via python      
       integer, intent(in) :: nlinha
@@ -70,8 +72,22 @@
       real (kind=8), intent(in) :: phsat1_param
       real (kind=8), intent(in) :: satco1_param
       real (kind=8), intent(in) :: poros1_param
+      !
+      real (kind=8), intent(in) :: bee26_param     
+      real (kind=8), intent(in) :: phsat26_param 
+      real (kind=8), intent(in) :: satco26_param 
+      real (kind=8), intent(in) :: poros26_param 
       ! saida
-      real (kind=8), intent(out) :: vout(nlinha)    ! vout(nlinha)
+      real (kind=8), intent(out) :: www1(nlinha) 
+      real (kind=8), intent(out) :: www2(nlinha) 
+      real (kind=8), intent(out) :: www3(nlinha) 
+      real (kind=8), intent(out) :: www4(nlinha) 
+      real (kind=8), intent(out) :: www5(nlinha) 
+      real (kind=8), intent(out) :: www6(nlinha) 
+      real (kind=8), intent(out) :: www7(nlinha) 
+      real (kind=8), intent(out) :: www8(nlinha) 
+      real (kind=8), intent(out) :: www9(nlinha) 
+      real (kind=8), intent(out) :: www10(nlinha)
       !----------------------------------------------------------------------
       itmp1=88
       itmp2=78
@@ -79,7 +95,7 @@
       itmp4=80
       itmp5=81
       !
-      vout = -99999.
+      !vout = -99999.
       itero = 0    ! Deve zerar a cada execucao do modulo SiB2pymod
       !
 !...  output files opening                                               
@@ -100,6 +116,12 @@
       phsat(1) = phsat1_param 
       satco(1) = satco1_param
       poros(1) = poros1_param
+      do in=2, 6
+         bee(in) = bee26_param
+         phsat(in) = phsat26_param
+         satco(in) = satco26_param
+         poros(in) = poros26_param
+      enddo
       !-------------------------------------------------------------------
       !      
       call cntrol(ichi,icho,maxit,nylast,nyfirst) 
@@ -159,8 +181,18 @@
          !use comsibc
          ! print *, itero
          ! print '(12F9.3)', www
-         vout(itero) = dble(www(1))
-         !print *, vout(itero)
+         ! vout(itero) = dble(www(1))
+         ! print *, vout(itero)
+         www1(itero) = dble(www(1))
+         www2(itero) = dble(www(2))
+         www3(itero) = dble(www(3))
+         www4(itero) = dble(www(4))
+         www5(itero) = dble(www(5))
+         www6(itero) = dble(www(6))
+         www7(itero) = dble(www(7))
+         www8(itero) = dble(www(8))
+         www9(itero) = dble(www(9))
+         www10(itero) = dble(www(10))
          !--------------------------------------
          
          !write(98,'(A20)')'   passed outer'                              
@@ -401,7 +433,8 @@
       rvar(67) = xmustar 
 !      rvar(69) = blank                                                      
 !      rvar(70) = blank                                                      
-      do 40 in=1,nlayer 
+      do 40 in=1,nlayer
+!         print *, in , www(in),  '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
          rvar(70+in) = qqq(in) 
    40    rvar(120+in) = www(in) 
 !                                                                        
