@@ -16,14 +16,20 @@ poros1_param = 0.515
 bee26_param = 7.12
 phsat26_param = -0.2
 satco26_param = 5e-06
-poros26_param = 0.530
+
+poros2_param = 0.530
+poros3_param = 0.530
+poros4_param = 0.530
+poros5_param = 0.530
+poros6_param = 0.530
 
 nlinha = 26304
 
 # primeira rodada
 [www1, www2, www3, www4, www5, www6, www7, www8, www9, www10] = sib2pymod.sib2(
     bee1_param, phsat1_param, satco1_param, poros1_param,
-    bee26_param, phsat26_param, satco26_param, poros26_param,
+    bee26_param, phsat26_param, satco26_param,
+    poros2_param, poros3_param, poros4_param, poros5_param, poros6_param,
     nlinha)
 
 # # Seleciona os valores validos
@@ -40,8 +46,10 @@ run1 = www1
 
 [www1, www2, www3, www4, www5, www6, www7, www8, www9, www10] = sib2pymod.sib2(
     bee1_param, phsat1_param, satco1_param, poros1_param,
-    bee26_param, phsat26_param, satco26_param, poros26_param,
+    bee26_param, phsat26_param, satco26_param,
+    poros2_param, poros3_param, poros4_param, poros5_param, poros6_param,
     nlinha)
+
 
 
 # posval = np.asarray(ustar_c > -99999.).nonzero()

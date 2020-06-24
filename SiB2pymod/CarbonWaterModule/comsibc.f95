@@ -4,7 +4,7 @@ module comsibc
 !        comsibc as module variables (Evandro M Anselmo)
 !-----------------------------------------------------------------------
   integer, parameter :: float64=8
-  integer, parameter :: nlayer=11
+  integer, parameter :: nlayer=10
 !-----------------------------------------------------------------------
 !        prognostic variables
 !-----------------------------------------------------------------------

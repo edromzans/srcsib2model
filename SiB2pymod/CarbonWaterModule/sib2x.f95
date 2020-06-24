@@ -683,8 +683,8 @@
       !
       !
       !Carrega os parametros aerodinamicos calibrados
-      print *,'-------ANTES-------'
-      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      ! print *,'-------ANTES-------'
+      ! print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       ! Aqui e preciso informar:
       ! nlinha_zlt : numero de linhas do arquivo de parametros
@@ -699,8 +699,8 @@
                                        ! no passo de tempo considerendo a
                                        ! a calibracao
       !
-      print *,'-------DEPOIS-------'
-      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      ! print *,'-------DEPOIS-------'
+      ! print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       return 
       !                                                                        

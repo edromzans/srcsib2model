@@ -41,7 +41,7 @@ subroutine load_aeropars(nlinha_zlt, digsig, zlt_sib2, &
           dd_par, g2_par, g3_par, cc1_par, cc2_par, corb1_par, corb2_par
      
      if ((int(zlt_sib2*digsig)).eq.(int(zlt_in*digsig))) then
-        print *, int(zlt_sib2*digsig), int(zlt_in*digsig)
+        !print *, int(zlt_sib2*digsig), int(zlt_in*digsig)
 
         ha = ha_par
         z0d = z0d_par

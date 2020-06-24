@@ -297,11 +297,11 @@
     ! Evandro M Anselmo
     ! Ajustes para inicio dos calculos:
     ! Observe que aqui define-se os valores de zs, zc, leafw (zlw) e
-    ! leafl (zlen), variaveis adicionais as variaveis que participam
-    ! do SiB2. Também aqui algumas variaveis do SiB2 podem assumir
+    ! leafl (zlen), parâmetros adicionais aos que participam
+    ! do SiB2. Também aqui alguns parâmetros do SiB2 podem assumir
     ! nomes ou valores diverentes para os calculos da derive_trans
     ! como: lai = zlt, g4 = ztz0, kar = vkc, g = gx. 
-    zs = 0.05         !Ground roughness length  (m)
+    zs = 0.05         ! Ground roughness length  (m)
     zc = 28.0         ! Inflection height for leaf-area density(m)
     leafw = 0.05      ! Leaf width (m) - zlw
     leafl = 0.1       ! Leaf width (m) - zlen

@@ -2,7 +2,8 @@
 !     SiB2 como um modulo de python - SiB2pymod - via f2py
 !
       subroutine sib2(bee1_param, phsat1_param, satco1_param, poros1_param, &
-           bee26_param, phsat26_param, satco26_param, poros26_param, &
+           bee26_param, phsat26_param, satco26_param, &
+           poros2_param, poros3_param, poros4_param, poros5_param, poros6_param, &
            nlinha, www1, www2, www3, www4, www5, www6, www7, www8, www9, www10)
 
 !                                                                       
@@ -76,7 +77,12 @@
       real (kind=8), intent(in) :: bee26_param     
       real (kind=8), intent(in) :: phsat26_param 
       real (kind=8), intent(in) :: satco26_param 
-      real (kind=8), intent(in) :: poros26_param 
+      !
+      real (kind=8), intent(in) :: poros2_param
+      real (kind=8), intent(in) :: poros3_param
+      real (kind=8), intent(in) :: poros4_param
+      real (kind=8), intent(in) :: poros5_param
+      real (kind=8), intent(in) :: poros6_param
       ! saida
       real (kind=8), intent(out) :: www1(nlinha) 
       real (kind=8), intent(out) :: www2(nlinha) 
@@ -116,11 +122,17 @@
       phsat(1) = phsat1_param 
       satco(1) = satco1_param
       poros(1) = poros1_param
+      !
+      poros(2) = poros2_param
+      poros(3) = poros3_param
+      poros(4) = poros4_param
+      poros(5) = poros5_param
+      poros(6) = poros6_param
+      !
       do in=2, 6
          bee(in) = bee26_param
          phsat(in) = phsat26_param
          satco(in) = satco26_param
-         poros(in) = poros26_param
       enddo
       !-------------------------------------------------------------------
       !      
@@ -701,8 +713,8 @@
       stop 'warning: checar ilw: incompativel'                         
       !
       !Carrega os parametros aerodinamicos calibrados
-      print *,'-------ANTES-------'
-      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      ! print *,'-------ANTES-------'
+      ! print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       ! Aqui e preciso informar:
       ! nlinha_zlt : numero de linhas do arquivo de parametros
@@ -717,8 +729,8 @@
                                        ! no passo de tempo considerendo a
                                        ! a calibracao
       !
-      print *,'-------DEPOIS-------'
-      print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
+      ! print *,'-------DEPOIS-------'
+      ! print '(9F11.3)', ha, z0d, dd, g2, g3, cc1, cc2, corb1, corb2
       !
       return 
       !                                                                        
