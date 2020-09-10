@@ -319,7 +319,7 @@
       rvar(18) = zlwf 
       rvar(19) = calbe 
       rvar(20) = tgeff 
-      rvar(21) = td -273.15 
+      rvar(21) = td - 273.15 
       rvar(22) = radt(1) 
       rvar(23) = radt(2) 
       rvar(24) = radn(1,1) 
@@ -385,20 +385,25 @@
          'Tm', 'em','um',                                                 &
          'Ki','Rn_m','alb','Ldwn','Lupw', 'Rn_C','H_C',                   &
          'LE_C','G_C','J_C','Fc_C','Rsc_C','An_C','u*_C',                 &
-         'Td','W1_C','W2_C','W3_C','gcond',                               &
+         'Td', &
+         'W1_C','W2_C','W3_C','W4_C','W5_C',  &
+         'W6_C','W7_C','W8_C','W9_C','W10_C', &
+         'gcond', &
          'Evpt','Trans','Esoil','Einterc','Prec','Rss','Rs','Runoff',     &
          'PARidir','PARidif','albPARdir','albPARdif'                      
          write(itmp2,'(a8,9(7x,a2,i1),90(7x,a1,i2))')                     &
          'NYMD',('W_',i,i=1,9),('W',i,i=10,nlayer)                        
       endif 
-                                                                        
-                                                                        
+
+
       write(itmp1,'(i8.8,50(1x,f9.3))') nymd,&
      & rvar(54), rvar(53), rvar(55),&                   ! tm,em,um       
      & rvar(51), rvar(52), rvar(19),rvar(28),rvar(18),& ! Ki,Rn,alb,Ldwn,Lupw
      & rvar(17), rvar(10), rvar(01),rvar(15),rvar(45),& ! Rn,H,LE,G,J     
-     & rvar(34), rvar(65), rvar(33),rvar(66),&          ! Fc,Rsc,An ,u*   
-     & rvar(21), rvar(121),rvar(122),rvar(123),&        ! Td,W1,W2,W3    
+     & rvar(34), rvar(65), rvar(33),rvar(66),&          ! Fc,Rsc,An,u*   
+     & rvar(21), &                                      ! Td,
+     & rvar(121),rvar(122),rvar(123),rvar(124),rvar(125),& ! W1,W2,W3,W4,W5,
+     & rvar(126),rvar(127),rvar(128),rvar(129),rvar(130),& ! W6,W7,W8,W9,W10  
      & rvar(39), rvar(46),rvar(2),rvar(4),rvar(44),&    ! gc,Evptran,Transp,Esoil,Einterc
      & rvar(57), rvar(7), rvar(8), rvar(9),&            ! precip,Qng,Croff,Runoff
      & rvar(24), rvar(25), rvar(29), rvar(30)           ! PARidir, PARidif, albPARdir, albPARdif                                                                        
