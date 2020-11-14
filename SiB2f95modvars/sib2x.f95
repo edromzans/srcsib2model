@@ -550,9 +550,10 @@
 !            2:  pco2m com ciclo diurno forcado                         
       if (ico2m.eq.0) co2amp = 0.                                                        
       if (ico2m.eq.2) co2amp = 100. ! amplitude (ppm)
-      pco2m = facco2*(340 + co2amp/2.*cos(2.*pie * real(ihour - 8)/24.)) 
-      if(ico2m.eq.1.and.xco2m.ne.-9999.) pco2m = xco2m !xco2m in ppm 
-      pco2m = pco2m * 0.1 !0.1 ppm 
+      if(ico2m.eq.1.and.xco2m.ne.-9999.) pco2m = xco2m !xco2m in ppm
+      !pco2m = facco2*(340 + co2amp/2.*cos(2.*pie * real(ihour - 8)/24.)) 
+      pco2m = facco2*(10.* pco2m + co2amp/2.*cos(2.*pie * real(ihour - 8)/24.))
+      pco2m = pco2m * 0.1 !0.1 ppm
 !      write(*,'(2(a10,f12.7))') 'pco2m=',pco2m,'real(ihour)',real(ihour)    
 !..   interpola mes a mes (N - green fraction, L - LAI)                 
 !      write(*,*) 'antes N ' ,(greex(mm),mm=1,12)                        
